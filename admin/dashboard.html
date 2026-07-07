@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم - ToolRar</title>
+  <link rel="stylesheet" href="assets/css/fonts-cairo.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap');
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg-dark: #0f172a;
+      --card-dark: #1e293b;
+      --border-dark: rgba(255, 255, 255, 0.08);
+      --text-dark: #cbd5e1;
+      --text-light: #475569;
+      --bg-light: #f8fafc;
+      --card-light: #ffffff;
+      --border-light: #e2e8f0;
+      
+      --theme-bg: var(--bg-dark);
+      --theme-card: var(--card-dark);
+      --theme-border: var(--border-dark);
+      --theme-text: var(--text-dark);
+      --theme-title: #ffffff;
+    }
+
+    .light-mode {
+      --theme-bg: var(--bg-light);
+      --theme-card: var(--card-light);
+      --theme-border: var(--border-light);
+      --theme-text: var(--text-light);
+      --theme-title: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      background-color: var(--theme-bg);
+      color: var(--theme-text);
+      transition: background-color 0.3s, color 0.3s;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar Design */
+    .sidebar {
+      width: 280px;
+      background-color: var(--theme-card);
+      border-left: 1px solid var(--theme-border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .brand-icon svg {
+      width: 22px;
+      height: 22px;
+      color: #fff;
+    }
+
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--theme-title);
+    }
+
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .nav-item button {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--theme-text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s ease;
+      text-align: right;
+    }
+
+    .nav-item button:hover, .nav-item.active button {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+    }
+
+    .nav-item.active button {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .nav-item button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .sidebar-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 20px;
+      border-top: 1px solid var(--theme-border);
+    }
+
+    /* Main Content Area */
+    .main-container {
+      flex: 1;
+      padding: 40px;
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--theme-title);
+    }
+
+    .action-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* GitHub Status Pill */
+    .sync-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .sync-status.offline {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background-color: var(--theme-card);
+      border: 1px solid var(--theme-border);
+      color: var(--theme-text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Tabs Content */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards & Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background-color: var(--theme-card);
+      border: 1px solid var(--theme-border);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-info h3 {
+      font-size: 0.9rem;
+      color: var(--theme-text);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .stat-info p {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--theme-title);
+      line-height: 1;
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-card:nth-child(1) .stat-icon { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+    .stat-card:nth-child(2) .stat-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .stat-card:nth-child(3) .stat-icon { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+    /* Tables & Lists */
+    .content-box {
+      background-color: var(--theme-card);
+      border: 1px solid var(--theme-border);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .box-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--theme-title);
+    }
+
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .form-group-full {
+      grid-column: span 2;
+    }
+
+    .label-custom {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: var(--theme-title);
+    }
+
+    .input-custom {
+      width: 100%;
+      background-color: rgba(15, 23, 42, 0.2);
+      border: 1.5px solid var(--theme-border);
+      color: var(--theme-title);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .light-mode .input-custom {
+      background-color: #f1f5f9;
+    }
+
+    .input-custom:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+      transition: all 0.2s;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Image Box */
+    .image-upload-wrapper {
+      border: 2px dashed var(--theme-border);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .image-upload-wrapper:hover {
+      border-color: var(--primary);
+    }
+
+    .image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 12px;
+      display: none;
+      margin-top: 16px;
+    }
+
+    /* AI Tools Section */
+    .ai-assistant-card {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(165, 180, 252, 0.05) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .ai-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .ai-select {
+      background-color: var(--theme-card);
+      border: 1.5px solid var(--theme-border);
+      color: var(--theme-title);
+      border-radius: 10px;
+      padding: 8px 16px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    /* Articles Table */
+    .articles-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+    }
+
+    .articles-table th {
+      padding: 16px;
+      border-bottom: 2px solid var(--theme-border);
+      color: var(--theme-text);
+      font-weight: 700;
+    }
+
+    .articles-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--theme-border);
+      color: var(--theme-title);
+    }
+
+    .article-row-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .article-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      background-color: rgba(99, 102, 241, 0.1);
+    }
+
+    .btn-action {
+      background: none;
+      border: 1px solid var(--theme-border);
+      color: var(--theme-title);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .btn-action.edit:hover {
+      background-color: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    .btn-action.delete:hover {
+      background-color: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+
+    /* FAQ area */
+    .faq-item-form {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Toast notification */
+    .toast-notify {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background-color: var(--theme-card);
+      border: 1px solid var(--theme-border);
+      padding: 16px 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 9999;
+    }
+
+    .toast-notify.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+        </svg>
+      </div>
+      <span class="brand-name">ToolRar</span>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item active" data-tab="dashboard">
+        <button>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+          الرئيسية
+        </button>
+      </li>
+      <li class="nav-item" data-tab="add-article">
+        <button>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+          إضافة مقال
+        </button>
+      </li>
+      <li class="nav-item" data-tab="articles">
+        <button>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          المقالات
+        </button>
+      </li>
+      <li class="nav-item" data-tab="categories">
+        <button>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          الأقسام
+        </button>
+      </li>
+      <li class="nav-item" data-tab="settings">
+        <button>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          الإعدادات
+        </button>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="modeBtn" onclick="toggleTheme()" title="تبديل الوضع">
+        <svg id="themeIcon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+      <button onclick="handleLogout()" style="width:100%; border:1px solid var(--theme-border); padding:10px; border-radius:10px; cursor:pointer; background:none; color:var(--danger); display:flex; align-items:center; justify-content:center; gap:8px;">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        تسجيل الخروج
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Area -->
+  <main class="main-container">
+    <header class="header-bar">
+      <h2 class="page-title" id="pageTitle">الرئيسية</h2>
+      <div class="action-controls">
+        <div class="sync-status" id="gitSyncPill">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:currentColor;"></span>
+          <span id="gitSyncText">محلي بالكامل</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tab 1: Dashboard -->
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>عدد المقالات</h3>
+            <p id="countArticles">0</p>
+          </div>
+          <div class="stat-icon">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>عدد الأقسام</h3>
+            <p id="countCategories">0</p>
+          </div>
+          <div class="stat-icon">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>حالة المزامنة</h3>
+            <p id="lastSyncTime" style="font-size: 1.1rem; font-weight: 700; margin-top: 5px;">غير نشط</p>
+          </div>
+          <div class="stat-icon">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-box">
+        <div class="box-header">
+          <h4 class="box-title">المقالات المضافة حديثاً</h4>
+          <button class="btn-action edit" onclick="switchTab('articles')">عرض الكل</button>
+        </div>
+        <table class="articles-table">
+          <thead>
+            <tr>
+              <th>المقال</th>
+              <th>القسم</th>
+              <th>التاريخ</th>
+              <th>الحالة</th>
+            </tr>
+          </thead>
+          <tbody id="latestArticlesList">
+            <!-- Dynamic list -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 2: Add/Edit Article -->
+    <div id="tab-add-article" class="tab-content">
+      <!-- AI Generator Panel -->
+      <div class="ai-assistant-card">
+        <h4 style="font-weight: 800; color: var(--theme-title); margin-bottom: 8px;">مساعد الذكاء الاصطناعي</h4>
+        <p style="font-size: 0.85rem; color: var(--theme-text); margin-bottom: 16px;">قم بتوليد العناوين، الأوصاف، أو المقال بالكامل بضغطة زر واحدة.</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label class="label-custom" style="font-size: 0.8rem;">مزود الخدمة</label>
+            <select id="aiProvider" class="ai-select" style="width: 100%;" onchange="loadAIModels()">
+              <option value="google">Google Gemini</option>
+              <option value="openrouter" selected>OpenRouter</option>
+              <option value="groq">Groq</option>
+              <option value="cerebras">Cerebras</option>
+              <option value="siliconflow">SiliconFlow</option>
+              <option value="routeway">Routeway</option>
+              <option value="github">GitHub AI</option>
+              <option value="featherless">Featherless</option>
+              <option value="opencode">OpenCode</option>
+            </select>
+          </div>
+          <div>
+            <label class="label-custom" style="font-size: 0.8rem;">النموذج (Model)</label>
+            <select id="aiModel" class="ai-select" style="width: 100%;">
+              <!-- Dynamic options -->
+            </select>
+          </div>
+          <div>
+            <label class="label-custom" style="font-size: 0.8rem;">نوع التوليد</label>
+            <select id="aiGenType" class="ai-select" style="width: 100%;">
+              <option value="long_desc">مقال سيو كامل (600-800 كلمة + HTML + سكيما)</option>
+              <option value="short_desc">وصف قصير للأداة (160 حرف)</option>
+              <option value="meta_desc">وصف الميتا لمحركات البحث (300 حرف)</option>
+              <option value="faq">أسئلة شائعة (FAQ JSON)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="label-custom" style="font-size: 0.8rem;">عنوان المقال المستهدف أو الكلمة المفتاحية</label>
+          <input type="text" id="aiPromptTitle" class="input-custom" style="margin-bottom: 12px;" placeholder="مثال: كيف تصنع مدونة ناجحة">
+        </div>
+
+        <button class="btn-submit" id="btnRunAI" onclick="generateContentWithAI()">
+          <span id="aiBtnText">توليد المحتوى بالذكاء الاصطناعي</span>
+        </button>
+      </div>
+
+      <!-- Add post form -->
+      <form id="articleForm" onsubmit="saveArticle(event)">
+        <input type="hidden" id="editArticleId" value="">
+        <div class="content-box">
+          <div class="form-grid">
+            <div class="form-group-full">
+              <label class="label-custom" for="postTitle">عنوان المقال</label>
+              <input type="text" id="postTitle" class="input-custom" required oninput="generateSlugFromTitle()">
+            </div>
+            
+            <div>
+              <label class="label-custom" for="postSlug">الرابط البديل (Slug)</label>
+              <input type="text" id="postSlug" class="input-custom" required placeholder="example-article-slug">
+            </div>
+
+            <div>
+              <label class="label-custom" for="postCategory">القسم</label>
+              <select id="postCategory" class="input-custom" required>
+                <!-- Dynamic categories -->
+              </select>
+            </div>
+
+            <div class="form-group-full">
+              <label class="label-custom" for="postExcerpt">مقتطف من المقال</label>
+              <textarea id="postExcerpt" class="input-custom" rows="3" required placeholder="اكتب مقتطف قصير جداً ليظهر في الرئيسية"></textarea>
+            </div>
+
+            <div class="form-group-full">
+              <label class="label-custom">محتوى المقال (محرر نصوص متقدم)</label>
+              <textarea id="postContent" class="input-custom" style="height: 350px;" placeholder="اكتب محتوى المقال هنا... (يدعم HTML)"></textarea>
+            </div>
+
+            <div>
+              <label class="label-custom">صورة المقال</label>
+              <div class="image-upload-wrapper" onclick="document.getElementById('postImageFile').click()">
+                <p>اضغط لاختيار صورة للمقال</p>
+                <input type="file" id="postImageFile" style="display:none" onchange="previewPostImage(event)">
+                <img id="postImagePreview" class="image-preview" src="#" alt="Preview">
+                <input type="hidden" id="postImagePath" value="">
+              </div>
+            </div>
+
+            <div>
+              <label class="label-custom">تحسين محركات البحث للصورة (SEO)</label>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="imageAlt" class="input-custom" placeholder="نص البديل للصورة (alt)">
+                <input type="text" id="imageTitle" class="input-custom" placeholder="عنوان الصورة (title)">
+              </div>
+            </div>
+
+            <div class="form-group-full" style="border-top: 1px solid var(--theme-border); padding-top: 20px; margin-top: 10px;">
+              <h4 style="font-weight: 800; color: var(--theme-title); margin-bottom: 12px;">تهيئة محركات البحث (SEO)</h4>
+            </div>
+
+            <div>
+              <label class="label-custom" for="metaTitle">عنوان SEO (Meta Title)</label>
+              <input type="text" id="metaTitle" class="input-custom" placeholder="اتركه فارغاً ليطابق العنوان الرئيسي">
+            </div>
+
+            <div>
+              <label class="label-custom" for="metaDesc">وصف SEO (Meta Description)</label>
+              <input type="text" id="metaDesc" class="input-custom" placeholder="وصف مقتضب يظهر في نتائج البحث">
+            </div>
+
+            <div class="form-group-full">
+              <h4 style="font-weight: 800; color: var(--theme-title); margin-bottom: 12px;">الأسئلة الشائعة (FAQ) للمقال</h4>
+              <div id="faqContainer">
+                <!-- Dynamically added FAQs -->
+              </div>
+              <button type="button" class="btn-action edit" onclick="addFaqRow('', '')" style="margin-top: 8px;">إضافة سؤال جديد</button>
+            </div>
+
+            <div class="form-group-full" style="margin-top: 24px;">
+              <button type="submit" class="btn-submit">حفظ المقال ونشره</button>
+              <button type="button" class="btn-action" onclick="switchTab('dashboard')" style="margin-right: 12px; padding: 14px 28px;">إلغاء</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tab 3: Articles List -->
+    <div id="tab-articles" class="tab-content">
+      <div class="content-box">
+        <div class="box-header">
+          <h4 class="box-title">قائمة المقالات بالكامل</h4>
+          <button class="btn-submit" onclick="switchTab('add-article'); clearArticleForm();">إضافة مقال جديد</button>
+        </div>
+        <table class="articles-table">
+          <thead>
+            <tr>
+              <th>المقال</th>
+              <th>القسم</th>
+              <th>التاريخ</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="allArticlesList">
+            <!-- Dynamic data -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 4: Categories Manager -->
+    <div id="tab-categories" class="tab-content">
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 32px;">
+        <div class="content-box">
+          <h4 class="box-title" id="catBoxTitle" style="margin-bottom: 16px;">إضافة قسم جديد</h4>
+          <form id="categoryForm" onsubmit="saveCategory(event)">
+            <input type="hidden" id="editCategoryId" value="">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <label class="label-custom" for="catName">اسم القسم</label>
+                <input type="text" id="catName" class="input-custom" required oninput="generateSlugFromCatName()">
+              </div>
+              <div>
+                <label class="label-custom" for="catSlug">الرابط البديل (Slug)</label>
+                <input type="text" id="catSlug" class="input-custom" required>
+              </div>
+              <div>
+                <label class="label-custom" for="catColor">اللون المميز (Hex)</label>
+                <input type="color" id="catColor" value="#6366f1" style="width: 100%; height: 42px; border: 1px solid var(--theme-border); border-radius: 8px;">
+              </div>
+              <div>
+                <label class="label-custom" for="catDesc">وصف القسم</label>
+                <textarea id="catDesc" class="input-custom" rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn-submit">حفظ القسم</button>
+              <button type="button" class="btn-action" onclick="clearCategoryForm()" style="display:none" id="btnCancelCatEdit">إلغاء التعديل</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="content-box">
+          <h4 class="box-title" style="margin-bottom: 24px;">الأقسام المتوفرة</h4>
+          <table class="articles-table">
+            <thead>
+              <tr>
+                <th>القسم</th>
+                <th>Slug</th>
+                <th>عدد المقالات</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="allCategoriesList">
+              <!-- Dynamic rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Settings -->
+    <div id="tab-settings" class="tab-content">
+      <form id="settingsForm" onsubmit="saveSettings(event)">
+        <div class="content-box">
+          <h4 class="box-title" style="margin-bottom: 24px;">إعدادات اتصال GitHub</h4>
+          <div class="form-grid">
+            <div>
+              <label class="label-custom" for="githubRepo">اسم المستودع (Repository)</label>
+              <input type="text" id="githubRepo" class="input-custom" placeholder="username/repo-name">
+            </div>
+            <div>
+              <label class="label-custom" for="githubBranch">فرع العمل الرئيسي (Branch)</label>
+              <input type="text" id="githubBranch" class="input-custom" value="main">
+            </div>
+            <div class="form-group-full">
+              <label class="label-custom" for="githubToken">رمز الوصول الشخصي (GitHub Personal Access Token)</label>
+              <input type="password" id="githubToken" class="input-custom" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+              <span style="font-size:0.75rem; color:var(--theme-text);">مطلوب لحفظ المقالات تلقائياً إلى مستودع GitHub الخاص بك.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-box">
+          <h4 class="box-title" style="margin-bottom: 24px;">مفاتيح خدمات الذكاء الاصطناعي (API Keys)</h4>
+          <div class="form-grid">
+            <div>
+              <label class="label-custom" for="keyOpenrouter">OpenRouter API Key</label>
+              <input type="password" id="keyOpenrouter" class="input-custom">
+            </div>
+            <div>
+              <label class="label-custom" for="keyGoogle">Google AI (Gemini) Key</label>
+              <input type="password" id="keyGoogle" class="input-custom">
+            </div>
+            <div>
+              <label class="label-custom" for="keyGroq">Groq API Key</label>
+              <input type="password" id="keyGroq" class="input-custom">
+            </div>
+            <div>
+              <label class="label-custom" for="keyCerebras">Cerebras API Key</label>
+              <input type="password" id="keyCerebras" class="input-custom">
+            </div>
+            <div>
+              <label class="label-custom" for="keySiliconflow">SiliconFlow Key</label>
+              <input type="password" id="keySiliconflow" class="input-custom">
+            </div>
+            <div>
+              <label class="label-custom" for="keyRouteway">Routeway API Key</label>
+              <input type="password" id="keyRouteway" class="input-custom">
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: left;">
+          <button type="submit" class="btn-submit">حفظ الإعدادات</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Toast Notification Wrapper -->
+  <div id="toastBox" class="toast-notify">
+    <span id="toastIcon">💡</span>
+    <span id="toastMsg">تم الإجراء بنجاح!</span>
+  </div>
+
+  <!-- TinyMCE Editor Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
+
+  <script>
+    // Ensure login security
+    if (localStorage.getItem('tr_logged_in') !== 'true') {
+      window.location.href = 'index.html';
+    }
+
+    // Static structures to manage local data
+    let articles = [];
+    let categories = [];
+    let settings = {};
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Load Theme
+      if (localStorage.getItem('tr_theme') === 'light') {
+        document.body.classList.add('light-mode');
+        document.getElementById('themeIcon').innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>';
+      }
+
+      // Init TinyMCE
+      tinymce.init({
+        selector: '#postContent',
+        language: 'ar',
+        directionality: 'rtl',
+        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+        height: 400
+      });
+
+      // Load data
+      await loadInitialData();
+      loadAIModels();
+    });
+
+    // Toggle styling theme
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      localStorage.setItem('tr_theme', isLight ? 'light' : 'dark');
+      
+      const themeIcon = document.getElementById('themeIcon');
+      if (isLight) {
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>';
+      } else {
+        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      }
+    }
+
+    // Switch View Tabs
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(item => item.getAttribute('data-tab') === tabId);
+      if (activeNav) activeNav.classList.add('active');
+
+      // Set Page Title
+      const titles = {
+        'dashboard': 'الرئيسية',
+        'add-article': 'إضافة مقال',
+        'articles': 'المقالات',
+        'categories': 'الأقسام',
+        'settings': 'الإعدادات'
+      };
+      document.getElementById('pageTitle').textContent = titles[tabId] || 'لوحة التحكم';
+    }
+
+    // Bind sidebar buttons
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        switchTab(item.getAttribute('data-tab'));
+      });
+    });
+
+    // Notify popups
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toastBox');
+      const msg = document.getElementById('toastMsg');
+      const icon = document.getElementById('toastIcon');
+      
+      msg.textContent = message;
+      icon.textContent = type === 'success' ? '⚡' : '⚠️';
+      
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // AI configurations and model mapping
+    const aiModelsList = {
+      openrouter: [
+        { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1 (Free)' },
+        { id: 'google/gemini-2.5-flash:free', name: 'Gemini 2.5 Flash (Free)' },
+        { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B (Free)' }
+      ],
+      google: [
+        { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash' },
+        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' }
+      ],
+      groq: [
+        { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B' },
+        { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B' }
+      ],
+      cerebras: [
+        { id: 'llama3.1-70b', name: 'Llama 3.1 70B' }
+      ],
+      siliconflow: [
+        { id: 'deepseek-ai/DeepSeek-V3', name: 'DeepSeek V3' }
+      ],
+      routeway: [
+        { id: 'deepseek-v4-flash:free', name: 'DeepSeek Flash' }
+      ],
+      github: [
+        { id: 'gpt-4o-mini', name: 'GPT-4o Mini' }
+      ],
+      featherless: [
+        { id: 'zai-org/GLM-5.1', name: 'GLM 5.1' }
+      ],
+      opencode: [
+        { id: 'deepseek-v4-flash-free', name: 'DeepSeek Flash Free' }
+      ]
+    };
+
+    function loadAIModels() {
+      const provider = document.getElementById('aiProvider').value;
+      const modelSelect = document.getElementById('aiModel');
+      modelSelect.innerHTML = '';
+      
+      const models = aiModelsList[provider] || [];
+      models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.name;
+        modelSelect.appendChild(opt);
+      });
+    }
+
+    // Load initial JSON structures
+    async function loadInitialData() {
+      // 1. Categories
+      try {
+        const cRes = await fetch('data/categories.json');
+        const cData = await cRes.json();
+        categories = cData.categories || [];
+      } catch (err) {
+        // Fallback localstorage
+        categories = JSON.parse(localStorage.getItem('tr_categories')) || [];
+      }
+
+      // 2. Articles
+      try {
+        const aRes = await fetch('data/articles.json');
+        const aData = await aRes.json();
+        articles = aData.articles || [];
+      } catch (err) {
+        articles = JSON.parse(localStorage.getItem('tr_articles')) || [];
+      }
+
+      // 3. Settings
+      try {
+        const sRes = await fetch('data/settings.json');
+        settings = await sRes.json();
+      } catch (err) {
+        settings = JSON.parse(localStorage.getItem('tr_settings')) || {};
+      }
+
+      // Populate elements
+      populateDashboard();
+      populateSettings();
+      populateCategoriesList();
+      populateArticlesList();
+      updateCategoryDropdowns();
+      checkGitHubConfiguration();
+    }
+
+    function checkGitHubConfiguration() {
+      const text = document.getElementById('gitSyncText');
+      const pill = document.getElementById('gitSyncPill');
+      
+      if (settings.github_repo && settings.github_token) {
+        text.textContent = `متصل: ${settings.github_repo}`;
+        pill.classList.remove('offline');
+        document.getElementById('lastSyncTime').textContent = 'جاهز للمزامنة';
+      } else {
+        text.textContent = 'محلي (غير مربوط بـ GitHub)';
+        pill.classList.add('offline');
+        document.getElementById('lastSyncTime').textContent = 'غير متصل';
+      }
+    }
+
+    function populateDashboard() {
+      document.getElementById('countArticles').textContent = articles.length;
+      document.getElementById('countCategories').textContent = categories.length;
+
+      // Populate latest 3 articles
+      const latestBody = document.getElementById('latestArticlesList');
+      latestBody.innerHTML = '';
+      const sorted = [...articles].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+      
+      if (sorted.length === 0) {
+        latestBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px;">لا يوجد مقالات مضافة بعد.</td></tr>`;
+        return;
+      }
+
+      sorted.forEach(art => {
+        const cat = categories.find(c => c.id === art.category) || { name: art.category };
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class="article-row-meta">
+              <img class="article-thumb" src="${art.image || '../blog/text-tools/img/default.png'}" onerror="this.src='../blog/text-tools/img/default.png'">
+              <span>${art.title}</span>
+            </div>
+          </td>
+          <td>${cat.name}</td>
+          <td>${art.date}</td>
+          <td><span style="color:var(--success); font-weight:700;">منشور</span></td>
+        `;
+        latestBody.appendChild(tr);
+      });
+    }
+
+    // Switch view to Settings page
+    function populateSettings() {
+      document.getElementById('githubRepo').value = settings.github_repo || '';
+      document.getElementById('githubBranch').value = settings.github_branch || 'main';
+      document.getElementById('githubToken').value = settings.github_token || '';
+      document.getElementById('keyOpenrouter').value = settings.openrouter_key || '';
+      document.getElementById('keyGoogle').value = settings.google_key || '';
+      document.getElementById('keyGroq').value = settings.groq_key || '';
+      document.getElementById('keyCerebras').value = settings.cerebras_key || '';
+      document.getElementById('keySiliconflow').value = settings.siliconflow_key || '';
+      document.getElementById('keyRouteway').value = settings.routeway_key || '';
+    }
+
+    function updateCategoryDropdowns() {
+      const select = document.getElementById('postCategory');
+      select.innerHTML = '';
+      
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = cat.name;
+        select.appendChild(opt);
+      });
+    }
+
+    function populateCategoriesList() {
+      const list = document.getElementById('allCategoriesList');
+      list.innerHTML = '';
+
+      categories.forEach(cat => {
+        // Calculate count
+        const count = articles.filter(a => a.category === cat.id).length;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="width:16px; height:16px; border-radius:50%; background-color:${cat.color}"></span>
+              <strong>${cat.name}</strong>
+            </div>
+          </td>
+          <td><code>${cat.slug}</code></td>
+          <td>${count}</td>
+          <td>
+            <button class="btn-action edit" onclick="editCategory('${cat.id}')">تعديل</button>
+            <button class="btn-action delete" onclick="deleteCategory('${cat.id}')">حذف</button>
+          </td>
+        `;
+        list.appendChild(tr);
+      });
+    }
+
+    function populateArticlesList() {
+      const list = document.getElementById('allArticlesList');
+      list.innerHTML = '';
+
+      if (articles.length === 0) {
+        list.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px;">لا يوجد أي مقالات حالياً.</td></tr>`;
+        return;
+      }
+
+      articles.forEach(art => {
+        const cat = categories.find(c => c.id === art.category) || { name: art.category };
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class="article-row-meta">
+              <img class="article-thumb" src="${art.image || '../blog/text-tools/img/default.png'}" onerror="this.src='../blog/text-tools/img/default.png'">
+              <strong>${art.title}</strong>
+            </div>
+          </td>
+          <td>${cat.name}</td>
+          <td>${art.date}</td>
+          <td><span style="color:var(--success); font-weight:700;">منشور</span></td>
+          <td>
+            <button class="btn-action edit" onclick="editArticle('${art.id}')">تعديل</button>
+            <button class="btn-action delete" onclick="deleteArticle('${art.id}')">حذف</button>
+          </td>
+        `;
+        list.appendChild(tr);
+      });
+    }
+
+    // Auto generate URLs slugs from titles
+    function generateSlugFromTitle() {
+      const title = document.getElementById('postTitle').value;
+      const slugInput = document.getElementById('postSlug');
+      slugInput.value = slugify(title);
+    }
+
+    function generateSlugFromCatName() {
+      const name = document.getElementById('catName').value;
+      const slugInput = document.getElementById('catSlug');
+      slugInput.value = slugify(name);
+    }
+
+    function slugify(text) {
+      return text
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/[^\u0621-\u064A\w\-]+/g, '') // Remove non-word non-arabic chars
+        .replace(/\-\-+/g, '-') // Replace multiple - with single -
+        .replace(/^-+/, '') // Trim - from start
+        .replace(/-+$/, ''); // Trim - from end
+    }
+
+    // Image previewer
+    function previewPostImage(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById('postImagePreview');
+      
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          
+          // Generate simulated path or handle Base64
+          const category = document.getElementById('postCategory').value;
+          document.getElementById('postImagePath').value = `${category}/img/${file.name}`;
+          
+          // Also set image Alt and Title
+          document.getElementById('imageAlt').value = document.getElementById('postTitle').value;
+          document.getElementById('imageTitle').value = document.getElementById('postTitle').value;
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // FAQ dynamic rows
+    function addFaqRow(q = '', a = '') {
+      const container = document.getElementById('faqContainer');
+      const div = document.createElement('div');
+      div.className = 'faq-item-form';
+      div.innerHTML = `
+        <input type="text" class="input-custom faq-q" style="flex:1" placeholder="السؤال" value="${q}">
+        <input type="text" class="input-custom faq-a" style="flex:2" placeholder="الإجابة" value="${a}">
+        <button type="button" class="btn-action delete" onclick="this.parentElement.remove()" style="padding: 12px;">X</button>
+      `;
+      container.appendChild(div);
+    }
+
+    // Form clearings
+    function clearArticleForm() {
+      document.getElementById('editArticleId').value = '';
+      document.getElementById('postTitle').value = '';
+      document.getElementById('postSlug').value = '';
+      document.getElementById('postExcerpt').value = '';
+      document.getElementById('postImagePath').value = '';
+      document.getElementById('imageAlt').value = '';
+      document.getElementById('imageTitle').value = '';
+      document.getElementById('metaTitle').value = '';
+      document.getElementById('metaDesc').value = '';
+      document.getElementById('faqContainer').innerHTML = '';
+      document.getElementById('postImagePreview').style.display = 'none';
+      if (tinymce.get('postContent')) {
+        tinymce.get('postContent').setContent('');
+      }
+    }
+
+    // Edit and Delete handlers
+    function editArticle(id) {
+      const art = articles.find(a => a.id === id);
+      if (!art) return;
+
+      clearArticleForm();
+      switchTab('add-article');
+
+      document.getElementById('editArticleId').value = art.id;
+      document.getElementById('postTitle').value = art.title;
+      document.getElementById('postSlug').value = art.slug;
+      document.getElementById('postCategory').value = art.category;
+      document.getElementById('postExcerpt').value = art.excerpt;
+      document.getElementById('postImagePath').value = art.image || '';
+      document.getElementById('imageAlt').value = art.imageAlt || '';
+      document.getElementById('imageTitle').value = art.imageTitle || '';
+      document.getElementById('metaTitle').value = art.metaTitle || '';
+      document.getElementById('metaDesc').value = art.metaDesc || '';
+
+      if (art.image) {
+        document.getElementById('postImagePreview').src = art.image;
+        document.getElementById('postImagePreview').style.display = 'block';
+      }
+
+      if (art.faq && Array.isArray(art.faq)) {
+        art.faq.forEach(f => addFaqRow(f.q, f.a));
+      }
+
+      // Let TinyMCE load content after fully initializing or render content
+      setTimeout(() => {
+        if (tinymce.get('postContent')) {
+          tinymce.get('postContent').setContent(art.content || '');
+        }
+      }, 300);
+    }
+
+    async function deleteArticle(id) {
+      if (!confirm('هل أنت متأكد من حذف هذا المقال نهائياً؟')) return;
+      
+      const index = articles.findIndex(a => a.id === id);
+      if (index === -1) return;
+
+      articles.splice(index, 1);
+      
+      // Save changes locally
+      saveDataToLocalStorage();
+      populateDashboard();
+      populateArticlesList();
+      showToast('تم حذف المقال بنجاح', 'success');
+
+      // Auto Push to GitHub if configured
+      await pushDataToGitHub();
+    }
+
+    // Save Article
+    async function saveArticle(e) {
+      e.preventDefault();
+      
+      const id = document.getElementById('editArticleId').value || `art_${Date.now()}`;
+      const title = document.getElementById('postTitle').value;
+      const slug = document.getElementById('postSlug').value;
+      const category = document.getElementById('postCategory').value;
+      const excerpt = document.getElementById('postExcerpt').value;
+      const image = document.getElementById('postImagePath').value;
+      const imageAlt = document.getElementById('imageAlt').value;
+      const imageTitle = document.getElementById('imageTitle').value;
+      const metaTitleVal = document.getElementById('metaTitle').value || title;
+      const metaDescVal = document.getElementById('metaDesc').value || excerpt;
+      
+      const content = tinymce.get('postContent') ? tinymce.get('postContent').getContent() : document.getElementById('postContent').value;
+
+      // Read FAQs
+      const faqRows = document.querySelectorAll('.faq-item-form');
+      const faq = [];
+      faqRows.forEach(row => {
+        const q = row.querySelector('.faq-q').value;
+        const a = row.querySelector('.faq-a').value;
+        if (q && a) faq.push({ q, a });
+      });
+
+      const articleData = {
+        id,
+        title,
+        slug,
+        category,
+        excerpt,
+        content,
+        image: image || `../blog/${category}/img/default.png`,
+        imageAlt,
+        imageTitle,
+        metaTitle: metaTitleVal,
+        metaDesc: metaDescVal,
+        author: 'Toolrar',
+        date: new Date().toISOString().split('T')[0],
+        readTime: Math.max(1, Math.ceil(content.split(' ').length / 200)),
+        faq,
+        status: 'published',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      const existingIndex = articles.findIndex(a => a.id === id);
+      if (existingIndex > -1) {
+        articleData.createdAt = articles[existingIndex].createdAt;
+        articles[existingIndex] = articleData;
+      } else {
+        articles.push(articleData);
+      }
+
+      // Save changes
+      saveDataToLocalStorage();
+      populateDashboard();
+      populateArticlesList();
+      switchTab('articles');
+      showToast('تم حفظ المقال بنجاح', 'success');
+
+      // Trigger GitHub Integration pipeline (creates physical file and updates JSON)
+      await pushDataToGitHub();
+    }
+
+    // Category Forms
+    function editCategory(id) {
+      const cat = categories.find(c => c.id === id);
+      if (!cat) return;
+
+      document.getElementById('editCategoryId').value = cat.id;
+      document.getElementById('catName').value = cat.name;
+      document.getElementById('catSlug').value = cat.slug;
+      document.getElementById('catColor').value = cat.color || '#6366f1';
+      document.getElementById('catDesc').value = cat.description || '';
+      
+      document.getElementById('catBoxTitle').textContent = 'تعديل القسم';
+      document.getElementById('btnCancelCatEdit').style.display = 'inline-block';
+    }
+
+    function clearCategoryForm() {
+      document.getElementById('editCategoryId').value = '';
+      document.getElementById('catName').value = '';
+      document.getElementById('catSlug').value = '';
+      document.getElementById('catColor').value = '#6366f1';
+      document.getElementById('catDesc').value = '';
+      
+      document.getElementById('catBoxTitle').textContent = 'إضافة قسم جديد';
+      document.getElementById('btnCancelCatEdit').style.display = 'none';
+    }
+
+    async function deleteCategory(id) {
+      if (!confirm('حذف القسم سيؤدي لإزالة تصنيف مقالاته. هل أنت متأكد؟')) return;
+      const index = categories.findIndex(c => c.id === id);
+      if (index === -1) return;
+
+      categories.splice(index, 1);
+      saveDataToLocalStorage();
+      populateDashboard();
+      populateCategoriesList();
+      updateCategoryDropdowns();
+      showToast('تم حذف القسم بنجاح', 'success');
+      
+      await pushDataToGitHub();
+    }
+
+    async function saveCategory(e) {
+      e.preventDefault();
+      
+      const id = document.getElementById('editCategoryId').value || document.getElementById('catSlug').value;
+      const name = document.getElementById('catName').value;
+      const slug = document.getElementById('catSlug').value;
+      const color = document.getElementById('catColor').value;
+      const description = document.getElementById('catDesc').value;
+
+      const catData = {
+        id,
+        name,
+        slug,
+        color,
+        description,
+        svgIcon: `<polyline points='4 7 4 4 20 4 20 7'/><line x1='9' y1='20' x2='15' y2='20'/><line x1='12' y1='4' x2='12' y2='20'/>` // default
+      };
+
+      const existingIndex = categories.findIndex(c => c.id === id);
+      if (existingIndex > -1) {
+        categories[existingIndex] = catData;
+      } else {
+        categories.push(catData);
+      }
+
+      saveDataToLocalStorage();
+      populateDashboard();
+      populateCategoriesList();
+      updateCategoryDropdowns();
+      clearCategoryForm();
+      showToast('تم حفظ القسم بنجاح', 'success');
+
+      await pushDataToGitHub();
+    }
+
+    // Local Storage Fallbacks
+    function saveDataToLocalStorage() {
+      localStorage.setItem('tr_articles', JSON.stringify(articles));
+      localStorage.setItem('tr_categories', JSON.stringify(categories));
+    }
+
+    // Save configuration settings
+    function saveSettings(e) {
+      e.preventDefault();
+      
+      settings.github_repo = document.getElementById('githubRepo').value;
+      settings.github_branch = document.getElementById('githubBranch').value;
+      settings.github_token = document.getElementById('githubToken').value;
+      settings.openrouter_key = document.getElementById('keyOpenrouter').value;
+      settings.google_key = document.getElementById('keyGoogle').value;
+      settings.groq_key = document.getElementById('keyGroq').value;
+      settings.cerebras_key = document.getElementById('keyCerebras').value;
+      settings.siliconflow_key = document.getElementById('keySiliconflow').value;
+      settings.routeway_key = document.getElementById('keyRouteway').value;
+
+      localStorage.setItem('tr_settings', JSON.stringify(settings));
+      checkGitHubConfiguration();
+      showToast('تم حفظ الإعدادات بنجاح', 'success');
+    }
+
+    // Log Out
+    function handleLogout() {
+      localStorage.removeItem('tr_logged_in');
+      localStorage.removeItem('tr_user');
+      window.location.href = 'index.html';
+    }
+
+    // AI Generation Logic directly from client-side
+    async function generateContentWithAI() {
+      const provider = document.getElementById('aiProvider').value;
+      const model = document.getElementById('aiModel').value;
+      const type = document.getElementById('aiGenType').value;
+      const title = document.getElementById('aiPromptTitle').value;
+      
+      if (!title) {
+        showToast('يرجى كتابة عنوان المقال المستهدف للمساعد ذكي', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('btnRunAI');
+      const text = document.getElementById('aiBtnText');
+      
+      btn.disabled = true;
+      text.textContent = 'جاري التوليد (قد يستغرق بعض الوقت)...';
+
+      // Pick correct key from settings
+      const keys = {
+        google: settings.google_key || 'AQ.Ab8RN6KhduQtbtmII7u0ijcaZDzc7xb8iZCTnPETVnZ2F3nfog',
+        openrouter: settings.openrouter_key || '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',
+        groq: settings.groq_key || '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',
+        cerebras: settings.cerebras_key || 'csk-8hnwewjmfy46xthhwcn3t22n94tt9t349e2rdkw9xvnf28pc',
+        siliconflow: settings.siliconflow_key || 'sk-uksfscrxjhaynjmlcpbhcvykqqkukmjwqdidjbvsczsjdsge',
+        routeway: settings.routeway_key || 'sk-Mrl1csStecbVXviGdJaae157NT5Whg9WVY6ZMqy8wg05AcmJhokX0l9e5SHQjjltcsTlaLhwN8H8HDf1-w5O'
+      };
+
+      const apiKey = keys[provider];
+      if (!apiKey) {
+        showToast(`مفتاح الـ API الخاص بـ ${provider} غير متوفر بالإعدادات!`, 'danger');
+        btn.disabled = false;
+        text.textContent = 'توليد المحتوى بالذكاء الاصطناعي';
+        return;
+      }
+
+      // Build Prompts matching user guidelines
+      const prompts = {
+        short_desc: `أنت كاتب محتوى ويب محترف. اكتب وصف قصير جذاب لا يتجاوز 160 حرف عن: "${title}" باللغة العربية الفصحى.`,
+        meta_desc: `أنت خبير سيو (SEO). اكتب وصف ميتا (Meta Description) مميز من 150-160 حرف مناسب لمحركات البحث لصفحة تتحدث عن: "${title}" باللغة العربية.`,
+        long_desc: `أنت كاتب محتوى محترف وخبير سيو (SEO) متقدم للغاية. اكتب مقال سيو شامل ومفصل عن موضوع "${title}" باللغة العربية الفصحى. يجب أن تلتزم التزاماً صارماً بالشروط التالية:
+1. طول النص: يجب أن يكون طول النص المولد بين 600 إلى 800 كلمة حصراً.
+2. الرموز والماركداون: يمنع منعاً باتاً استخدام أي نجوم مثل (* أو **) أو علامات ماركداون. استخدم فقط وسوم HTML النظيفة للتنسيق (h2, h3, p, ul, li, strong).
+3. أسلوب الكتابة: يجب أن يكون الأسلوب احترافياً، طبيعياً وسلساً.
+4. توزيع الكلمات المفتاحية والسيو: وزع الكلمات المفتاحية بذكاء.`,
+        faq: `أنشئ 5 أسئلة شائعة مميزة مع إجاباتها عن موضوع "${title}". أعد النتيجة بتنسيق JSON فقط هكذا: [{"q":"السؤال","a":"الإجابة"}].`
+      };
+
+      try {
+        let responseText = '';
+        
+        if (provider === 'openrouter') {
+          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [{ role: 'user', content: prompts[type] }]
+            })
+          });
+          const data = await res.json();
+          responseText = data.choices[0].message.content;
+        } else if (provider === 'google') {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompts[type] }] }]
+            })
+          });
+          const data = await res.json();
+          responseText = data.candidates[0].content.parts[0].text;
+        } else {
+          // Fallback message for custom providers
+          showToast('المزود المحدد غير مدعوم بالكامل للاتصال المباشر بالمتصفح، يرجى تهيئة مفتاح OpenRouter', 'warning');
+          btn.disabled = false;
+          text.textContent = 'توليد المحتوى بالذكاء الاصطناعي';
+          return;
+        }
+
+        // Apply generated text to form fields
+        if (type === 'long_desc') {
+          if (tinymce.get('postContent')) {
+            tinymce.get('postContent').setContent(responseText);
+          } else {
+            document.getElementById('postContent').value = responseText;
+          }
+          showToast('تم توليد المقال السيو بنجاح وإدراجه بالمحرر!', 'success');
+        } else if (type === 'short_desc') {
+          document.getElementById('postExcerpt').value = responseText.replace(/['"]+/g, '');
+          showToast('تم توليد المقتطف بنجاح!', 'success');
+        } else if (type === 'meta_desc') {
+          document.getElementById('metaDesc').value = responseText.replace(/['"]+/g, '');
+          showToast('تم توليد وصف الميتا سيو بنجاح!', 'success');
+        } else if (type === 'faq') {
+          // Parse JSON FAQs
+          try {
+            const faqs = JSON.parse(responseText.substring(responseText.indexOf('['), responseText.lastIndexOf(']') + 1));
+            document.getElementById('faqContainer').innerHTML = '';
+            faqs.forEach(f => addFaqRow(f.q, f.a));
+            showToast('تم توليد وتعبئة الأسئلة الشائعة بنجاح!', 'success');
+          } catch(e) {
+            console.error('Failed parsing FAQ JSON:', responseText);
+            showToast('فشل في تحليل صيغة الأسئلة الشائعة، يرجى نسخها يدوياً', 'warning');
+            addFaqRow('الأسئلة الشائعة المجمعة', responseText);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('حدث خطأ أثناء الاتصال بمزود الذكاء الاصطناعي', 'danger');
+      } finally {
+        btn.disabled = false;
+        text.textContent = 'توليد المحتوى بالذكاء الاصطناعي';
+      }
+    }
+
+    // Helper functions to replace arrays in original HTML template
+    function updateArticlesInHTML(originalHtml, articlesList) {
+      const startIndex = originalHtml.indexOf('const articles = [');
+      if (startIndex === -1) return originalHtml;
+      
+      const endIndex = originalHtml.indexOf('];', startIndex);
+      if (endIndex === -1) return originalHtml;
+      
+      const before = originalHtml.substring(0, startIndex);
+      const after = originalHtml.substring(endIndex + 2);
+      
+      return before + `const articles = ${JSON.stringify(articlesList, null, 2)}` + after;
+    }
+
+    function updateCategoriesInHTML(originalHtml, categoriesList) {
+      const startIndex = originalHtml.indexOf('const categories = [');
+      if (startIndex === -1) return originalHtml;
+      
+      const endIndex = originalHtml.indexOf('];', startIndex);
+      if (endIndex === -1) return originalHtml;
+      
+      const before = originalHtml.substring(0, startIndex);
+      const after = originalHtml.substring(endIndex + 2);
+      
+      return before + `const categories = ${JSON.stringify(categoriesList, null, 2)}` + after;
+    }
+
+    // GitHub Commit System via REST API
+    async function pushDataToGitHub() {
+      if (!settings.github_repo || !settings.github_token) {
+        console.log('GitHub sync is offline. Changes saved locally.');
+        return;
+      }
+
+      const branch = settings.github_branch || 'main';
+      const repo = settings.github_repo;
+      const token = settings.github_token;
+      
+      document.getElementById('gitSyncText').textContent = 'جاري حفظ التغييرات إلى GitHub...';
+      document.getElementById('gitSyncPill').className = 'sync-status';
+
+      try {
+        // Write data files
+        await commitFileToGitHub(repo, branch, token, 'admin/data/articles.json', JSON.stringify({ articles }, null, 2), 'تحديث المقالات (articles.json)');
+        await commitFileToGitHub(repo, branch, token, 'admin/data/categories.json', JSON.stringify({ categories }, null, 2), 'تحديث الأقسام (categories.json)');
+        
+        // Regenerate static HTML pages and push them!
+        await pushHTMLPagesToGitHub(repo, branch, token);
+
+        document.getElementById('gitSyncText').textContent = 'متزامن مع GitHub';
+        document.getElementById('gitSyncPill').className = 'sync-status';
+        document.getElementById('lastSyncTime').textContent = new Date().toLocaleTimeString('ar-EG');
+        showToast('تمت مزامنة كافة البيانات والصفحات بنجاح على GitHub!', 'success');
+      } catch (err) {
+        console.error(err);
+        document.getElementById('gitSyncText').textContent = 'فشلت المزامنة';
+        document.getElementById('gitSyncPill').className = 'sync-status offline';
+        showToast('فشل إرسال التغييرات إلى GitHub. تفقد صلاحيات الـ Token.', 'danger');
+      }
+    }
+
+    // REST API call to commit file
+    async function commitFileToGitHub(repo, branch, token, path, content, message) {
+      const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+      
+      // Check if file exists to get its SHA
+      let sha = '';
+      try {
+        const res = await fetch(`${url}?ref=${branch}`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (res.status === 200) {
+          const data = await res.json();
+          sha = data.sha;
+        }
+      } catch (e) {
+        // New file
+      }
+
+      const body = {
+        message: message,
+        content: btoa(unescape(encodeURIComponent(content))),
+        branch: branch
+      };
+      if (sha) body.sha = sha;
+
+      const saveRes = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      return saveRes.json();
+    }
+
+    // Generate complete HTML code templates for Blog Pages directly in Client-Side JS!
+    async function pushHTMLPagesToGitHub(repo, branch, token) {
+      let indexTemplate = "";
+      let categoryTemplate = "";
+      let articleTemplate = "";
+      
+      try {
+        const r1 = await fetch('../blog/index.html');
+        indexTemplate = await r1.text();
+        
+        const r2 = await fetch('../blog/text-tools/index.html');
+        categoryTemplate = await r2.text();
+        
+        const r3 = await fetch('../blog/text-tools/asrar-almhtrfyn-kyf-ttsdr-mnsat-akhtbar.html');
+        articleTemplate = await r3.text();
+      } catch (err) {
+        console.error("Failed to load local templates. Falling back to built-in templates.", err);
+      }
+
+      // 1. Generate blog/index.html (Blog Homepage)
+      let homepageHTML = "";
+      if (indexTemplate) {
+        homepageHTML = updateArticlesInHTML(indexTemplate, articles);
+        homepageHTML = updateCategoriesInHTML(homepageHTML, categories);
+      } else {
+        homepageHTML = getBlogHomepageHTMLFallback();
+      }
+      await commitFileToGitHub(repo, branch, token, 'blog/index.html', homepageHTML, 'تحديث الصفحة الرئيسية للمدونة');
+
+      // 2. Generate categories indexes
+      for (const cat of categories) {
+        let catHTML = "";
+        if (categoryTemplate) {
+          try {
+            const rCat = await fetch(`../blog/${cat.slug}/index.html`);
+            const specificTemplate = await rCat.text();
+            catHTML = updateArticlesInHTML(specificTemplate, articles.filter(a => a.category === cat.id));
+          } catch(e) {
+            catHTML = updateArticlesInHTML(categoryTemplate, articles.filter(a => a.category === cat.id));
+            catHTML = catHTML.replace(/أدوات النصوص والكلمات/g, cat.name);
+            catHTML = catHTML.replace(/text-tools/g, cat.slug);
+            if (cat.description) {
+              catHTML = catHTML.replace(/أحدث المقالات والأدلة حول أدوات تحرير النصوص وتحليل الكلمات وعدد الأحرف والترجمة والتدقيق الإملائي. كل ما تحتاجه لتحسين كتابتك وإتقان المحتوى./g, cat.description);
+            }
+          }
+        } else {
+          catHTML = getCategoryPageHTMLFallback(cat);
+        }
+        await commitFileToGitHub(repo, branch, token, `blog/${cat.slug}/index.html`, catHTML, `تحديث صفحة القسم ${cat.name}`);
+      }
+
+      // 3. Generate individual articles pages
+      for (const art of articles) {
+        let artHTML = "";
+        if (articleTemplate) {
+          artHTML = getProcessedArticleHTML(articleTemplate, art);
+        } else {
+          artHTML = getArticlePageHTMLFallback(art);
+        }
+        await commitFileToGitHub(repo, branch, token, `blog/${art.category}/${art.slug}.html`, artHTML, `تحديث صفحة المقال: ${art.title}`);
+      }
+    }
+
+    function getProcessedArticleHTML(template, art) {
+      const cat = categories.find(c => c.id === art.category) || { name: art.category, slug: art.category };
+      let html = template;
+
+      // Replace Page Title
+      html = html.replace(/<title>[^<]*<\/title>/i, `<title>${art.metaTitle || art.title} - مدونة ToolRar<\/title>`);
+      
+      // Replace Meta description
+      html = html.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${art.metaDesc || art.excerpt}"`);
+      
+      // Replace Canonicals
+      html = html.replace(/href="https:\/\/toolrar\.com\/blog\/text-tools\/asrar-almhtrfyn-kyf-ttsdr-mnsat-akhtbar\.html"/g, `href="https://toolrar.com/blog/${art.category}/${art.slug}.html"`);
+      html = html.replace(/content="https:\/\/toolrar\.com\/blog\/text-tools\/asrar-almhtrfyn-kyf-ttsdr-mnsat-akhtbar\.html"/g, `content="https://toolrar.com/blog/${art.category}/${art.slug}.html"`);
+      
+      // Replace OG Title & Description
+      html = html.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${art.title}"`);
+      html = html.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${art.metaDesc || art.excerpt}"`);
+
+      // Replace JSON-LD Schemas
+      const faqSchema = art.faq && art.faq.length > 0 ? `
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": ${JSON.stringify(art.faq.map(f => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": f.a
+    }
+  })))}
+}
+</script>` : '';
+
+      const articleSchema = `
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": ${JSON.stringify(art.title)},
+  "description": ${JSON.stringify(art.metaDesc || art.excerpt)},
+  "url": "https://toolrar.com/blog/${art.category}/${art.slug}.html",
+  "datePublished": "${art.createdAt || new Date().toISOString()}",
+  "dateModified": "${art.updatedAt || new Date().toISOString()}",
+  "author": { "@type": "Person", "name": "${art.author || 'Toolrar'}" },
+  "publisher": { "@type": "Organization", "name": "ToolRar", "url": "https://toolrar.com" },
+  "image": "img/${art.slug}.png"
+}
+</script>`;
+
+      const schemaStart = html.indexOf('<script type="application/ld+json">');
+      if (schemaStart !== -1) {
+        const schemaEnd = html.indexOf('<link rel="preload"', schemaStart);
+        if (schemaEnd !== -1) {
+          html = html.substring(0, schemaStart) + articleSchema + faqSchema + "\n" + html.substring(schemaEnd);
+        }
+      }
+
+      // Replace breadcrumbs & title headers
+      html = html.replace(/href="index\.html" class="category-badge">أدوات النصوص<\/a>/g, `<a href="index.html" class="category-badge">${cat.name}</a>`);
+      html = html.replace(/href="index\.html">أدوات النصوص<\/a>/g, `href="index.html">${cat.name}</a>`);
+      
+      // Target generic headings & metadata replacements
+      const breadcrumbSpanStart = html.indexOf('<span style="color:#A5B4FC">');
+      if (breadcrumbSpanStart !== -1) {
+        const breadcrumbSpanEnd = html.indexOf('</span>', breadcrumbSpanStart);
+        if (breadcrumbSpanEnd !== -1) {
+          html = html.substring(0, breadcrumbSpanStart) + `<span style="color:#A5B4FC">${art.title}</span>` + html.substring(breadcrumbSpanEnd + 7);
+        }
+      }
+
+      const h1Start = html.indexOf('<h1>');
+      if (h1Start !== -1) {
+        const h1End = html.indexOf('</h1>', h1Start);
+        if (h1End !== -1) {
+          html = html.substring(0, h1Start) + `<h1>${art.title}</h1>` + html.substring(h1End + 5);
+        }
+      }
+
+      html = html.replace(/> 2026-07-06<\/span>/g, `> ${art.date}</span>`);
+
+      // Replace main content block
+      const contentStart = html.indexOf('<div class="article-content">');
+      if (contentStart !== -1) {
+        const contentEnd = html.indexOf('<div class="faq-inline">', contentStart);
+        if (contentEnd !== -1) {
+          const newContentBlock = `
+<div class="article-content">
+<div class="featured-image-wrap"><img src="img/${art.slug}.png" alt="${art.imageAlt || art.title}" title="${art.imageTitle || art.title}" width="1200" height="630" loading="lazy" class="article-featured-image"><span class="watermark">www.toolrar.com</span></div>
+${art.content}
+</div>
+`;
+          html = html.substring(0, contentStart) + newContentBlock + html.substring(contentEnd);
+        }
+      }
+
+      // Build FAQ elements
+      let faqBlock = '';
+      if (art.faq && art.faq.length > 0) {
+        faqBlock = `
+<div class="faq-sidebar"><h3 class="faq-sidebar-title">❓ الأسئلة الشائعة</h3><div class="faq-sidebar-list">
+`;
+        art.faq.forEach((f, idx) => {
+          faqBlock += `
+<div class="faq-sidebar-item"><button class="faq-sidebar-q" onclick="toggleFaq(${idx})">${f.q}<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-sidebar-a" id="faqAnswer${idx}"><p>${f.a}</p></div></div>
+`;
+        });
+        faqBlock += '</div></div>';
+      }
+
+      // Inline FAQs replacement
+      const faqInlineStart = html.indexOf('<div class="faq-inline">');
+      if (faqInlineStart !== -1) {
+        const faqInlineEnd = html.indexOf('<div class="author-box">', faqInlineStart);
+        if (faqInlineEnd !== -1) {
+          html = html.substring(0, faqInlineStart) + `<div class="faq-inline">${faqBlock}</div>\n` + html.substring(faqInlineEnd);
+        }
+      }
+
+      // Sidebar TOC and FAQ
+      const sidebarStart = html.indexOf('<div class="sidebar">');
+      if (sidebarStart !== -1) {
+        const sidebarEnd = html.indexOf('</div>\n</div>\n</section>', sidebarStart);
+        if (sidebarEnd !== -1) {
+          const tocHTML = rebuildTOC(art.content);
+          const newSidebarBlock = `
+<div class="sidebar">
+${tocHTML}
+${faqBlock}
+</div>
+`;
+          html = html.substring(0, sidebarStart) + newSidebarBlock + html.substring(sidebarEnd);
+        }
+      }
+
+      return html;
+    }
+
+    function rebuildTOC(content) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(content, 'text/html');
+      const headings = doc.querySelectorAll('h2, h3');
+      if (headings.length === 0) return '';
+
+      let toc = '<nav class="toc"><h3 class="toc-title">📋 فهرس المقال</h3><ul class="toc-list">';
+      headings.forEach(h => {
+        const text = h.textContent;
+        const id = slugify(text);
+        const isSub = h.tagName.toLowerCase() === 'h3';
+        toc += `
+<li class="toc-item ${isSub ? 'toc-sub' : ''}"><a href="#${id}" class="toc-link">${text}</a></li>
+`;
+      });
+      toc += '</ul></nav>';
+      return toc;
+    }
+
+    function getBlogHomepageHTMLFallback() {
+      return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>المدونة - ToolRar</title>
+</head>
+<body>
+  <h1>مدونة ToolRar</h1>
+</body>
+</html>`;
+    }
+
+    function getCategoryPageHTMLFallback(cat) {
+      return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>${cat.name} - ToolRar</title>
+</head>
+<body>
+  <h1>قسم: ${cat.name}</h1>
+</body>
+</html>`;
+    }
+
+    function getArticlePageHTMLFallback(art) {
+      return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>${art.title}</title>
+</head>
+<body>
+  <h1>${art.title}</h1>
+  <div>${art.content}</div>
+</body>
+</html>`;
+    }
+  </script>
+</body>
+</html>
