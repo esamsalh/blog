@@ -1,124 +1,207 @@
-$path = "C:\Users\pc\Documents\GitHub\blog\admin\dashboard.html"
+﻿$path = "C:\Users\pc\Documents\GitHub\blog\admin\dashboard.html"
 $bytes = [System.IO.File]::ReadAllBytes($path)
 $text = [System.Text.Encoding]::UTF8.GetString($bytes)
 
-# 1. Fix generateField - replace the whole switch block (between "switch (fieldType)" and the closing brace of the function)
-# Find the switch block start
-$sw = $text.IndexOf('switch (fieldType) {')
-$fnEnd = $text.IndexOf('}', $sw)
-# Actually let's find the function boundaries better
-$fnStart = $text.LastIndexOf('async function generateField', $sw)
-# Read from sw to the try statement
-$tryIdx = $text.IndexOf('try {', $sw)
-# Replace the part between switch { and try {
-$swBodyStart = $text.IndexOf('{', $sw) + 1
-$swBodyEnd = $text.LastIndexOf('}', $tryIdx - 1)
-# Find where the switch ends (the last } before the catch)
-$closeBrace = $swBodyEnd
-while ($closeBrace -lt $text.Length -and $text.Substring($closeBrace, 1) -ne '}') { $closeBrace++ }
-# Actually simpler: just replace from switch start + 1 to try {
-$swStartContent = $text.IndexOf('{', $sw) + 1
-$swEndContent = $text.LastIndexOf('try {', $fnEnd) - 1
-# Trim whitespace
-$swEndContent = $text.LastIndexOf("`n", $swEndContent)
-
-$newSwitchBody = @'
-      let prompt = "";
-      switch (fieldType) {
-        case "title": prompt = "اقترح عنواناً جذاباً لمقال عن '" + (document.getElementById("aiPromptTitle").value || "التقنية") + "' (عنوان واحد فقط)"; break;
-        case "slug": prompt = "اقترح رابط مختصر (slug) للمقال: " + (title || "موضوع تقني"); break;
-        case "excerpt": prompt = "اكتب ملخصاً قصيراً للمقال (160 حرف) بعنوان: " + (title || "موضوع تقني"); break;
-        case "content": prompt = "اكتب محتوى كامل HTML للمقال بعنوان: " + (title || "موضوع تقني") + "\nباستخدام h2, h3, p, ul, li. بدون علامات html أو CSS."; break;
-        case "custom": prompt = document.getElementById("customPrompt").value || "اكتب محتوى عن التقنية"; break;
-        case "faq": prompt = "أنشئ 3 أسئلة شائعة (FAQ) بصيغة JSON عن: " + (title || "التقنية") + "\nالتنسيق: [{q:سؤال,a:جواب}]"; break;
-        case "meta_title": prompt = "اقترح عنوان SEO (Meta Title) للمقال بعنوان: " + (title || "موضوع"); break;
-        case "meta_desc": prompt = "اكتب وصف SEO (Meta Description) للمقال بعنوان: " + (title || "موضوع"); break;
-      }
-'@
-
-# Find the exact boundaries more carefully
-$fromSwitch = $text.IndexOf('switch (fieldType) {', $fnStart)
-$fromTry = $text.IndexOf('try {', $fromSwitch)
-$blockToReplace = $text.Substring($fromSwitch, $fromTry - $fromSwitch)
-$newBlock = "switch (fieldType) {`n" + $newSwitchBody.Trim() + "`n      "
-$text = $text.Remove($fromSwitch, $fromTry - $fromSwitch).Insert($fromSwitch, $newBlock)
-"Fix 1: generateField prompts - done"
-
-# 2. Fix pushDataToGitHub - change articles path
-$artIdx = $text.IndexOf('const folder = "articles/" + a.slug;')
-if ($artIdx -ge 0) {
-    $text = $text.Remove($artIdx, 'const folder = "articles/" + a.slug;'.Length)
-    $text = $text.Insert($artIdx, 'const cat = categories.find(x => x.id === a.category) || { slug: "general" };`n          const folder = "blog/" + cat.slug + "/" + a.slug;')
-    "Fix 2a: article folder path - done"
-} else { "Fix 2a: articles pattern not found" }
-
-# Also fix the image path in the same function
-$imgIdx = $text.IndexOf('"articles/" + a.slug + "/img/default.png"')
-if ($imgIdx -ge 0) {
-    $text = $text.Remove($imgIdx, '"articles/" + a.slug + "/img/default.png"'.Length)
-    $text = $text.Insert($imgIdx, '"blog/" + cat.slug + "/" + a.slug + "/img/default.png"')
-    "Fix 2b: image path - done"
-} else { "Fix 2b: image path not found" }
-
-# 3. Fix category path - change "category/" + c.slug + "/index.html"
-$catIdx = $text.IndexOf('"category/" + c.slug + "/index.html"')
-if ($catIdx -ge 0) {
-    $text = $text.Remove($catIdx, '"category/" + c.slug + "/index.html"'.Length)
-    $text = $text.Insert($catIdx, '"blog/" + c.slug + "/index.html"')
-    "Fix 3: category path - done"
-} else { "Fix 3: category path not found" }
-
-# 4. Fix generateBlogHomepage - category link in catCards
-$catLinkIdx = $text.IndexOf('href="category/')
-while ($catLinkIdx -ge 0) {
-    $text = $text.Remove($catLinkIdx, 'href="category/'.Length)
-    $text = $text.Insert($catLinkIdx, 'href="blog/')
-    $catLinkIdx = $text.IndexOf('href="category/', $catLinkIdx + 10)
-}
-"Fix 4: generateBlogHomepage category links - done"
-
-# 5. Fix generateBlogHomepage - article link in articleCards
-# Pattern: href="articles/'"'"' + a.slug + '"'"'"
-# In the actual UTF8 text, this is: href="articles/' + a.slug + '"
-$artLinkIdx = $text.IndexOf('href="articles/')
-while ($artLinkIdx -ge 0) {
-    # Check if this is in a template generator context (inside generateBlogHomepage, generateArticlePage, or generateCategoryPage)
-    $contextStart = [Math]::Max(0, $artLinkIdx - 200)
-    $context = $text.Substring($contextStart, $artLinkIdx - $contextStart)
-    if ($context.Contains('generateBlogHomepage') -or $context.Contains('generateArticlePage') -or $context.Contains('generateCategoryPage')) {
-        # We need to add the category slug. This is tricky because we need cat in scope.
-        # For generateBlogHomepage: replace 'articles/' + a.slug with 'blog/' + c.slug + '/' + a.slug
-        # But the pattern varies by function. Let me handle each separately.
+# ---- Helper ----
+function FindNth($text, $pattern, $nth, $start=0) {
+    $idx = $start - 1
+    for ($i = 0; $i -lt $nth; $i++) {
+        $idx = $text.IndexOf($pattern, $idx + 1)
+        if ($idx -lt 0) { return -1 }
     }
-    $artLinkIdx = $text.IndexOf('href="articles/', $artLinkIdx + 10)
+    return $idx
 }
 
-# Handle generateBlogHomepage article link specifically - replace the whole articleCards template
-# The pattern is: href="articles/' + a.slug + '"
-# We need to insert c.slug: href="blog/' + c.slug + '/' + a.slug + '"
-$homeArticleLink = $text.IndexOf('href="articles/' + "'" + '"' + "'" + ' + a.slug + ' + "'" + '"' + "'" + '"')
-# That's not right due to encoding. Let me search for the raw pattern.
-$rawPattern = 'href="articles/'
-$genBlogIdx = $text.IndexOf('generateBlogHomepage')
-$genBlogEnd = $text.IndexOf('function generateArticlePage', $genBlogIdx)
-$articleLinks = New-Object System.Collections.ArrayList
-$searchIdx = $genBlogIdx
-while ($searchIdx -lt $genBlogEnd) {
-    $found = $text.IndexOf($rawPattern, $searchIdx)
-    if ($found -lt 0 -or $found -gt $genBlogEnd) { break }
-    [void]$articleLinks.Add($found)
-    $searchIdx = $found + 10
+# ======== 1. FIX generateField SWITCH BLOCK ========
+$gfStart = $text.IndexOf("async function generateField")
+$switchStartIdx = $text.IndexOf("switch (fieldType) {", $gfStart)
+$tryIdx = $text.IndexOf("try {", $switchStartIdx)
+if ($switchStartIdx -ge 0 -and $tryIdx -gt $switchStartIdx) {
+    $oldSwitch = $text.Substring($switchStartIdx, $tryIdx - $switchStartIdx)
+    $newSwitch = "switch (fieldType) {
+        case `"title`": prompt = `"اقترح عنواناً جذاباً لمقال عن '" + (document.getElementById(`"aiPromptTitle`").value || `"التقنية`") + "' (عنوان واحد فقط)`"; break;
+        case `"slug`": prompt = `"اقترح رابط مختصر (slug) للمقال: `" + (title || `"موضوع تقني`"); break;
+        case `"excerpt`": prompt = `"اكتب ملخصاً قصيراً للمقال (160 حرف) بعنوان: `" + (title || `"موضوع تقني`"); break;
+        case `"content`": prompt = `"اكتب محتوى كامل HTML للمقال بعنوان: `" + (title || `"موضوع تقني`") + `"\nباستخدام h2, h3, p, ul, li. بدون علامات html أو CSS.`"; break;
+        case `"custom`": prompt = document.getElementById(`"customPrompt`").value || `"اكتب محتوى عن التقنية`"; break;
+        case `"faq`": prompt = `"أنشئ 3 أسئلة شائعة (FAQ) بصيغة JSON عن: `" + (title || `"التقنية`") + `"\nالتنسيق: [{q:سؤال,a:جواب}]`"; break;
+        case `"meta_title`": prompt = `"اقترح عنوان SEO (Meta Title) للمقال بعنوان: `" + (title || `"موضوع`"); break;
+        case `"meta_desc`": prompt = `"اكتب وصف SEO (Meta Description) للمقال بعنوان: `" + (title || `"موضوع`"); break;
+      }
+"
+    $text = $text.Remove($switchStartIdx, $tryIdx - $switchStartIdx).Insert($switchStartIdx, $newSwitch)
+    Write-Host "1: generateField switch block DONE" -ForegroundColor Green
+} else { Write-Host "1 FAILED" -ForegroundColor Red }
+
+# ======== 2. FIX pushDataToGitHub - article folder ========
+$pdgIdx = $text.IndexOf("function pushDataToGitHub")
+$oldFold = 'const folder = "articles/" + a.slug;'
+$foldIdx = $text.IndexOf($oldFold, $pdgIdx)
+if ($foldIdx -ge 0) {
+    $newCat = '          const cat = categories.find(x => x.id === a.category) || { slug: "general" };'
+    $newFold = '          const folder = "blog/" + cat.slug + "/" + a.slug;'
+    $text = $text.Replace($oldFold, $newFold)
+    $text = $text.Insert($foldIdx, $newCat + "`n")
+    Write-Host "2a: article folder DONE" -ForegroundColor Green
+} else { Write-Host "2a: NOT FOUND" -ForegroundColor Yellow }
+
+$oldImg = '"articles/" + a.slug + "/img/default.png"'
+$imgIdx = $text.IndexOf($oldImg, $pdgIdx)
+if ($imgIdx -ge 0) {
+    $newImg = '"blog/" + cat.slug + "/" + a.slug + "/img/default.png"'
+    $text = $text.Replace($oldImg, $newImg)
+    Write-Host "2b: image path DONE" -ForegroundColor Green
+} else { Write-Host "2b: NOT FOUND" -ForegroundColor Yellow }
+
+# ======== 3. FIX pushDataToGitHub - category folder ========
+$oldCat = '"category/" + c.slug + "/index.html"'
+$catIdx = $text.IndexOf($oldCat, $pdgIdx)
+if ($catIdx -ge 0) {
+    $text = $text.Replace($oldCat, '"blog/" + c.slug + "/index.html"')
+    Write-Host "3: category path DONE" -ForegroundColor Green
+} else { Write-Host "3: NOT FOUND (may already be blog/)" -ForegroundColor Yellow }
+
+# ======== 4. FIX category links in template generators ========
+$funcs = @("generateBlogHomepage", "generateArticlePage", "generateCategoryPage")
+$catFixCount = 0
+foreach ($func in $funcs) {
+    $startAt = $text.IndexOf("function $func")
+    if ($startAt -lt 0) { continue }
+    # Find where this function ends by looking for next function
+    $endAt = $text.Length
+    foreach ($other in $funcs) {
+        if ($other -eq $func) { continue }
+        $nf = $text.IndexOf("function $other", $startAt + 10)
+        if ($nf -gt 0 -and $nf -lt $endAt) { $endAt = $nf }
+    }
+    # Fix ../category/ links
+    $si = $startAt
+    while ($si -lt $endAt) {
+        $ci = $text.IndexOf("../category/", $si)
+        if ($ci -lt 0 -or $ci -ge $endAt) { break }
+        $text = $text.Remove($ci, "../category/".Length).Insert($ci, "../blog/")
+        $catFixCount++
+        $si = $ci + 10
+    }
+    # Fix href="category/ links
+    $si = $startAt
+    while ($si -lt $endAt) {
+        $ci = $text.IndexOf('href="category/', $si)
+        if ($ci -lt 0 -or $ci -ge $endAt) { break }
+        $text = $text.Remove($ci, 'href="category/'.Length).Insert($ci, 'href="blog/')
+        $catFixCount++
+        $si = $ci + 10
+    }
 }
-# For each article link in generateBlogHomepage, replace 'articles/' + a.slug with 'blog/' + c.slug + '/' + a.slug
-# Since these links are built with string concat, we need to find the specific pattern
-foreach ($linkIdx in $articleLinks) {
-    # Read around to see the pattern
-    $around = $text.Substring($linkIdx, 40)
-    "Link at $linkIdx: $around"
+if ($catFixCount -gt 0) { Write-Host "4: category links in templates DONE ($catFixCount)" -ForegroundColor Green }
+else { Write-Host "4: no category links to fix" -ForegroundColor Yellow }
+
+# ======== 5. FIX ../articles/ links in templates ========
+$artFixCount = 0
+foreach ($func in @("generateArticlePage", "generateCategoryPage")) {
+    $startAt = $text.IndexOf("function $func")
+    if ($startAt -lt 0) { continue }
+    $endAt = $text.Length
+    foreach ($other in @("generateBlogHomepage","generateArticlePage","generateCategoryPage","saveArticle","editArticle","populateDashboard","populateArticlesList","pushDataToGitHub","generateField","generateContentWithAI")) {
+        if ($other -eq $func) { continue }
+        $nf = $text.IndexOf("function $other", $startAt + 10)
+        if ($nf -gt 0 -and $nf -lt $endAt) { $endAt = $nf }
+    }
+    $si = $startAt
+    while ($si -lt $endAt) {
+        $ci = $text.IndexOf("../articles/", $si)
+        if ($ci -lt 0 -or $ci -ge $endAt) { break }
+        $text = $text.Remove($ci, "../articles/".Length).Insert($ci, "../blog/")
+        $artFixCount++
+        $si = $ci + 14
+    }
+}
+if ($artFixCount -gt 0) { Write-Host "5: article links fixed DONE ($artFixCount)" -ForegroundColor Green }
+else { Write-Host "5: no ../articles/ links" -ForegroundColor Yellow }
+
+# ======== 6. FIX image paths referencing articles/ in dashboard functions ========
+# Pattern: 'articles/' + a.slug + '/img/default.png'
+# Already handled in pushDataToGitHub above
+# Check populateDashboard, populateArticlesList, editArticle
+$imgFixCount = 0
+foreach ($func in @("populateDashboard", "populateArticlesList", "editArticle")) {
+    $funcIdx = $text.IndexOf("function $func")
+    if ($funcIdx -lt 0) { continue }
+    $si = $funcIdx
+    while ($si -gt 0) {
+        $ai = $text.IndexOf("articles/", $si)
+        if ($ai -lt 0) { break }
+        $ctx = $text.Substring([Math]::Max(0,$ai-40), [Math]::Min(80,$ai+80))
+        # Check if this is in an image path pattern
+        if ($ctx.Contains("img") -and ($ctx.Contains("slug") -or $ctx.Contains("default.png"))) {
+            Write-Host "  Image path at ${ai}: ${ctx}" -ForegroundColor White
+        }
+        $si = $ai + 10
+    }
 }
 
-"Fix 5: article links - partial"
+# ======== 7. FIX generateBlogHomepage article cards (articles/ -> blog/cat.slug/) ========
+$gbhIdx = $text.IndexOf("function generateBlogHomepage")
+if ($gbhIdx -ge 0) {
+    $gbhEnd = $text.IndexOf("function generateArticlePage", $gbhIdx)
+    if ($gbhEnd -lt 0) { $gbhEnd = $text.Length }
+    # In the articleCards map, c is already defined: const c = categories.find(x => x.id === a.category) || ...
+    # So we can reference c.slug
+    # Pattern: href="articles/' + a.slug + '"
+    # Need: href="blog/' + c.slug + '/' + a.slug + '"
+    # In the source: href="articles/' + a.slug + '"
+    $si = $gbhIdx
+    $count = 0
+    while ($si -lt $gbhEnd) {
+        $ai = $text.IndexOf("articles/", $si)
+        if ($ai -lt 0 -or $ai -ge $gbhEnd) { break }
+        # Check if c.slug is in scope
+        $preContext = $text.Substring([Math]::Max(0,$ai-300), [Math]::Min(300,$ai))
+        if ($preContext.Contains("c = categories.find") -or $preContext.Contains("cat.slug")) {
+            # Read the template string around this link
+            # Pattern: "articles/'"'"' + a.slug + '"'"'"
+            # Raw chars: "articles/' + a.slug + '"
+            # We need: "blog/' + c.slug + '/' + a.slug + '"
+            
+            # Find the single quote after 'articles/'
+            $sqIdx = $text.IndexOf("'", $ai + 10)
+            if ($sqIdx -gt 0 -and $sqIdx -lt $ai + 20) {
+                # Found the single quote: articles/'
+                # The pattern is: articles/' + a.slug + '
+                # We need: blog/' + c.slug + '/' + a.slug + '
+                # So we replace "articles/" with "blog/" + c.slug + "/"
+                # Actually, the exact replacement:
+                # "articles/'"  ->  "blog/'" + c.slug + "'/'" 
+                # No, that's wrong. Let me just see the exact chars.
+                $exact = $text.Substring($ai, 25)
+                Write-Host "  article link at ${ai}: ${exact}" -ForegroundColor White
+                
+                # Replace "articles/'" with "blog/'" + c.slug + "'/'" 
+                # Wait, in JS template literal: `href="articles/' + a.slug + '"`
+                # The `'` is a literal single quote char inside HTML
+                # So: articles/' + a.slug + '
+                # Replace with: blog/' + c.slug + '/' + a.slug + '
+                
+                # Find the end of the pattern: find the closing ' after a.slug
+                $closingQuote = $text.IndexOf("'", $sqIdx + 1)
+                if ($closingQuote -gt $sqIdx) {
+                    $afterSlug = $text.IndexOf("'", $closingQuote + 1)
+                    if ($afterSlug -gt $closingQuote) {
+                        # Found patterns: articles/' + a.slug + '
+                        # Replace articles/' with blog/' + c.slug + '/'
+                        $text = $text.Remove($ai, 10)  # Remove "articles/"
+                        $text = $text.Insert($ai, "blog/" + "'" + " + c.slug + " + "'" + "/")
+                        $count++
+                    }
+                }
+            }
+        }
+        $si = $ai + 14
+    }
+    if ($count -gt 0) { Write-Host "7: blog homepage article links DONE ($count)" -ForegroundColor Green }
+    else { Write-Host "7: no article links in blog homepage" -ForegroundColor Yellow }
+}
 
-# Write the file
+# ======== WRITE ========
 [System.IO.File]::WriteAllBytes($path, [System.Text.Encoding]::UTF8.GetBytes($text))
-"File written"
+Write-Host "`nFile written!" -ForegroundColor Green
