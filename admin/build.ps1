@@ -1,0 +1,398 @@
+$path = "C:\Users\pc\Documents\GitHub\blog\admin\dashboard.html"
+
+# Part 1: HTML head + CSS
+@"
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم - ToolRar</title>
+  <link rel="stylesheet" href="assets/css/fonts-cairo.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap');
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-deeper: #4338ca;
+      --primary-glow: rgba(99,102,241,0.25);
+      --primary-subtle: rgba(99,102,241,0.08);
+      --success: #10b981;
+      --success-subtle: rgba(16,185,129,0.08);
+      --danger: #ef4444;
+      --danger-subtle: rgba(239,68,68,0.08);
+      --warning: #f59e0b;
+      --bg-dark: #0a0f1e;
+      --card-dark: #131a2b;
+      --card-alt: #1a2336;
+      --border-dark: rgba(255,255,255,0.06);
+      --text-dark: #cbd5e1;
+      --text-muted-dark: #64748b;
+      --bg-light: #f0f2f5;
+      --card-light: #ffffff;
+      --card-alt-light: #f8fafc;
+      --border-light: #e2e8f0;
+      --text-light: #475569;
+      --text-muted-light: #94a3b8;
+      --theme-bg: var(--bg-dark);
+      --theme-card: var(--card-dark);
+      --theme-card-alt: var(--card-alt);
+      --theme-border: var(--border-dark);
+      --theme-text: var(--text-dark);
+      --theme-text-muted: var(--text-muted-dark);
+      --theme-title: #f1f5f9;
+      --glass-bg: rgba(19,26,43,0.55);
+      --glass-border: rgba(255,255,255,0.05);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --sidebar-w: 270px;
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    .light-mode {
+      --theme-bg: var(--bg-light);
+      --theme-card: var(--card-light);
+      --theme-card-alt: var(--card-alt-light);
+      --theme-border: var(--border-light);
+      --theme-text: var(--text-light);
+      --theme-text-muted: var(--text-muted-light);
+      --theme-title: #0f172a;
+      --glass-bg: rgba(255,255,255,0.65);
+      --glass-border: rgba(0,0,0,0.04);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      background: var(--theme-bg);
+      color: var(--theme-text);
+      transition: background var(--transition), color var(--transition);
+      min-height: 100vh; display: flex;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px);
+      border-left: 1px solid var(--glass-border);
+      display: flex; flex-direction: column;
+      padding: 20px 16px;
+      height: 100vh; position: sticky; top: 0;
+      flex-shrink: 0; z-index: 100;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; padding: 0 4px; }
+    .brand-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-deeper));
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px var(--primary-glow);
+      flex-shrink: 0;
+    }
+    .brand-icon svg { width: 22px; height: 22px; color: #fff; }
+    .brand-name { font-size: 1.3rem; font-weight: 800; color: var(--theme-title); letter-spacing: -0.02em; }
+    .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; }
+    .nav-item button {
+      width: 100%; background: none; border: none;
+      padding: 10px 14px; border-radius: var(--radius-md);
+      color: var(--theme-text); font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 12px;
+      transition: all var(--transition); text-align: right;
+    }
+    .nav-item button:hover { background: var(--primary-subtle); color: var(--primary); }
+    .nav-item.active button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff; box-shadow: 0 4px 16px var(--primary-glow);
+    }
+    .nav-item button svg { width: 20px; height: 20px; flex-shrink: 0; transition: transform var(--transition); }
+    .nav-item button:hover svg { transform: scale(1.1); }
+    .sidebar-footer { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--theme-border); margin-top: auto; }
+    .sidebar-footer button { width: 100%; padding: 9px 12px; border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: 0.85rem; font-weight: 600; transition: all var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .sidebar-footer .theme-btn { background: none; border: 1px solid var(--theme-border); color: var(--theme-text); }
+    .sidebar-footer .theme-btn:hover { background: var(--primary-subtle); color: var(--primary); border-color: var(--primary); }
+    .sidebar-footer .logout-btn { background: none; border: 1px solid rgba(239,68,68,0.15); color: var(--danger); }
+    .sidebar-footer .logout-btn:hover { background: var(--danger-subtle); border-color: var(--danger); }
+    .sidebar-close { display: none; align-items: center; justify-content: center; position: absolute; left: 12px; top: 16px; width: 32px; height: 32px; background: rgba(255,255,255,0.04); border: none; color: var(--theme-title); font-size: 1.1rem; border-radius: var(--radius-sm); cursor: pointer; }
+    .sidebar-close:hover { background: rgba(255,255,255,0.1); }
+    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
+    .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+    .mobile-header { display: none; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--glass-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--theme-border); position: sticky; top: 0; z-index: 50; gap: 12px; }
+    .mobile-header .brand { margin: 0; flex: 1; justify-content: center; }
+    .mobile-header .brand .brand-name { font-size: 1.1rem; }
+    .mobile-menu-btn { background: none; border: none; color: var(--theme-title); cursor: pointer; padding: 8px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mobile-menu-btn:hover { background: rgba(255,255,255,0.05); }
+    .mobile-header-spacer { width: 36px; flex-shrink: 0; }
+    .main-container { flex: 1; padding: 28px 32px; height: 100vh; overflow-y: auto; min-width: 0; animation: fadeIn 0.4s ease; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-size: 1.5rem; font-weight: 800; color: var(--theme-title); }
+    .action-controls { display: flex; align-items: center; gap: 12px; }
+    .sync-status { display: flex; align-items: center; gap: 8px; padding: 5px 14px; background: var(--success-subtle); border: 1px solid rgba(16,185,129,0.15); color: var(--success); border-radius: 9999px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+    .sync-status.offline { background: var(--danger-subtle); border: 1px solid rgba(239,68,68,0.15); color: var(--danger); }
+    .tab-content { display: none; animation: fadeIn 0.35s ease; }
+    .tab-content.active { display: block; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 24px; }
+    .stat-card { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; transition: all var(--transition); box-shadow: var(--glass-shadow); }
+    .stat-card:hover { border-color: rgba(99,102,241,0.2); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+    .stat-info h3 { font-size: 0.82rem; color: var(--theme-text-muted); font-weight: 600; margin-bottom: 6px; }
+    .stat-info p { font-size: 2rem; font-weight: 800; color: var(--theme-title); line-height: 1.2; }
+    .stat-icon { width: 50px; height: 50px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(99,102,241,0.05)); color: var(--primary); }
+    .stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05)); color: var(--success); }
+    .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); color: var(--warning); }
+    .content-box { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 24px 26px; margin-bottom: 20px; box-shadow: var(--glass-shadow); }
+    .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; }
+    .box-title { font-size: 1.1rem; font-weight: 800; color: var(--theme-title); }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .form-group-full { grid-column: span 2; }
+    .label-custom { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--theme-title); }
+    .input-custom { width: 100%; background: rgba(15,23,42,0.15); border: 1.5px solid var(--theme-border); border-bottom: 2px solid transparent; color: var(--theme-title); border-radius: var(--radius-md); padding: 11px 16px; font-family: inherit; font-size: 0.9rem; outline: none; transition: all var(--transition); }
+    .light-mode .input-custom { background: #f1f5f9; }
+    .input-custom:focus { border-color: var(--primary); border-bottom-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.08); }
+    select.input-custom { cursor: pointer; }
+    textarea.input-custom { resize: vertical; min-height: 80px; }
+    .btn-submit { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; border: none; border-radius: var(--radius-md); padding: 12px 24px; font-family: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px var(--primary-glow); transition: all var(--transition); }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 24px var(--primary-glow); }
+    .btn-submit:active { transform: scale(0.97); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-action { background: none; border: 1px solid var(--theme-border); color: var(--theme-title); padding: 6px 14px; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; font-size: 0.8rem; font-weight: 600; transition: all var(--transition); }
+    .btn-action:active { transform: scale(0.96); }
+    .btn-action.edit:hover { background: var(--success); color: #fff; border-color: var(--success); }
+    .btn-action.delete:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .image-upload-wrapper { border: 2px dashed var(--theme-border); border-radius: var(--radius-md); padding: 24px; text-align: center; cursor: pointer; transition: all var(--transition); }
+    .image-upload-wrapper:hover { border-color: var(--primary); background: var(--primary-subtle); border-style: solid; }
+    .image-upload-wrapper p { font-size: 0.85rem; color: var(--theme-text-muted); }
+    .image-preview { max-width: 100%; max-height: 180px; border-radius: var(--radius-sm); display: none; margin-top: 12px; }
+    .field-with-ai { position: relative; }
+    .input-group-ai { display: flex; gap: 6px; align-items: flex-start; }
+    .input-group-ai .input-custom { flex: 1; }
+    .btn-ai-field { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; color: #fff; padding: 7px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; font-family: inherit; white-space: nowrap; transition: all var(--transition); display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .btn-ai-field:hover { transform: scale(1.05); box-shadow: 0 4px 14px var(--primary-glow); }
+    .btn-ai-field:active { transform: scale(0.95); }
+    .btn-ai-field-ta { align-self: flex-start; margin-top: 2px; }
+    .ai-assistant-card { background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(165,180,252,0.02)); border: 1px solid rgba(99,102,241,0.15); border-radius: var(--radius-lg); padding: 22px 24px; margin-bottom: 20px; }
+    .ai-select { background: rgba(15,23,42,0.15); border: 1.5px solid var(--theme-border); color: var(--theme-title); border-radius: var(--radius-sm); padding: 8px 14px; outline: none; font-family: inherit; font-size: 0.85rem; cursor: pointer; }
+    .ai-select:focus { border-color: var(--primary); }
+    .light-mode .ai-select { background: #f1f5f9; }
+    .table-wrap { overflow-x: auto; }
+    .articles-table { width: 100%; border-collapse: collapse; text-align: right; }
+    .articles-table th { padding: 14px 16px; border-bottom: 2px solid var(--theme-border); color: var(--theme-text-muted); font-weight: 700; font-size: 0.8rem; white-space: nowrap; }
+    .articles-table td { padding: 12px 16px; border-bottom: 1px solid var(--theme-border); color: var(--theme-title); font-size: 0.88rem; }
+    .articles-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    .light-mode .articles-table tbody tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+    .articles-table tbody tr:hover td { background: var(--primary-subtle); }
+    .article-row-meta { display: flex; align-items: center; gap: 12px; }
+    .article-thumb { width: 44px; height: 44px; border-radius: var(--radius-sm); object-fit: cover; background: var(--primary-subtle); flex-shrink: 0; }
+    .faq-item-form { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+    .faq-item-form input { flex: 1; }
+    .toast-notify { position: fixed; bottom: 24px; left: 24px; background: var(--glass-bg); backdrop-filter: blur(24px); border: 1px solid var(--glass-border); padding: 14px 22px; border-radius: var(--radius-md); box-shadow: 0 12px 40px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); z-index: 9999; font-size: 0.9rem; font-weight: 600; }
+    .toast-notify.show { transform: translateY(0); opacity: 1; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .stat-card { animation: slideUp 0.5s ease both; }
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .nav-item { animation: slideInRight 0.4s ease both; }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    @media (max-width: 1023px) {
+      body { flex-direction: column; }
+      .sidebar { position: fixed; right: 0; top: 0; bottom: 0; transform: translateX(calc(var(--sidebar-w) + 20px)); z-index: 1000; box-shadow: -10px 0 40px rgba(0,0,0,0.3); border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-close { display: flex; }
+      .mobile-header { display: flex; }
+      .main-container { padding: 20px 16px; height: auto; min-height: 100vh; }
+      .stats-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
+      .stat-card { padding: 16px 18px; }
+      .stat-info p { font-size: 1.6rem; }
+      .stat-icon { width: 42px; height: 42px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group-full { grid-column: 1; }
+      .content-box { padding: 18px 16px; }
+      .page-title { font-size: 1.25rem; }
+      .articles-table { min-width: 500px; }
+      .header-bar .sync-status { display: none; }
+    }
+    @media (max-width: 480px) {
+      .main-container { padding: 14px 12px; }
+      .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+      .stat-card { padding: 14px 16px; }
+      .stat-info p { font-size: 1.4rem; }
+      .stat-icon { width: 38px; height: 38px; }
+      .content-box { padding: 14px 12px; }
+      .form-grid { gap: 14px; }
+      .page-title { font-size: 1.1rem; }
+      .articles-table { min-width: 350px; }
+      .articles-table th, .articles-table td { padding: 10px; font-size: 0.78rem; }
+      .faq-item-form { flex-direction: column; }
+      .faq-item-form input { width: 100%; }
+      .image-upload-wrapper { padding: 16px; }
+      .btn-ai-field { font-size: 0.72rem; padding: 6px 8px; }
+    }
+  </style>
+</head>
+"@ | Set-Content -Path $path -Encoding UTF8
+
+# Part 2: HTML body
+@"
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+    </div>
+    <span class="brand-name">ToolRar</span>
+  </div>
+  <ul class="nav-menu">
+    <li class="nav-item active" data-tab="dashboard"><button><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> الرئيسية</button></li>
+    <li class="nav-item" data-tab="add-article"><button><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg> إضافة مقال</button></li>
+    <li class="nav-item" data-tab="articles"><button><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> المقالات</button></li>
+    <li class="nav-item" data-tab="categories"><button><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> الأقسام</button></li>
+    <li class="nav-item" data-tab="settings"><button><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> الإعدادات</button></li>
+  </ul>
+  <div class="sidebar-footer">
+    <button class="theme-btn" onclick="toggleTheme()" title="تبديل الوضع">
+      <svg id="themeIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      تبديل الوضع
+    </button>
+    <button class="logout-btn" onclick="handleLogout()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      تسجيل الخروج
+    </button>
+  </div>
+</aside>
+
+<div class="mobile-header">
+  <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="فتح القائمة">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="brand">
+    <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+    <span class="brand-name">ToolRar</span>
+  </div>
+  <div class="mobile-header-spacer"></div>
+</div>
+
+<main class="main-container">
+  <header class="header-bar">
+    <h2 class="page-title" id="pageTitle">الرئيسية</h2>
+    <div class="action-controls">
+      <div class="sync-status" id="gitSyncPill"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor"></span><span id="gitSyncText">محلي بالكامل</span></div>
+    </div>
+  </header>
+
+  <div id="tab-dashboard" class="tab-content active">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-info"><h3>عدد المقالات</h3><p id="countArticles">0</p></div><div class="stat-icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div></div>
+      <div class="stat-card"><div class="stat-info"><h3>عدد الأقسام</h3><p id="countCategories">0</p></div><div class="stat-icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div></div>
+      <div class="stat-card"><div class="stat-info"><h3>حالة المزامنة</h3><p id="lastSyncTime" style="font-size:1.1rem;font-weight:700;margin-top:5px">غير نشط</p></div><div class="stat-icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></div></div>
+    </div>
+    <div class="content-box">
+      <div class="box-header"><h4 class="box-title">المقالات المضافة حديثاً</h4><button class="btn-action edit" onclick="switchTab('articles')">عرض الكل</button></div>
+      <table class="articles-table"><thead><tr><th>المقال</th><th>القسم</th><th>التاريخ</th><th>الحالة</th></tr></thead><tbody id="latestArticlesList"></tbody></table>
+    </div>
+  </div>
+
+  <div id="tab-add-article" class="tab-content">
+    <div class="ai-assistant-card">
+      <h4 style="font-weight:800;color:var(--theme-title);margin-bottom:8px">مساعد الذكاء الاصطناعي</h4>
+      <p style="font-size:0.85rem;color:var(--theme-text);margin-bottom:16px">قم بتوليد العناوين، الأوصاف، أو المقال بالكامل بضغطة زر واحدة.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:16px">
+        <div><label class="label-custom" style="font-size:0.8rem">مزود الخدمة</label><select id="aiProvider" class="ai-select" style="width:100%" onchange="loadAIModels()"><option value="google">Google Gemini</option><option value="openrouter" selected>OpenRouter</option><option value="groq">Groq</option><option value="cerebras">Cerebras</option><option value="siliconflow">SiliconFlow</option><option value="routeway">Routeway</option><option value="github">GitHub AI</option><option value="featherless">Featherless</option><option value="opencode">OpenCode</option></select></div>
+        <div><label class="label-custom" style="font-size:0.8rem">النموذج</label><select id="aiModel" class="ai-select" style="width:100%"></select></div>
+        <div><label class="label-custom" style="font-size:0.8rem">نوع التوليد</label><select id="aiGenType" class="ai-select" style="width:100%"><option value="long_desc">مقال سيو كامل (600-800 كلمة)</option><option value="short_desc">وصف قصير (160 حرف)</option><option value="meta_desc">وصف الميتا (300 حرف)</option><option value="faq">أسئلة شائعة (JSON)</option></select></div>
+      </div>
+      <div><label class="label-custom" style="font-size:0.8rem">عنوان المقال أو الكلمة المفتاحية</label><input type="text" id="aiPromptTitle" class="input-custom" style="margin-bottom:12px" placeholder="مثال: كيف تصنع مدونة ناجحة"></div>
+      <button class="btn-submit" id="btnRunAI" onclick="generateContentWithAI()"><span id="aiBtnText">توليد المحتوى بالذكاء الاصطناعي</span></button>
+    </div>
+
+    <form id="articleForm" onsubmit="saveArticle(event)">
+      <input type="hidden" id="editArticleId" value="">
+      <div class="content-box">
+        <div class="form-grid">
+          <div class="form-group-full field-with-ai"><label class="label-custom" for="postTitle">عنوان المقال</label><div class="input-group-ai"><input type="text" id="postTitle" class="input-custom" required oninput="generateSlugFromTitle()"><button type="button" class="btn-ai-field" onclick="generateField('title')">🤖</button></div></div>
+          <div class="field-with-ai"><label class="label-custom" for="postSlug">الرابط البديل (Slug)</label><div class="input-group-ai"><input type="text" id="postSlug" class="input-custom" required placeholder="example-slug"><button type="button" class="btn-ai-field" onclick="generateField('slug')">🤖</button></div></div>
+          <div><label class="label-custom" for="postCategory">القسم</label><select id="postCategory" class="input-custom" required></select></div>
+          <div class="form-group-full field-with-ai"><label class="label-custom" for="postExcerpt">مقتطف المقال</label><div class="input-group-ai"><textarea id="postExcerpt" class="input-custom" rows="3" required></textarea><button type="button" class="btn-ai-field btn-ai-field-ta" onclick="generateField('excerpt')">🤖</button></div></div>
+          <div class="form-group-full"><label class="label-custom">المحتوى</label><textarea id="postContent" class="input-custom" style="height:350px"></textarea><button type="button" class="btn-ai-field" onclick="generateField('content')" style="margin-top:8px">🤖 توليد المحتوى</button></div>
+          <div class="form-group-full"><label class="label-custom">البرومبت المخصص</label><textarea id="customPrompt" class="input-custom" rows="4"></textarea><button type="button" class="btn-ai-field" onclick="generateField('custom')" style="margin-top:8px">🤖 توليد حسب البرومبت</button></div>
+          <div><label class="label-custom">صورة المقال</label><div class="image-upload-wrapper" onclick="document.getElementById('postImageFile').click()"><p>اضغط لاختيار صورة</p><input type="file" id="postImageFile" style="display:none" onchange="previewPostImage(event)"><img id="postImagePreview" class="image-preview" src="#"><input type="hidden" id="postImagePath" value=""><input type="hidden" id="postImageData" value=""></div></div>
+          <div><label class="label-custom">تحسين SEO للصورة</label><div style="display:flex;flex-direction:column;gap:12px"><input type="text" id="imageAlt" class="input-custom" placeholder="نص بديل (alt)"><input type="text" id="imageTitle" class="input-custom" placeholder="عنوان (title)"></div></div>
+          <div class="form-group-full" style="border-top:1px solid var(--theme-border);padding-top:20px;margin-top:10px"><h4 style="font-weight:800;color:var(--theme-title)">تهيئة محركات البحث (SEO)</h4></div>
+          <div class="field-with-ai"><label class="label-custom" for="metaTitle">Meta Title</label><div class="input-group-ai"><input type="text" id="metaTitle" class="input-custom" placeholder="عنوان SEO"><button type="button" class="btn-ai-field" onclick="generateField('meta_title')">🤖</button></div></div>
+          <div class="field-with-ai"><label class="label-custom" for="metaDesc">Meta Description</label><div class="input-group-ai"><input type="text" id="metaDesc" class="input-custom" placeholder="وصف SEO"><button type="button" class="btn-ai-field" onclick="generateField('meta_desc')">🤖</button></div></div>
+          <div class="form-group-full"><h4 style="font-weight:800;color:var(--theme-title);margin-bottom:12px">الأسئلة الشائعة (FAQ)</h4><div id="faqContainer"></div><button type="button" class="btn-action edit" onclick="addFaqRow('','')" style="margin-top:8px">+ إضافة سؤال</button><button type="button" class="btn-ai-field" onclick="generateField('faq')" style="margin-top:8px;margin-right:8px">🤖 توليد أسئلة</button></div>
+          <div class="form-group-full" style="margin-top:24px"><button type="submit" class="btn-submit">حفظ المقال ونشره</button><button type="button" class="btn-action" onclick="switchTab('dashboard')" style="margin-right:12px;padding:14px 28px">إلغاء</button></div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="tab-articles" class="tab-content">
+    <div class="content-box">
+      <div class="box-header"><h4 class="box-title">جميع المقالات</h4><button class="btn-submit" onclick="switchTab('add-article');clearArticleForm()">+ مقال جديد</button></div>
+      <table class="articles-table"><thead><tr><th>المقال</th><th>القسم</th><th>التاريخ</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody id="allArticlesList"></tbody></table>
+    </div>
+  </div>
+
+  <div id="tab-categories" class="tab-content">
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:32px">
+      <div class="content-box">
+        <h4 class="box-title" id="catBoxTitle" style="margin-bottom:16px">إضافة قسم جديد</h4>
+        <form id="categoryForm" onsubmit="saveCategory(event)">
+          <input type="hidden" id="editCategoryId" value="">
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div><label class="label-custom" for="catName">اسم القسم</label><input type="text" id="catName" class="input-custom" required oninput="generateSlugFromCatName()"></div>
+            <div><label class="label-custom" for="catSlug">الرابط البديل (Slug)</label><input type="text" id="catSlug" class="input-custom" required></div>
+            <div><label class="label-custom" for="catColor">اللون</label><input type="color" id="catColor" value="#6366f1" style="width:100%;height:42px;border:1px solid var(--theme-border);border-radius:var(--radius-sm)"></div>
+            <div><label class="label-custom" for="catDesc">الوصف</label><textarea id="catDesc" class="input-custom" rows="3"></textarea></div>
+            <button type="submit" class="btn-submit">حفظ القسم</button>
+            <button type="button" class="btn-action" onclick="clearCategoryForm()" style="display:none" id="btnCancelCatEdit">إلغاء التعديل</button>
+          </div>
+        </form>
+      </div>
+      <div class="content-box">
+        <h4 class="box-title" style="margin-bottom:24px">الأقسام المتوفرة</h4>
+        <table class="articles-table"><thead><tr><th>القسم</th><th>Slug</th><th>المقالات</th><th>الإجراءات</th></tr></thead><tbody id="allCategoriesList"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-settings" class="tab-content">
+    <form id="settingsForm" onsubmit="saveSettings(event)">
+      <div class="content-box"><h4 class="box-title" style="margin-bottom:24px">إعدادات GitHub</h4><div class="form-grid"><div><label class="label-custom" for="githubRepo">المستودع</label><input type="text" id="githubRepo" class="input-custom" placeholder="username/repo"></div><div><label class="label-custom" for="githubBranch">الفرع</label><input type="text" id="githubBranch" class="input-custom" value="main"></div><div class="form-group-full"><label class="label-custom" for="githubToken">Token</label><input type="password" id="githubToken" class="input-custom" placeholder="ghp_..."></div></div></div>
+      <div class="content-box"><h4 class="box-title" style="margin-bottom:24px">مفاتيح API</h4><div class="form-grid">
+        <div><label class="label-custom" for="keyOpenrouter">OpenRouter</label><input type="password" id="keyOpenrouter" class="input-custom"></div>
+        <div><label class="label-custom" for="keyGoogle">Google Gemini</label><input type="password" id="keyGoogle" class="input-custom"></div>
+        <div><label class="label-custom" for="keyGroq">Groq</label><input type="password" id="keyGroq" class="input-custom"></div>
+        <div><label class="label-custom" for="keyCerebras">Cerebras</label><input type="password" id="keyCerebras" class="input-custom"></div>
+        <div><label class="label-custom" for="keySiliconflow">SiliconFlow</label><input type="password" id="keySiliconflow" class="input-custom"></div>
+        <div><label class="label-custom" for="keyRouteway">Routeway</label><input type="password" id="keyRouteway" class="input-custom"></div>
+        <div><label class="label-custom" for="keyFeatherless">Featherless</label><input type="password" id="keyFeatherless" class="input-custom"></div>
+        <div><label class="label-custom" for="keyGithubAi">GitHub AI</label><input type="password" id="keyGithubAi" class="input-custom"></div>
+        <div><label class="label-custom" for="keyOpencode">OpenCode</label><input type="password" id="keyOpencode" class="input-custom"></div>
+        <div class="form-group-full"><label class="label-custom" for="keyNetlifyApi">Netlify API</label><input type="password" id="keyNetlifyApi" class="input-custom"></div>
+        <div class="form-group-full"><label class="label-custom" for="keyNetlifySite">Netlify Site ID</label><input type="text" id="keyNetlifySite" class="input-custom"></div>
+      </div></div>
+      <div class="content-box"><h4 class="box-title" style="margin-bottom:24px">الموقع</h4><div class="form-grid"><div class="form-group-full"><label class="label-custom" for="siteName">اسم الموقع</label><input type="text" id="siteName" class="input-custom" placeholder="ToolRar"></div><div class="form-group-full"><label class="label-custom" for="siteDescription">الوصف</label><textarea id="siteDescription" class="input-custom" rows="3"></textarea></div><div class="form-group-full"><label class="label-custom" for="blogUrl">الرابط</label><input type="text" id="blogUrl" class="input-custom" placeholder="https://toolrar.com"></div></div></div>
+      <div style="text-align:left"><button type="submit" class="btn-submit">حفظ الإعدادات</button></div>
+    </form>
+  </div>
+</main>
+
+<div id="toastBox" class="toast-notify"><span id="toastIcon">💡</span><span id="toastMsg">تم الإجراء بنجاح!</span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
+"@ | Add-Content -Path $path -Encoding UTF8
