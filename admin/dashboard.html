@@ -378,6 +378,29 @@
       margin-top: 16px;
     }
 
+    /* AI Field Buttons */
+    .field-with-ai { position: relative; }
+    .input-group-ai { display: flex; gap: 8px; align-items: flex-start; }
+    .input-group-ai .input-custom { flex: 1; }
+    .btn-ai-field {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      border: none;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-ai-field:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+    }
+    .btn-ai-field-ta { align-self: flex-start; margin-top: 2px; }
+
     /* AI Tools Section */
     .ai-assistant-card {
       background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(165, 180, 252, 0.05) 100%);
@@ -673,14 +696,20 @@
         <input type="hidden" id="editArticleId" value="">
         <div class="content-box">
           <div class="form-grid">
-            <div class="form-group-full">
+            <div class="form-group-full field-with-ai">
               <label class="label-custom" for="postTitle">عنوان المقال</label>
-              <input type="text" id="postTitle" class="input-custom" required oninput="generateSlugFromTitle()">
+              <div class="input-group-ai">
+                <input type="text" id="postTitle" class="input-custom" required oninput="generateSlugFromTitle()">
+                <button type="button" class="btn-ai-field" onclick="generateField('title')" title="توليد عنوان بالذكاء الاصطناعي">🤖</button>
+              </div>
             </div>
             
-            <div>
+            <div class="field-with-ai">
               <label class="label-custom" for="postSlug">الرابط البديل (Slug)</label>
-              <input type="text" id="postSlug" class="input-custom" required placeholder="example-article-slug">
+              <div class="input-group-ai">
+                <input type="text" id="postSlug" class="input-custom" required placeholder="example-article-slug">
+                <button type="button" class="btn-ai-field" onclick="generateField('slug')" title="توليد slug بالذكاء الاصطناعي">🤖</button>
+              </div>
             </div>
 
             <div>
@@ -690,14 +719,24 @@
               </select>
             </div>
 
-            <div class="form-group-full">
+            <div class="form-group-full field-with-ai">
               <label class="label-custom" for="postExcerpt">مقتطف من المقال</label>
-              <textarea id="postExcerpt" class="input-custom" rows="3" required placeholder="اكتب مقتطف قصير جداً ليظهر في الرئيسية"></textarea>
+              <div class="input-group-ai">
+                <textarea id="postExcerpt" class="input-custom" rows="3" required placeholder="اكتب مقتطف قصير جداً ليظهر في الرئيسية"></textarea>
+                <button type="button" class="btn-ai-field btn-ai-field-ta" onclick="generateField('excerpt')" title="توليد مقتطف بالذكاء الاصطناعي">🤖</button>
+              </div>
             </div>
 
             <div class="form-group-full">
               <label class="label-custom">محتوى المقال (محرر نصوص متقدم)</label>
               <textarea id="postContent" class="input-custom" style="height: 350px;" placeholder="اكتب محتوى المقال هنا... (يدعم HTML)"></textarea>
+              <button type="button" class="btn-ai-field" onclick="generateField('content')" title="توليد محتوى المقال بالذكاء الاصطناعي" style="margin-top:8px">🤖 توليد محتوى المقال كاملاً</button>
+            </div>
+
+            <div class="form-group-full">
+              <label class="label-custom">📝 البرومبت المخصص (Custom Prompt)</label>
+              <textarea id="customPrompt" class="input-custom" rows="4" placeholder="اكتب برومبتك الخاص هنا وسيقوم الذكاء الاصطناعي بإنشاء النص بناءً عليه..."></textarea>
+              <button type="button" class="btn-ai-field" onclick="generateField('custom')" title="توليد نص مخصص" style="margin-top:8px">🤖 توليد حسب البرومبت</button>
             </div>
 
             <div>
@@ -722,14 +761,20 @@
               <h4 style="font-weight: 800; color: var(--theme-title); margin-bottom: 12px;">تهيئة محركات البحث (SEO)</h4>
             </div>
 
-            <div>
+            <div class="field-with-ai">
               <label class="label-custom" for="metaTitle">عنوان SEO (Meta Title)</label>
-              <input type="text" id="metaTitle" class="input-custom" placeholder="اتركه فارغاً ليطابق العنوان الرئيسي">
+              <div class="input-group-ai">
+                <input type="text" id="metaTitle" class="input-custom" placeholder="اتركه فارغاً ليطابق العنوان الرئيسي">
+                <button type="button" class="btn-ai-field" onclick="generateField('meta_title')" title="توليد Meta Title بالذكاء الاصطناعي">🤖</button>
+              </div>
             </div>
 
-            <div>
+            <div class="field-with-ai">
               <label class="label-custom" for="metaDesc">وصف SEO (Meta Description)</label>
-              <input type="text" id="metaDesc" class="input-custom" placeholder="وصف مقتضب يظهر في نتائج البحث">
+              <div class="input-group-ai">
+                <input type="text" id="metaDesc" class="input-custom" placeholder="وصف مقتضب يظهر في نتائج البحث">
+                <button type="button" class="btn-ai-field" onclick="generateField('meta_desc')" title="توليد Meta Description بالذكاء الاصطناعي">🤖</button>
+              </div>
             </div>
 
             <div class="form-group-full">
@@ -738,6 +783,7 @@
                 <!-- Dynamically added FAQs -->
               </div>
               <button type="button" class="btn-action edit" onclick="addFaqRow('', '')" style="margin-top: 8px;">إضافة سؤال جديد</button>
+              <button type="button" class="btn-ai-field" onclick="generateField('faq')" title="توليد أسئلة شائعة بالذكاء الاصطناعي" style="margin-top:8px;margin-right:8px">🤖 توليد أسئلة شائعة</button>
             </div>
 
             <div class="form-group-full" style="margin-top: 24px;">
@@ -871,6 +917,44 @@
               <label class="label-custom" for="keyRouteway">Routeway API Key</label>
               <input type="password" id="keyRouteway" class="input-custom">
             </div>
+            <div>
+              <label class="label-custom" for="keyFeatherless">Featherless API Key</label>
+              <input type="password" id="keyFeatherless" class="input-custom">
+            </div>
+            <div>
+              <label class="label-custom" for="keyGithubAi">GitHub AI API Key</label>
+              <input type="password" id="keyGithubAi" class="input-custom">
+            </div>
+            <div>
+              <label class="label-custom" for="keyOpencode">OpenCode API Key</label>
+              <input type="password" id="keyOpencode" class="input-custom">
+            </div>
+            <div class="form-group-full">
+              <label class="label-custom" for="keyNetlifyApi">Netlify API Key</label>
+              <input type="password" id="keyNetlifyApi" class="input-custom">
+            </div>
+            <div class="form-group-full">
+              <label class="label-custom" for="keyNetlifySite">Netlify Site ID</label>
+              <input type="text" id="keyNetlifySite" class="input-custom">
+            </div>
+          </div>
+        </div>
+
+        <div class="content-box">
+          <h4 class="box-title" style="margin-bottom: 24px;">إعدادات الموقع العامة</h4>
+          <div class="form-grid">
+            <div class="form-group-full">
+              <label class="label-custom" for="siteName">اسم الموقع</label>
+              <input type="text" id="siteName" class="input-custom" placeholder="ToolRar">
+            </div>
+            <div class="form-group-full">
+              <label class="label-custom" for="siteDescription">وصف الموقع</label>
+              <textarea id="siteDescription" class="input-custom" rows="3" placeholder="وصف قصير للموقع"></textarea>
+            </div>
+            <div class="form-group-full">
+              <label class="label-custom" for="blogUrl">رابط الموقع الأساسي</label>
+              <input type="text" id="blogUrl" class="input-custom" placeholder="https://toolrar.com">
+            </div>
           </div>
         </div>
 
@@ -978,38 +1062,74 @@
       setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // AI configurations and model mapping
+    // AI configurations and model mapping (Full list from original system)
     const aiModelsList = {
-      openrouter: [
-        { id: 'deepseek/deepseek-r1:free', name: 'DeepSeek R1 (Free)' },
-        { id: 'google/gemini-2.5-flash:free', name: 'Gemini 2.5 Flash (Free)' },
-        { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B (Free)' }
-      ],
       google: [
-        { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash' },
-        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' }
-      ],
-      groq: [
-        { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B' },
-        { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B' }
-      ],
-      cerebras: [
-        { id: 'llama3.1-70b', name: 'Llama 3.1 70B' }
-      ],
-      siliconflow: [
-        { id: 'deepseek-ai/DeepSeek-V3', name: 'DeepSeek V3' }
-      ],
-      routeway: [
-        { id: 'deepseek-v4-flash:free', name: 'DeepSeek Flash' }
-      ],
-      github: [
-        { id: 'gpt-4o-mini', name: 'GPT-4o Mini' }
-      ],
-      featherless: [
-        { id: 'zai-org/GLM-5.1', name: 'GLM 5.1' }
+        { id: 'gemini-2.5-flash', name: 'gemini-2.5-flash (أحدث نموذج سريع)' },
+        { id: 'gemini-2.5-pro', name: 'gemini-2.5-pro (ذكاء فائق)' },
+        { id: 'gemini-2.0-flash', name: 'gemini-2.0-flash (سريع جداً)' },
+        { id: 'gemini-2.0-flash-thinking-exp', name: 'gemini-2.0-flash-thinking-exp (تفكير عميق)' },
+        { id: 'gemini-1.5-flash', name: 'gemini-1.5-flash (افتراضي)' },
+        { id: 'gemini-1.5-pro', name: 'gemini-1.5-pro (تحليل عميق)' }
       ],
       opencode: [
-        { id: 'deepseek-v4-flash-free', name: 'DeepSeek Flash Free' }
+        { id: 'qwen3.6-plus-free', name: 'qwen3.6-plus-free (كوين 3.6 بلس)' },
+        { id: 'deepseek-v4-flash-free', name: 'deepseek-v4-flash-free (ديب سيك V4)' },
+        { id: 'minimax-m3-free', name: 'minimax-m3-free (مينيمكس 3)' },
+        { id: 'mimo-v2.5-free', name: 'mimo-v2.5-free (ميمو 2.5)' },
+        { id: 'big-pickle', name: 'big-pickle (بيج بيكل)' },
+        { id: 'nemotron-3-ultra-free', name: 'nemotron-3-ultra-free (نيموترون الترا)' },
+        { id: 'nemotron-3-super-free', name: 'nemotron-3-super-free (نيموترون)' }
+      ],
+      openrouter: [
+        { id: 'deepseek/deepseek-v4-flash:free', name: 'DeepSeek V4 Flash (free)' },
+        { id: 'z-ai/glm-4.5-air:free', name: 'GLM 4.5 Air (free)' },
+        { id: 'moonshotai/kimi-k2.6:free', name: 'Kimi K2.6 (free)' },
+        { id: 'poolside/laguna-m.1:free', name: 'Laguna M.1 (free)' },
+        { id: 'poolside/laguna-xs.2:free', name: 'Laguna XS.2 (free)' },
+        { id: 'openai/gpt-oss-120b:free', name: 'GPT-OSS-120B (free)' }
+      ],
+      groq: [
+        { id: 'llama-3.3-70b-versatile', name: 'llama-3.3-70b-versatile (ميتا)' },
+        { id: 'deepseek-r1-distill-llama-70b', name: 'deepseek-r1-distill-llama-70b' },
+        { id: 'deepseek-r1-distill-qwen-32b', name: 'deepseek-r1-distill-qwen-32b' },
+        { id: 'qwen-2.5-coder-32b', name: 'qwen-2.5-coder-32b (برمجة)' },
+        { id: 'llama-3.1-8b-instant', name: 'llama-3.1-8b-instant' },
+        { id: 'mixtral-8x7b-32768', name: 'mixtral-8x7b-32768' },
+        { id: 'gemma2-9b-it', name: 'gemma2-9b-it' }
+      ],
+      cerebras: [
+        { id: 'gpt-oss-120b', name: 'gpt-oss-120b (استدلال فائق السرعة)' },
+        { id: 'zai-glm-4.7', name: 'zai-glm-4.7 (محادثة ذكية)' }
+      ],
+      siliconflow: [
+        { id: 'deepseek-ai/DeepSeek-R1', name: 'DeepSeek-R1 (برمجة/تفكير)' },
+        { id: 'deepseek-ai/DeepSeek-V4-Pro', name: 'DeepSeek-V4-Pro (برمجة)' },
+        { id: 'deepseek-ai/DeepSeek-V4-Flash', name: 'DeepSeek-V4-Flash (سريع)' },
+        { id: 'zai-org/GLM-5.1', name: 'GLM-5.1 (برمجة)' },
+        { id: 'deepseek-ai/DeepSeek-V3.2', name: 'DeepSeek-V3.2' },
+        { id: 'zai-org/GLM-5', name: 'GLM-5' },
+        { id: 'deepseek-ai/DeepSeek-V3.1', name: 'DeepSeek-V3.1' },
+        { id: 'Qwen/Qwen3-Coder-30B-A3B-Instruct', name: 'Qwen3-Coder-30B' },
+        { id: 'Qwen/Qwen3-32B', name: 'Qwen3-32B' },
+        { id: 'google/gemma-4-31B-it', name: 'Gemma-4-31B' },
+        { id: 'MiniMaxAI/MiniMax-M3', name: 'MiniMax-M3' },
+        { id: 'moonshotai/Kimi-K2.6', name: 'Kimi-K2.6' },
+        { id: 'openai/gpt-oss-120b', name: 'GPT-OSS-120B' },
+        { id: 'Qwen/Qwen3-14B', name: 'Qwen3-14B' }
+      ],
+      routeway: [
+        { id: 'deepseek-v4-flash:free', name: 'DeepSeek V4 Flash' },
+        { id: 'llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B' },
+        { id: 'nemotron-3-nano-30b-a3b:free', name: 'Nemotron 3 Nano' },
+        { id: 'gpt-oss-120b:free', name: 'GPT-OSS 120B' },
+        { id: 'step-3.5-flash:free', name: 'Step 3.5 Flash' }
+      ],
+      github: [
+        { id: 'openai/gpt-4.1', name: 'GPT-4.1' }
+      ],
+      featherless: [
+        { id: 'zai-org/GLM-5.1', name: 'GLM-5.1' }
       ]
     };
 
@@ -1052,6 +1172,10 @@
       try {
         const sRes = await fetch('data/settings.json');
         settings = await sRes.json();
+        // Auto-save loaded settings to localStorage if not already saved
+        if (!localStorage.getItem('tr_settings')) {
+          localStorage.setItem('tr_settings', JSON.stringify(settings));
+        }
       } catch (err) {
         settings = JSON.parse(localStorage.getItem('tr_settings')) || {};
       }
@@ -1123,6 +1247,14 @@
       document.getElementById('keyCerebras').value = settings.cerebras_key || '';
       document.getElementById('keySiliconflow').value = settings.siliconflow_key || '';
       document.getElementById('keyRouteway').value = settings.routeway_key || '';
+      document.getElementById('keyFeatherless').value = settings.featherless_key || '';
+      document.getElementById('keyGithubAi').value = settings.github_ai_key || '';
+      document.getElementById('keyOpencode').value = settings.opencode_key || '';
+      document.getElementById('keyNetlifyApi').value = settings.netlify_api_key || '';
+      document.getElementById('keyNetlifySite').value = settings.netlify_site_id || '';
+      document.getElementById('siteName').value = settings.site_name || '';
+      document.getElementById('siteDescription').value = settings.site_description || '';
+      document.getElementById('blogUrl').value = settings.blog_url || '';
     }
 
     function updateCategoryDropdowns() {
@@ -1487,6 +1619,14 @@
       settings.cerebras_key = document.getElementById('keyCerebras').value;
       settings.siliconflow_key = document.getElementById('keySiliconflow').value;
       settings.routeway_key = document.getElementById('keyRouteway').value;
+      settings.featherless_key = document.getElementById('keyFeatherless').value;
+      settings.github_ai_key = document.getElementById('keyGithubAi').value;
+      settings.opencode_key = document.getElementById('keyOpencode').value;
+      settings.netlify_api_key = document.getElementById('keyNetlifyApi').value;
+      settings.netlify_site_id = document.getElementById('keyNetlifySite').value;
+      settings.site_name = document.getElementById('siteName').value;
+      settings.site_description = document.getElementById('siteDescription').value;
+      settings.blog_url = document.getElementById('blogUrl').value;
 
       localStorage.setItem('tr_settings', JSON.stringify(settings));
       checkGitHubConfiguration();
@@ -1498,6 +1638,123 @@
       localStorage.removeItem('tr_logged_in');
       localStorage.removeItem('tr_user');
       window.location.href = 'index.html';
+    }
+
+    // Default API keys (loaded from add_tool.php as fallback)
+    const defaultAIKeys = {
+      google: 'AQ.Ab8RN6KhduQtbtmII7u0ijcaZDzc7xb8iZCTnPETVnZ2F3nfog',
+      openrouter: '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',
+      groq: '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',
+      cerebras: 'csk-8hnwewjmfy46xthhwcn3t22n94tt9t349e2rdkw9xvnf28pc',
+      siliconflow: 'sk-uksfscrxjhaynjmlcpbhcvykqqkukmjwqdidjbvsczsjdsge',
+      routeway: 'sk-Mrl1csStecbVXviGdJaae157NT5Whg9WVY6ZMqy8wg05AcmJhokX0l9e5SHQjjltcsTlaLhwN8H8HDf1-w5O',
+      featherless: 'rc_ad3f761e6bcecf4c751c248e549bc2a045438e268d4c995172d338155615db0d',
+      github: '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',
+      opencode: 'sk-KQSYcYOXAr5YDBCzFh7jlVlxoSR5ZI4cnc8y56RlJJ9YjROqQhkmuG6fvKLwsWrR'
+    };
+
+    // Helper: call AI API and return text
+    async function callAIAPI(provider, model, promptText) {
+      const keys = {
+        google: settings.google_key || defaultAIKeys.google,
+        openrouter: settings.openrouter_key || defaultAIKeys.openrouter,
+        groq: settings.groq_key || defaultAIKeys.groq,
+        cerebras: settings.cerebras_key || defaultAIKeys.cerebras,
+        siliconflow: settings.siliconflow_key || defaultAIKeys.siliconflow,
+        routeway: settings.routeway_key || defaultAIKeys.routeway,
+        featherless: settings.featherless_key || defaultAIKeys.featherless,
+        github: settings.github_ai_key || defaultAIKeys.github,
+        opencode: settings.opencode_key || defaultAIKeys.opencode
+      };
+      const apiKey = keys[provider];
+      if (!apiKey) throw new Error('مفتاح API غير متوفر');
+      let apiUrl = '', headers = {}, body = {};
+      switch (provider) {
+        case 'openrouter': apiUrl='https://openrouter.ai/api/v1/chat/completions'; headers={'Content-Type':'application/json','Authorization':'Bearer '+apiKey}; body={model,messages:[{role:'user',content:promptText}]}; break;
+        case 'google': apiUrl='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+apiKey; headers={'Content-Type':'application/json'}; body={contents:[{parts:[{text:promptText}]}]}; break;
+        case 'groq': apiUrl='https://api.groq.com/openai/v1/chat/completions'; headers={'Content-Type':'application/json','Authorization':'Bearer '+apiKey}; body={model,messages:[{role:'user',content:promptText}]}; break;
+        case 'cerebras': apiUrl='https://api.cerebras.ai/v1/chat/completions'; headers={'Content-Type':'application/json','Authorization':'Bearer '+apiKey}; body={model,messages:[{role:'user',content:promptText}]}; break;
+        case 'siliconflow': apiUrl='https://api.siliconflow.cn/v1/chat/completions'; headers={'Content-Type':'application/json','Authorization':'Bearer '+apiKey}; body={model,messages:[{role:'user',content:promptText}]}; break;
+        case 'routeway': apiUrl='https://api.routeway.ai/v1/chat/completions'; headers={'Content-Type':'application/json','Authorization':'Bearer '+apiKey}; body={model,messages:[{role:'user',content:promptText}]}; break;
+        case 'github': apiUrl='https://models.github.ai/inference/chat/completions'; headers={'Content-Type':'application/json','Accept':'application/vnd.github+json','Authorization':'Bearer '+apiKey}; body={model,messages:[{role:'user',content:promptText}]}; break;
+        case 'featherless': apiUrl='https://api.featherless.ai/v1/chat/completions'; headers={'Content-Type':'application/json','Authorization':'Bearer '+apiKey}; body={model,messages:[{role:'user',content:promptText}]}; break;
+        case 'opencode': apiUrl='https://opencode.ai/zen/v1/chat/completions'; headers={'Content-Type':'application/json','Authorization':'Bearer '+apiKey}; body={model,messages:[{role:'user',content:promptText}]}; break;
+      }
+      const res = await fetch(apiUrl, {method:'POST',headers,body:JSON.stringify(body)});
+      const data = await res.json();
+      if (provider==='google') return data.candidates[0].content.parts[0].text;
+      return data.choices[0].message.content;
+    }
+
+    // Generate content for a specific field (new buttons next to each input)
+    async function generateField(field) {
+      const provider = document.getElementById('aiProvider').value;
+      const model = document.getElementById('aiModel').value;
+      const title = document.getElementById('postTitle').value || document.getElementById('aiPromptTitle').value;
+      if (!title) { showToast('اكتب عنوان المقال أولاً', 'warning'); return; }
+      let prompt = '';
+      let target = null;
+      switch (field) {
+        case 'title':
+          prompt = 'اقترح 3 عناوين جذابة ومحسّنة لـ SEO لمقال عن "'+title+'" باللغة العربية. أعد العناوين فقط كرقم والنص.';
+          target = document.getElementById('postTitle');
+          break;
+        case 'slug':
+          prompt = 'أنشئ رابط URL (slug) باللغة الإنجليزية لمقال عنوانه "'+title+'". استخدم الحروف والواصلات فقط. أعد slug واحد فقط بدون مسافات.';
+          target = document.getElementById('postSlug');
+          break;
+        case 'excerpt':
+          prompt = 'اكتب مقتطف قصير جذاب لا يتجاوز 160 حرف لمقال عنوانه "'+title+'" باللغة العربية.';
+          target = document.getElementById('postExcerpt');
+          break;
+        case 'content':
+          prompt = 'أنت كاتب محتوى محترف. اكتب مقال سيو كامل وشامل عن "'+title+'" باللغة العربية الفصحى. استخدم وسوم HTML نظيفة (h2, h3, p, ul, li, strong). لا تستخدم Markdown. اجعل المقال بين 600-1000 كلمة.';
+          break;
+        case 'meta_title':
+          prompt = 'اقترح عنوان SEO (Meta Title) مميز لا يتجاوز 60 حرف لمقال عن "'+title+'" باللغة العربية.';
+          target = document.getElementById('metaTitle');
+          break;
+        case 'meta_desc':
+          prompt = 'اكتب وصف ميتا (Meta Description) من 150-160 حرف لمحركات البحث لمقال عن "'+title+'" باللغة العربية.';
+          target = document.getElementById('metaDesc');
+          break;
+        case 'faq':
+          prompt = 'أنشئ 5 أسئلة شائعة مع إجاباتها عن موضوع "'+title+'". أعد النتيجة بتنسيق JSON فقط: [{"q":"السؤال","a":"الإجابة"}]';
+          break;
+        case 'custom':
+          prompt = document.getElementById('customPrompt').value;
+          if (!prompt) { showToast('اكتب البرومبت المخصص أولاً', 'warning'); return; }
+          break;
+      }
+      if (!prompt) return;
+      try {
+        const text = await callAIAPI(provider, model, prompt);
+        if (field === 'content') {
+          if (tinymce.get('postContent')) tinymce.get('postContent').setContent(text);
+          else document.getElementById('postContent').value = text;
+          showToast('تم توليد محتوى المقال', 'success');
+        } else if (field === 'faq') {
+          try {
+            const faqs = JSON.parse(text.substring(text.indexOf('['), text.lastIndexOf(']')+1));
+            document.getElementById('faqContainer').innerHTML = '';
+            faqs.forEach(f => addFaqRow(f.q, f.a));
+            showToast('تم توليد الأسئلة الشائعة', 'success');
+          } catch(e) { showToast('فشل تحليل JSON، انسخ النص يدوياً', 'warning'); }
+        } else if (field === 'custom') {
+          if (tinymce.get('postContent')) tinymce.get('postContent').setContent(text);
+          else document.getElementById('postContent').value = text;
+          showToast('تم توليد النص حسب البرومبت', 'success');
+        } else if (target) {
+          if (field === 'title') {
+            target.value = text.replace(/^\d+[\.\)]\s*/gm, '').trim();
+          } else {
+            target.value = text.replace(/['"]/g, '').trim();
+          }
+          showToast('تم توليد ' + target.previousElementSibling.textContent, 'success');
+        }
+      } catch(err) {
+        showToast('فشل الاتصال بالذكاء الاصطناعي: '+err.message, 'danger');
+      }
     }
 
     // AI Generation Logic directly from client-side
@@ -1513,137 +1770,47 @@
       }
 
       const btn = document.getElementById('btnRunAI');
-      const text = document.getElementById('aiBtnText');
+      const aiBtnText = document.getElementById('aiBtnText');
       
       btn.disabled = true;
-      text.textContent = 'جاري التوليد (قد يستغرق بعض الوقت)...';
+      aiBtnText.textContent = 'جاري التوليد (قد يستغرق بعض الوقت)...';
 
-      // Pick correct key from settings
-      const keys = {
-        google: settings.google_key || 'AQ.Ab8RN6KhduQtbtmII7u0ijcaZDzc7xb8iZCTnPETVnZ2F3nfog',
-        openrouter: settings.openrouter_key || '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',
-        groq: settings.groq_key || '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',
-        cerebras: settings.cerebras_key || 'csk-8hnwewjmfy46xthhwcn3t22n94tt9t349e2rdkw9xvnf28pc',
-        siliconflow: settings.siliconflow_key || 'sk-uksfscrxjhaynjmlcpbhcvykqqkukmjwqdidjbvsczsjdsge',
-        routeway: settings.routeway_key || 'sk-Mrl1csStecbVXviGdJaae157NT5Whg9WVY6ZMqy8wg05AcmJhokX0l9e5SHQjjltcsTlaLhwN8H8HDf1-w5O'
-      };
-
-      const apiKey = keys[provider];
-      if (!apiKey) {
-        showToast(`مفتاح الـ API الخاص بـ ${provider} غير متوفر بالإعدادات!`, 'danger');
-        btn.disabled = false;
-        text.textContent = 'توليد المحتوى بالذكاء الاصطناعي';
-        return;
-      }
-
-      // Build Prompts matching user guidelines
       const prompts = {
-        short_desc: `أنت كاتب محتوى ويب محترف. اكتب وصف قصير جذاب لا يتجاوز 160 حرف عن: "${title}" باللغة العربية الفصحى.`,
-        meta_desc: `أنت خبير سيو (SEO). اكتب وصف ميتا (Meta Description) مميز من 150-160 حرف مناسب لمحركات البحث لصفحة تتحدث عن: "${title}" باللغة العربية.`,
-        long_desc: `أنت كاتب محتوى محترف وخبير سيو (SEO) متقدم للغاية. اكتب مقال سيو شامل ومفصل عن موضوع "${title}" باللغة العربية الفصحى. يجب أن تلتزم التزاماً صارماً بالشروط التالية:
-1. طول النص: يجب أن يكون طول النص المولد بين 600 إلى 800 كلمة حصراً.
-2. الرموز والماركداون: يمنع منعاً باتاً استخدام أي نجوم مثل (* أو **) أو علامات ماركداون. استخدم فقط وسوم HTML النظيفة للتنسيق (h2, h3, p, ul, li, strong).
-3. أسلوب الكتابة: يجب أن يكون الأسلوب احترافياً، طبيعياً وسلساً.
-4. توزيع الكلمات المفتاحية والسيو: وزع الكلمات المفتاحية بذكاء.`,
-        faq: `أنشئ 5 أسئلة شائعة مميزة مع إجاباتها عن موضوع "${title}". أعد النتيجة بتنسيق JSON فقط هكذا: [{"q":"السؤال","a":"الإجابة"}].`
+        short_desc: 'اكتب وصف قصير جذاب لا يتجاوز 160 حرف عن: "'+title+'" باللغة العربية الفصحى.',
+        meta_desc: 'اكتب وصف ميتا (Meta Description) مميز من 150-160 حرف لمقال عن: "'+title+'" باللغة العربية.',
+        long_desc: 'أنت كاتب محتوى محترف وخبير سيو متقدم للغاية. اكتب مقال سيو شامل ومفصل عن موضوع "'+title+'" باللغة العربية الفصحى. طول النص بين 600 إلى 800 كلمة. استخدم فقط وسوم HTML (h2, h3, p, ul, li, strong). ممنوع استخدام Markdown.',
+        faq: 'أنشئ 5 أسئلة شائعة مع إجاباتها عن موضوع "'+title+'". أعد JSON فقط: [{"q":"السؤال","a":"الإجابة"}]'
       };
 
       try {
-        let responseText = '';
-        
-        if (provider === 'openrouter') {
-          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: [{ role: 'user', content: prompts[type] }]
-            })
-          });
-          const data = await res.json();
-          responseText = data.choices[0].message.content;
-        } else if (provider === 'google') {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompts[type] }] }]
-            })
-          });
-          const data = await res.json();
-          responseText = data.candidates[0].content.parts[0].text;
-        } else {
-          // Fallback message for custom providers
-          showToast('المزود المحدد غير مدعوم بالكامل للاتصال المباشر بالمتصفح، يرجى تهيئة مفتاح OpenRouter', 'warning');
-          btn.disabled = false;
-          text.textContent = 'توليد المحتوى بالذكاء الاصطناعي';
-          return;
-        }
-
-        // Apply generated text to form fields
+        const responseText = await callAIAPI(provider, model, prompts[type]);
         if (type === 'long_desc') {
-          if (tinymce.get('postContent')) {
-            tinymce.get('postContent').setContent(responseText);
-          } else {
-            document.getElementById('postContent').value = responseText;
-          }
-          showToast('تم توليد المقال السيو بنجاح وإدراجه بالمحرر!', 'success');
+          if (tinymce.get('postContent')) tinymce.get('postContent').setContent(responseText);
+          else document.getElementById('postContent').value = responseText;
+          showToast('تم توليد المقال!', 'success');
         } else if (type === 'short_desc') {
           document.getElementById('postExcerpt').value = responseText.replace(/['"]+/g, '');
-          showToast('تم توليد المقتطف بنجاح!', 'success');
+          showToast('تم توليد المقتطف!', 'success');
         } else if (type === 'meta_desc') {
           document.getElementById('metaDesc').value = responseText.replace(/['"]+/g, '');
-          showToast('تم توليد وصف الميتا سيو بنجاح!', 'success');
+          showToast('تم توليد وصف الميتا!', 'success');
         } else if (type === 'faq') {
-          // Parse JSON FAQs
           try {
-            const faqs = JSON.parse(responseText.substring(responseText.indexOf('['), responseText.lastIndexOf(']') + 1));
+            const faqs = JSON.parse(responseText.substring(responseText.indexOf('['), responseText.lastIndexOf(']')+1));
             document.getElementById('faqContainer').innerHTML = '';
             faqs.forEach(f => addFaqRow(f.q, f.a));
-            showToast('تم توليد وتعبئة الأسئلة الشائعة بنجاح!', 'success');
+            showToast('تم توليد الأسئلة الشائعة!', 'success');
           } catch(e) {
-            console.error('Failed parsing FAQ JSON:', responseText);
-            showToast('فشل في تحليل صيغة الأسئلة الشائعة، يرجى نسخها يدوياً', 'warning');
-            addFaqRow('الأسئلة الشائعة المجمعة', responseText);
+            showToast('فشل تحليل JSON، انسخ يدوياً', 'warning');
+            addFaqRow('الأسئلة الشائعة', responseText);
           }
         }
       } catch (err) {
-        console.error(err);
-        showToast('حدث خطأ أثناء الاتصال بمزود الذكاء الاصطناعي', 'danger');
+        showToast('خطأ في الاتصال بمزود AI', 'danger');
       } finally {
         btn.disabled = false;
-        text.textContent = 'توليد المحتوى بالذكاء الاصطناعي';
+        aiBtnText.textContent = 'توليد المحتوى بالذكاء الاصطناعي';
       }
-    }
-
-    // Helper functions to replace arrays in original HTML template
-    function updateArticlesInHTML(originalHtml, articlesList) {
-      const startIndex = originalHtml.indexOf('const articles = [');
-      if (startIndex === -1) return originalHtml;
-      
-      const endIndex = originalHtml.indexOf('];', startIndex);
-      if (endIndex === -1) return originalHtml;
-      
-      const before = originalHtml.substring(0, startIndex);
-      const after = originalHtml.substring(endIndex + 2);
-      
-      return before + `const articles = ${JSON.stringify(articlesList, null, 2)}` + after;
-    }
-
-    function updateCategoriesInHTML(originalHtml, categoriesList) {
-      const startIndex = originalHtml.indexOf('const categories = [');
-      if (startIndex === -1) return originalHtml;
-      
-      const endIndex = originalHtml.indexOf('];', startIndex);
-      if (endIndex === -1) return originalHtml;
-      
-      const before = originalHtml.substring(0, startIndex);
-      const after = originalHtml.substring(endIndex + 2);
-      
-      return before + `const categories = ${JSON.stringify(categoriesList, null, 2)}` + after;
     }
 
     // GitHub Commit System via REST API
@@ -1716,265 +1883,321 @@
       return saveRes.json();
     }
 
-    // Generate complete HTML code templates for Blog Pages directly in Client-Side JS!
-    async function pushHTMLPagesToGitHub(repo, branch, token) {
-      let indexTemplate = "";
-      let categoryTemplate = "";
-      let articleTemplate = "";
-      
-      try {
-        const r1 = await fetch('../blog/index.html');
-        indexTemplate = await r1.text();
-        
-        const r2 = await fetch('../blog/text-tools/index.html');
-        categoryTemplate = await r2.text();
-        
-        const r3 = await fetch('../blog/text-tools/asrar-almhtrfyn-kyf-ttsdr-mnsat-akhtbar.html');
-        articleTemplate = await r3.text();
-      } catch (err) {
-        console.error("Failed to load local templates. Falling back to built-in templates.", err);
-      }
-
-      // 1. Generate blog/index.html (Blog Homepage)
-      let homepageHTML = "";
-      if (indexTemplate) {
-        homepageHTML = updateArticlesInHTML(indexTemplate, articles);
-        homepageHTML = updateCategoriesInHTML(homepageHTML, categories);
-      } else {
-        homepageHTML = getBlogHomepageHTMLFallback();
-      }
-      await commitFileToGitHub(repo, branch, token, 'blog/index.html', homepageHTML, 'تحديث الصفحة الرئيسية للمدونة');
-
-      // 2. Generate categories indexes
-      for (const cat of categories) {
-        let catHTML = "";
-        if (categoryTemplate) {
-          try {
-            const rCat = await fetch(`../blog/${cat.slug}/index.html`);
-            const specificTemplate = await rCat.text();
-            catHTML = updateArticlesInHTML(specificTemplate, articles.filter(a => a.category === cat.id));
-          } catch(e) {
-            catHTML = updateArticlesInHTML(categoryTemplate, articles.filter(a => a.category === cat.id));
-            catHTML = catHTML.replace(/أدوات النصوص والكلمات/g, cat.name);
-            catHTML = catHTML.replace(/text-tools/g, cat.slug);
-            if (cat.description) {
-              catHTML = catHTML.replace(/أحدث المقالات والأدلة حول أدوات تحرير النصوص وتحليل الكلمات وعدد الأحرف والترجمة والتدقيق الإملائي. كل ما تحتاجه لتحسين كتابتك وإتقان المحتوى./g, cat.description);
-            }
-          }
-        } else {
-          catHTML = getCategoryPageHTMLFallback(cat);
-        }
-        await commitFileToGitHub(repo, branch, token, `blog/${cat.slug}/index.html`, catHTML, `تحديث صفحة القسم ${cat.name}`);
-      }
-
-      // 3. Generate individual articles pages
-      for (const art of articles) {
-        let artHTML = "";
-        if (articleTemplate) {
-          artHTML = getProcessedArticleHTML(articleTemplate, art);
-        } else {
-          artHTML = getArticlePageHTMLFallback(art);
-        }
-        await commitFileToGitHub(repo, branch, token, `blog/${art.category}/${art.slug}.html`, artHTML, `تحديث صفحة المقال: ${art.title}`);
-      }
+    // Generate complete blog HTML pages from built-in templates (no external fetch needed)
+    function generateBlogHomepage() {
+      const siteName = settings.site_name || 'ToolRar';
+      const siteDesc = settings.site_description || 'أحدث المقالات والأدلة والشروحات';
+      let articleCards = '';
+      const sorted = [...articles].sort((a, b) => new Date(b.date) - new Date(a.date));
+      sorted.forEach(art => {
+        const cat = categories.find(c => c.id === art.category) || { name: '', slug: '' };
+        articleCards += `
+<article class="blog-card">
+  <a href="${art.category}/${art.slug}.html" class="blog-card-link">
+    <div class="blog-card-image"><img src="${art.category}/img/${art.slug}.png" alt="${art.imageAlt || art.title}" loading="lazy"></div>
+    <div class="blog-card-content">
+      <span class="blog-card-category">${cat.name}</span>
+      <h2 class="blog-card-title">${art.title}</h2>
+      <p class="blog-card-excerpt">${art.excerpt}</p>
+      <div class="blog-card-meta"><span>${art.date}</span><span>${art.readTime || 5} دقيقة قراءة</span></div>
+    </div>
+  </a>
+</article>`;
+      });
+      return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المدونة - ${siteName}</title>
+  <meta name="description" content="${siteDesc}">
+  <meta property="og:title" content="المدونة - ${siteName}">
+  <meta property="og:description" content="${siteDesc}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://toolrar.com/blog/">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;background:#0f0f1a;color:#e2e8f0;line-height:1.8}
+    .container{max-width:1000px;margin:0 auto;padding:20px}
+    h1{font-size:2rem;margin-bottom:10px;background:linear-gradient(135deg,#a5b4fc,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .blog-grid{display:grid;gap:24px;margin-top:30px}
+    .blog-card{background:#1a1a2e;border-radius:16px;overflow:hidden;transition:transform .2s}
+    .blog-card:hover{transform:translateY(-4px)}
+    .blog-card img{width:100%;height:200px;object-fit:cover}
+    .blog-card-content{padding:20px}
+    .blog-card-category{color:#a5b4fc;font-size:.85rem}
+    .blog-card-title{font-size:1.2rem;margin:8px 0;color:#f1f5f9}
+    .blog-card-excerpt{color:#94a3b8;font-size:.95rem}
+    .blog-card-meta{display:flex;gap:16px;margin-top:12px;font-size:.85rem;color:#64748b}
+    a{text-decoration:none;color:inherit}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 المدونة</h1>
+    <p style="color:#94a3b8;margin-bottom:20px">${siteDesc}</p>
+    <div class="blog-grid">${articleCards}</div>
+  </div>
+</body>
+</html>`;
     }
 
-    function getProcessedArticleHTML(template, art) {
-      const cat = categories.find(c => c.id === art.category) || { name: art.category, slug: art.category };
-      let html = template;
+    function generateCategoryPage(cat) {
+      const catArticles = articles.filter(a => a.category === cat.id);
+      let articleCards = '';
+      catArticles.forEach(art => {
+        articleCards += `
+<article class="blog-card">
+  <a href="${art.slug}.html" class="blog-card-link">
+    <div class="blog-card-image"><img src="img/${art.slug}.png" alt="${art.imageAlt || art.title}" loading="lazy"></div>
+    <div class="blog-card-content">
+      <h2 class="blog-card-title">${art.title}</h2>
+      <p class="blog-card-excerpt">${art.excerpt}</p>
+      <div class="blog-card-meta"><span>${art.date}</span><span>${art.readTime || 5} دقيقة قراءة</span></div>
+    </div>
+  </a>
+</article>`;
+      });
+      return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${cat.name} - ${settings.site_name || 'ToolRar'}</title>
+  <meta name="description" content="${cat.description || ''}">
+  <meta property="og:title" content="${cat.name}">
+  <meta property="og:description" content="${cat.description || ''}">
+  <link rel="canonical" href="https://toolrar.com/blog/${cat.slug}/">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;background:#0f0f1a;color:#e2e8f0;line-height:1.8}
+    .container{max-width:1000px;margin:0 auto;padding:20px}
+    h1{font-size:2rem;margin-bottom:10px;color:#a5b4fc}
+    .blog-grid{display:grid;gap:24px;margin-top:30px}
+    .blog-card{background:#1a1a2e;border-radius:16px;overflow:hidden;transition:transform .2s}
+    .blog-card:hover{transform:translateY(-4px)}
+    .blog-card img{width:100%;height:200px;object-fit:cover}
+    .blog-card-content{padding:20px}
+    .blog-card-title{font-size:1.2rem;margin:8px 0;color:#f1f5f9}
+    .blog-card-excerpt{color:#94a3b8;font-size:.95rem}
+    .blog-card-meta{display:flex;gap:16px;margin-top:12px;font-size:.85rem;color:#64748b}
+    a{text-decoration:none;color:inherit}
+    .breadcrumb{color:#64748b;font-size:.9rem;margin-bottom:20px}
+    .breadcrumb a{color:#a5b4fc}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="breadcrumb"><a href="../">الرئيسية</a> / ${cat.name}</div>
+    <h1>📂 ${cat.name}</h1>
+    <p style="color:#94a3b8;margin-bottom:20px">${cat.description || ''}</p>
+    <div class="blog-grid">${articleCards}</div>
+  </div>
+</body>
+</html>`;
+    }
 
-      // Replace Page Title
-      html = html.replace(/<title>[^<]*<\/title>/i, `<title>${art.metaTitle || art.title} - مدونة ToolRar<\/title>`);
-      
-      // Replace Meta description
-      html = html.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${art.metaDesc || art.excerpt}"`);
-      
-      // Replace Canonicals
-      html = html.replace(/href="https:\/\/toolrar\.com\/blog\/text-tools\/asrar-almhtrfyn-kyf-ttsdr-mnsat-akhtbar\.html"/g, `href="https://toolrar.com/blog/${art.category}/${art.slug}.html"`);
-      html = html.replace(/content="https:\/\/toolrar\.com\/blog\/text-tools\/asrar-almhtrfyn-kyf-ttsdr-mnsat-akhtbar\.html"/g, `content="https://toolrar.com/blog/${art.category}/${art.slug}.html"`);
-      
-      // Replace OG Title & Description
-      html = html.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${art.title}"`);
-      html = html.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${art.metaDesc || art.excerpt}"`);
-
-      // Replace JSON-LD Schemas
-      const faqSchema = art.faq && art.faq.length > 0 ? `
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
+    function generateArticlePage(art) {
+      const cat = categories.find(c => c.id === art.category) || { name: '', slug: '' };
+      const siteName = settings.site_name || 'ToolRar';
+      const blogUrl = settings.blog_url || 'https://toolrar.com';
+      const faqSchema = art.faq && art.faq.length > 0 ? `,
   "mainEntity": ${JSON.stringify(art.faq.map(f => ({
     "@type": "Question",
     "name": f.q,
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": f.a
-    }
-  })))}
-}
-</script>` : '';
-
-      const articleSchema = `
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": ${JSON.stringify(art.title)},
-  "description": ${JSON.stringify(art.metaDesc || art.excerpt)},
-  "url": "https://toolrar.com/blog/${art.category}/${art.slug}.html",
-  "datePublished": "${art.createdAt || new Date().toISOString()}",
-  "dateModified": "${art.updatedAt || new Date().toISOString()}",
-  "author": { "@type": "Person", "name": "${art.author || 'Toolrar'}" },
-  "publisher": { "@type": "Organization", "name": "ToolRar", "url": "https://toolrar.com" },
-  "image": "img/${art.slug}.png"
-}
-</script>`;
-
-      const schemaStart = html.indexOf('<script type="application/ld+json">');
-      if (schemaStart !== -1) {
-        const schemaEnd = html.indexOf('<link rel="preload"', schemaStart);
-        if (schemaEnd !== -1) {
-          html = html.substring(0, schemaStart) + articleSchema + faqSchema + "\n" + html.substring(schemaEnd);
-        }
-      }
-
-      // Replace breadcrumbs & title headers
-      html = html.replace(/href="index\.html" class="category-badge">أدوات النصوص<\/a>/g, `<a href="index.html" class="category-badge">${cat.name}</a>`);
-      html = html.replace(/href="index\.html">أدوات النصوص<\/a>/g, `href="index.html">${cat.name}</a>`);
-      
-      // Target generic headings & metadata replacements
-      const breadcrumbSpanStart = html.indexOf('<span style="color:#A5B4FC">');
-      if (breadcrumbSpanStart !== -1) {
-        const breadcrumbSpanEnd = html.indexOf('</span>', breadcrumbSpanStart);
-        if (breadcrumbSpanEnd !== -1) {
-          html = html.substring(0, breadcrumbSpanStart) + `<span style="color:#A5B4FC">${art.title}</span>` + html.substring(breadcrumbSpanEnd + 7);
-        }
-      }
-
-      const h1Start = html.indexOf('<h1>');
-      if (h1Start !== -1) {
-        const h1End = html.indexOf('</h1>', h1Start);
-        if (h1End !== -1) {
-          html = html.substring(0, h1Start) + `<h1>${art.title}</h1>` + html.substring(h1End + 5);
-        }
-      }
-
-      html = html.replace(/> 2026-07-06<\/span>/g, `> ${art.date}</span>`);
-
-      // Replace main content block
-      const contentStart = html.indexOf('<div class="article-content">');
-      if (contentStart !== -1) {
-        const contentEnd = html.indexOf('<div class="faq-inline">', contentStart);
-        if (contentEnd !== -1) {
-          const newContentBlock = `
-<div class="article-content">
-<div class="featured-image-wrap"><img src="img/${art.slug}.png" alt="${art.imageAlt || art.title}" title="${art.imageTitle || art.title}" width="1200" height="630" loading="lazy" class="article-featured-image"><span class="watermark">www.toolrar.com</span></div>
-${art.content}
-</div>
-`;
-          html = html.substring(0, contentStart) + newContentBlock + html.substring(contentEnd);
-        }
-      }
-
-      // Build FAQ elements
-      let faqBlock = '';
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  })))}` : '';
+      let faqHTML = '';
       if (art.faq && art.faq.length > 0) {
-        faqBlock = `
-<div class="faq-sidebar"><h3 class="faq-sidebar-title">❓ الأسئلة الشائعة</h3><div class="faq-sidebar-list">
-`;
-        art.faq.forEach((f, idx) => {
-          faqBlock += `
-<div class="faq-sidebar-item"><button class="faq-sidebar-q" onclick="toggleFaq(${idx})">${f.q}<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-sidebar-a" id="faqAnswer${idx}"><p>${f.a}</p></div></div>
-`;
+        faqHTML = '<div class="faq-section"><h2>❓ الأسئلة الشائعة</h2>';
+        art.faq.forEach((f, i) => {
+          faqHTML += '<div class="faq-item"><button class="faq-q" onclick="this.nextElementSibling.classList.toggle(\'open\')">' + f.q + '</button><div class="faq-a"><p>' + f.a + '</p></div></div>';
         });
-        faqBlock += '</div></div>';
+        faqHTML += '</div>';
       }
-
-      // Inline FAQs replacement
-      const faqInlineStart = html.indexOf('<div class="faq-inline">');
-      if (faqInlineStart !== -1) {
-        const faqInlineEnd = html.indexOf('<div class="author-box">', faqInlineStart);
-        if (faqInlineEnd !== -1) {
-          html = html.substring(0, faqInlineStart) + `<div class="faq-inline">${faqBlock}</div>\n` + html.substring(faqInlineEnd);
-        }
-      }
-
-      // Sidebar TOC and FAQ
-      const sidebarStart = html.indexOf('<div class="sidebar">');
-      if (sidebarStart !== -1) {
-        const sidebarEnd = html.indexOf('</div>\n</div>\n</section>', sidebarStart);
-        if (sidebarEnd !== -1) {
-          const tocHTML = rebuildTOC(art.content);
-          const newSidebarBlock = `
-<div class="sidebar">
-${tocHTML}
-${faqBlock}
-</div>
-`;
-          html = html.substring(0, sidebarStart) + newSidebarBlock + html.substring(sidebarEnd);
-        }
-      }
-
-      return html;
+      const tagsHTML = art.tags && art.tags.length ? art.tags.map(t => '<span class="tag">#' + t + '</span>').join(' ') : '';
+      const tocHTML = generateArticleTOC(art.content);
+      return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${art.metaTitle || art.title} - ${siteName}</title>
+  <meta name="description" content="${art.metaDesc || art.excerpt}">
+  <meta property="og:title" content="${art.title}">
+  <meta property="og:description" content="${art.metaDesc || art.excerpt}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="${blogUrl}/blog/${art.category}/${art.slug}.html">
+  <meta property="og:image" content="${blogUrl}/blog/${art.category}/img/${art.slug}.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="${blogUrl}/blog/${art.category}/${art.slug}.html">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","headline":${JSON.stringify(art.title)},"description":${JSON.stringify(art.metaDesc || art.excerpt)},"url":"${blogUrl}/blog/${art.category}/${art.slug}.html","datePublished":"${art.createdAt || art.date}","dateModified":"${art.updatedAt || art.date}","author":{"@type":"Person","name":"${art.author || 'Toolrar'}"},"publisher":{"@type":"Organization","name":"${siteName}","url":"${blogUrl}"},"image":"${blogUrl}/blog/${art.category}/img/${art.slug}.png"${faqSchema}}
+  <\/script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;background:#0f0f1a;color:#e2e8f0;line-height:1.9;padding:20px}
+    .article-wrap{max-width:800px;margin:0 auto}
+    .breadcrumb{color:#64748b;font-size:.9rem;margin-bottom:20px}
+    .breadcrumb a{color:#a5b4fc;text-decoration:none}
+    h1{font-size:2rem;margin:16px 0;background:linear-gradient(135deg,#f1f5f9,#a5b4fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .article-meta{display:flex;gap:20px;font-size:.9rem;color:#94a3b8;margin-bottom:20px;flex-wrap:wrap}
+    .article-meta span{display:flex;align-items:center;gap:6px}
+    .featured-image{margin:20px 0;border-radius:16px;overflow:hidden}
+    .featured-image img{width:100%;height:auto;border-radius:16px}
+    .article-content h2{font-size:1.5rem;margin:30px 0 12px;color:#a5b4fc}
+    .article-content h3{font-size:1.2rem;margin:24px 0 10px;color:#cbd5e1}
+    .article-content p{margin-bottom:16px;color:#e2e8f0}
+    .article-content ul,.article-content ol{margin:12px 0 16px 20px;color:#e2e8f0}
+    .article-content li{margin-bottom:8px}
+    .article-content img{max-width:100%;border-radius:12px;margin:16px 0}
+    .article-content a{color:#818cf8}
+    .toc-card{background:#1a1a2e;border-radius:16px;padding:20px;margin:20px 0}
+    .toc-card h3{margin-bottom:12px;color:#a5b4fc}
+    .toc-card ul{list-style:none;padding:0}
+    .toc-card li{margin-bottom:8px}
+    .toc-card a{color:#94a3b8;text-decoration:none}
+    .toc-card a:hover{color:#a5b4fc}
+    .faq-section{background:#1a1a2e;border-radius:16px;padding:24px;margin:30px 0}
+    .faq-section h2{margin-bottom:16px;color:#a5b4fc}
+    .faq-item{border-bottom:1px solid #2d2d4a;padding:12px 0}
+    .faq-q{background:none;border:none;color:#e2e8f0;font-size:1rem;cursor:pointer;width:100%;text-align:right;padding:8px 0}
+    .faq-a{display:none;padding:8px 0;color:#94a3b8}
+    .faq-a.open{display:block}
+    .tags{margin:20px 0}
+    .tag{display:inline-block;background:#2d2d4a;color:#a5b4fc;padding:4px 12px;border-radius:20px;font-size:.85rem;margin:4px}
+    .author-box{display:flex;align-items:center;gap:16px;background:#1a1a2e;border-radius:16px;padding:20px;margin:30px 0}
+    .author-box strong{color:#f1f5f9}
+    .author-box p{color:#94a3b8;font-size:.9rem}
+  </style>
+</head>
+<body>
+  <div class="article-wrap">
+    <div class="breadcrumb"><a href="../">الرئيسية</a> / <a href="../${cat.slug}/">${cat.name}</a> / ${art.title}</div>
+    <h1>${art.title}</h1>
+    <div class="article-meta">
+      <span>📅 ${art.date}</span>
+      <span>👤 ${art.author || 'Toolrar'}</span>
+      <span>⏱ ${art.readTime || 5} دقيقة قراءة</span>
+    </div>
+    ${tagsHTML ? '<div class="tags">' + tagsHTML + '</div>' : ''}
+    <div class="featured-image"><img src="img/${art.slug}.png" alt="${art.imageAlt || art.title}" title="${art.imageTitle || art.title}" loading="lazy"></div>
+    ${tocHTML}
+    <div class="article-content">${art.content}</div>
+    ${faqHTML}
+    <div class="author-box"><div><strong>✍️ ${art.author || 'Toolrar'}</strong><p>كاتب محتوى متخصص في أدوات الويب والتقنية</p></div></div>
+  </div>
+</body>
+</html>`;
     }
 
-    function rebuildTOC(content) {
+    function generateArticleTOC(content) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(content, 'text/html');
       const headings = doc.querySelectorAll('h2, h3');
       if (headings.length === 0) return '';
-
-      let toc = '<nav class="toc"><h3 class="toc-title">📋 فهرس المقال</h3><ul class="toc-list">';
+      let toc = '<div class="toc-card"><h3>📋 فهرس المقال</h3><ul>';
       headings.forEach(h => {
         const text = h.textContent;
-        const id = slugify(text);
-        const isSub = h.tagName.toLowerCase() === 'h3';
-        toc += `
-<li class="toc-item ${isSub ? 'toc-sub' : ''}"><a href="#${id}" class="toc-link">${text}</a></li>
-`;
+        const tag = h.tagName.toLowerCase();
+        toc += '<li' + (tag === 'h3' ? ' style="margin-right:16px"' : '') + '><a href="#' + slugify(text) + '">' + text + '</a></li>';
       });
-      toc += '</ul></nav>';
+      toc += '</ul></div>';
       return toc;
     }
-
-    function getBlogHomepageHTMLFallback() {
-      return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>المدونة - ToolRar</title>
-</head>
-<body>
-  <h1>مدونة ToolRar</h1>
-</body>
-</html>`;
+    
+    // Helper: patch articles array in category/home page template
+    function patchArticlesInHTML(html, articleList) {
+      const start = html.indexOf('const articles = [');
+      if (start === -1) return null;
+      const end = html.indexOf('];', start);
+      if (end === -1) return null;
+      return html.substring(0, start) + 'const articles = ' + JSON.stringify(articleList, null, 2) + html.substring(end+1);
     }
 
-    function getCategoryPageHTMLFallback(cat) {
-      return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>${cat.name} - ToolRar</title>
-</head>
-<body>
-  <h1>قسم: ${cat.name}</h1>
-</body>
-</html>`;
+    // Get article template from blog (fetch first existing article as base)
+    async function fetchArticleTemplate() {
+      for (const art of articles) {
+        try {
+          const r = await fetch('../blog/'+art.category+'/'+art.slug+'.html');
+          if (r.ok) return await r.text();
+        } catch(e) {}
+      }
+      try {
+        const r = await fetch('../blog/text-tools/asrar-almhtrfyn-kyf-ttsdr-mnsat-akhtbar.html');
+        if (r.ok) return await r.text();
+      } catch(e) {}
+      return null;
     }
 
-    function getArticlePageHTMLFallback(art) {
-      return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>${art.title}</title>
-</head>
-<body>
-  <h1>${art.title}</h1>
-  <div>${art.content}</div>
-</body>
-</html>`;
+    // Generate article page from template by replacing content markers
+    function generateArticleFromTemplate(tpl, art) {
+      const cat = categories.find(c => c.id === art.category) || { name: art.category, slug: art.category };
+      let html = tpl;
+      // Replace metadata
+      html = html.replace(/<title>[^<]*<\/title>/i, '<title>'+(art.metaTitle||art.title)+' - '+(settings.site_name||'ToolRar')+'<\/title>');
+      html = html.replace(/<meta name="description" content="[^"]*"/i, '<meta name="description" content="'+(art.metaDesc||art.excerpt)+'"');
+      html = html.replace(/<meta property="og:title" content="[^"]*"/i, '<meta property="og:title" content="'+art.title+'"');
+      html = html.replace(/<meta property="og:description" content="[^"]*"/i, '<meta property="og:description" content="'+(art.metaDesc||art.excerpt)+'"');
+      // Replace canonical URLs
+      html = html.replace(/href="https:\/\/toolrar\.com\/blog\/[^"]+"/g, 'href="https://toolrar.com/blog/'+art.category+'/'+art.slug+'.html"');
+      html = html.replace(/content="https:\/\/toolrar\.com\/blog\/[^"]+"/g, 'content="https://toolrar.com/blog/'+art.category+'/'+art.slug+'.html"');
+      // Replace breadcrumb category name
+      html = html.replace(/أدوات النصوص والكلمات/g, cat.name).replace(/text-tools/g, cat.slug);
+      // Replace h1 title
+      html = html.replace(/<h1>[^<]*<\/h1>/, '<h1>'+art.title+'<\/h1>');
+      // Replace breadcrumb ending span
+      html = html.replace(/<span style="color:#A5B4FC">[^<]*<\/span>/, '<span style="color:#A5B4FC">'+art.title+'<\/span>');
+      // Replace date
+      html = html.replace(/> \d{4}-\d{2}-\d{2}<\/span>/g, '> '+art.date+'<\/span>');
+      // Replace article content
+      html = html.replace(/<div class="article-content">[\s\S]*?<div class="faq-inline">/, '<div class="article-content">\n<div class="featured-image-wrap"><img src="img/'+art.slug+'.png" alt="'+(art.imageAlt||art.title)+'" title="'+(art.imageTitle||art.title)+'" width="1200" height="630" loading="lazy" class="article-featured-image"><span class="watermark">www.toolrar.com</span></div>\n'+art.content+'\n</div>\n<div class="faq-inline">');
+      // Replace image src in content
+      html = html.replace(/src="img\/[^"]+"/g, 'src="img/'+art.slug+'.png"');
+      return html;
+    }
+
+    async function pushHTMLPagesToGitHub(repo, branch, token) {
+      // 1. Homepage - fetch and patch or generate
+      let homepageHTML = '';
+      try {
+        const r = await fetch('../blog/index.html');
+        if (r.ok) {
+          let tpl = await r.text();
+          let patched = patchArticlesInHTML(tpl, articles);
+          if (patched) homepageHTML = patched;
+        }
+      } catch(e) {}
+      if (!homepageHTML) homepageHTML = generateBlogHomepage();
+      await commitFileToGitHub(repo, branch, token, 'blog/index.html', homepageHTML, 'تحديث الصفحة الرئيسية');
+
+      // 2. Category pages - fetch each and patch or generate
+      for (const cat of categories) {
+        let catHTML = '';
+        try {
+          const r = await fetch('../blog/'+cat.slug+'/index.html');
+          if (r.ok) {
+            let tpl = await r.text();
+            let patched = patchArticlesInHTML(tpl, articles.filter(a => a.category === cat.id));
+            if (patched) catHTML = patched;
+          }
+        } catch(e) {}
+        if (!catHTML) catHTML = generateCategoryPage(cat);
+        await commitFileToGitHub(repo, branch, token, 'blog/'+cat.slug+'/index.html', catHTML, 'تحديث صفحة قسم '+cat.name);
+      }
+
+      // 3. Article pages - fetch template once, then use it for all
+      const articleTemplate = await fetchArticleTemplate();
+      for (const art of articles) {
+        let artHTML = '';
+        if (articleTemplate) {
+          artHTML = generateArticleFromTemplate(articleTemplate, art);
+        } else {
+          artHTML = generateArticlePage(art);
+        }
+        await commitFileToGitHub(repo, branch, token, 'blog/'+art.category+'/'+art.slug+'.html', artHTML, 'تحديث صفحة: '+art.title);
+      }
     }
   </script>
 </body>
