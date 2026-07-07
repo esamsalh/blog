@@ -1,4 +1,4 @@
-$path = "C:\Users\pc\Documents\GitHub\blog\admin\dashboard.html"
+﻿$path = "C:\Users\pc\Documents\GitHub\blog\admin\dashboard.html"
 $webEnc = [System.Text.Encoding]::UTF8
 
 # Read original build.ps1 content that has correct structure but wrong encoding
