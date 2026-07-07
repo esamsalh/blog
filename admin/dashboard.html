@@ -47,7 +47,6 @@
       background:var(--theme-bg);
       color:var(--theme-text);
       min-height:100vh;
-      display:flex;
       transition:background .3s,color .3s;
       overflow-x:hidden
     }
@@ -185,12 +184,10 @@
 
     /* ===== MAIN CONTENT ===== */
     .main-container{
-      flex:1;
       margin-right:var(--sidebar-width);
       padding:28px 32px;
-      max-height:100vh;
-      overflow-y:auto;
-      min-height:100vh
+      height:100vh;
+      overflow-y:auto
     }
     .header-bar{
       display:flex;
