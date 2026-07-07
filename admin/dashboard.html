@@ -1192,6 +1192,83 @@
       if (sha) body.sha = sha;
       return fetch(api, { method: "PUT", headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" }, body: JSON.stringify(body) });
     }
+
+    async function generateField(fieldType) {
+      const provider = document.getElementById("aiProvider").value;
+      const model = document.getElementById("aiModel").value;
+      const title = document.getElementById("postTitle").value;
+      let prompt = "";
+      switch (fieldType) {
+        case "title": prompt = "اقترح عنواناً جذاباً لمقال عن '" + (document.getElementById("aiPromptTitle").value || "التقنية") + "' (عنوان واحد فقط)"; break;
+        case "slug": prompt = "اقترح رابط مختصر (slug) للمقال: " + (title || "موضوع تقني"); break;
+        case "excerpt": prompt = "اكتب ملخصاً قصيراً للمقال (160 حرف) بعنوان: " + (title || "موضوع تقني"); break;
+        case "content": prompt = "اكتب محتوى كامل HTML للمقال بعنوان: " + (title || "موضوع تقني") + "\nباستخدام h2, h3, p, ul, li. بدون علامات html أو CSS."; break;
+        case "custom": prompt = document.getElementById("customPrompt").value || "اكتب محتوى عن التقنية"; break;
+        case "faq": prompt = "أنشئ 3 أسئلة شائعة (FAQ) بصيغة JSON عن: " + (title || "التقنية") + "\nالتنسيق: [{q:سؤال,a:جواب}]"; break;
+        case "meta_title": prompt = "اقترح عنوان SEO (Meta Title) للمقال بعنوان: " + (title || "موضوع"); break;
+        case "meta_desc": prompt = "اكتب وصف SEO (Meta Description) للمقال بعنوان: " + (title || "موضوع"); break;
+      }
+      try {
+        const result = await callAIAPI(provider, model, prompt);
+        if (fieldType === "content" && tinymce.get("postContent")) {
+          tinymce.get("postContent").setContent(result);
+        } else if (fieldType === "faq") {
+          try {
+            const faqData = JSON.parse(result);
+            document.getElementById("faqContainer").innerHTML = "";
+            faqData.forEach(f => addFaqRow(f.q, f.a));
+          } catch (e) {
+            document.getElementById("faqContainer").innerHTML = "<pre>" + result + "</pre>";
+          }
+        } else if (fieldType === "excerpt") {
+          document.getElementById("postExcerpt").value = result.replace(/<[^>]+>/g, "");
+        } else if (fieldType === "meta_title") {
+          document.getElementById("metaTitle").value = result.replace(/<[^>]+>/g, "");
+        } else if (fieldType === "meta_desc") {
+          document.getElementById("metaDesc").value = result.replace(/<[^>]+>/g, "");
+        }
+        showToast("تم إنشاء الحقل: " + fieldType, "success");
+      } catch (err) { showToast("خطأ: " + err.message, "error"); }
+    }
+
+    async function generateContentWithAI() {
+      const provider = document.getElementById("aiProvider").value;
+      const model = document.getElementById("aiModel").value;
+      const genType = document.getElementById("aiGenType").value;
+      const topic = document.getElementById("aiPromptTitle").value || "التقنية";
+      if (!topic) { showToast("الرجاء إدخال الموضوع", "error"); return; }
+      const btn = document.getElementById("btnRunAI");
+      btn.disabled = true;
+      document.getElementById("aiBtnText").textContent = "جاري التوليد...";
+      let prompt = "";
+      switch (genType) {
+        case "long_desc": prompt = "اكتب مقالاً طويلاً (600-800 كلمة) بالعربية عن: " + topic; break;
+        case "short_desc": prompt = "اكتب وصفاً قصيراً (160 حرف) بالعربية عن: " + topic; break;
+        case "meta_desc": prompt = "اكتب وصف SEO (300 حرف) بالعربية عن: " + topic; break;
+        case "faq": prompt = "أنشئ 5 أسئلة شائعة بصيغة JSON عن " + topic; break;
+      }
+      try {
+        const result = await callAIAPI(provider, model, prompt);
+        if (genType === "long_desc" && tinymce.get("postContent")) {
+          tinymce.get("postContent").setContent("<h1>" + topic + "</h1>" + result);
+        } else if (genType === "short_desc") {
+          document.getElementById("postExcerpt").value = result.replace(/<[^>]+>/g, "").substring(0, 160);
+        } else if (genType === "meta_desc") {
+          document.getElementById("metaDesc").value = result.replace(/<[^>]+>/g, "").substring(0, 300);
+        } else if (genType === "faq") {
+          try {
+            const faqData = JSON.parse(result);
+            document.getElementById("faqContainer").innerHTML = "";
+            faqData.forEach(f => addFaqRow(f.q, f.a));
+          } catch (e) {
+            document.getElementById("faqContainer").innerHTML = "<pre>" + result + "</pre>";
+          }
+        }
+        showToast("تم توليد المحتوى بنجاح", "success");
+      } catch (err) { showToast("خطأ: " + err.message, "error"); }
+      btn.disabled = false;
+      document.getElementById("aiBtnText").textContent = "توليد المحتوى بالذكاء الاصطناعي";
+    }
   </script>
 </body>
 </html>
