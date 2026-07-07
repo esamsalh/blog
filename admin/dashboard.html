@@ -1168,11 +1168,12 @@
         articles = JSON.parse(localStorage.getItem('tr_articles')) || [];
       }
 
-      // 3. Settings
+      // 3. Settings - load from file, then merge with localStorage (user's saved data takes priority)
       try {
         const sRes = await fetch('data/settings.json');
-        settings = await sRes.json();
-        // Auto-save loaded settings to localStorage if not already saved
+        const fileSettings = await sRes.json();
+        const savedSettings = JSON.parse(localStorage.getItem('tr_settings')) || {};
+        settings = { ...fileSettings, ...savedSettings };
         if (!localStorage.getItem('tr_settings')) {
           localStorage.setItem('tr_settings', JSON.stringify(settings));
         }
@@ -1610,24 +1611,26 @@
     function saveSettings(e) {
       e.preventDefault();
       
-      settings.github_repo = document.getElementById('githubRepo').value;
-      settings.github_branch = document.getElementById('githubBranch').value;
-      settings.github_token = document.getElementById('githubToken').value;
-      settings.openrouter_key = document.getElementById('keyOpenrouter').value;
-      settings.google_key = document.getElementById('keyGoogle').value;
-      settings.groq_key = document.getElementById('keyGroq').value;
-      settings.cerebras_key = document.getElementById('keyCerebras').value;
-      settings.siliconflow_key = document.getElementById('keySiliconflow').value;
-      settings.routeway_key = document.getElementById('keyRouteway').value;
-      settings.featherless_key = document.getElementById('keyFeatherless').value;
-      settings.github_ai_key = document.getElementById('keyGithubAi').value;
-      settings.opencode_key = document.getElementById('keyOpencode').value;
-      settings.netlify_api_key = document.getElementById('keyNetlifyApi').value;
-      settings.netlify_site_id = document.getElementById('keyNetlifySite').value;
-      settings.site_name = document.getElementById('siteName').value;
-      settings.site_description = document.getElementById('siteDescription').value;
-      settings.blog_url = document.getElementById('blogUrl').value;
-
+      const newSettings = {
+        github_repo: document.getElementById('githubRepo').value,
+        github_branch: document.getElementById('githubBranch').value,
+        github_token: document.getElementById('githubToken').value,
+        openrouter_key: document.getElementById('keyOpenrouter').value,
+        google_key: document.getElementById('keyGoogle').value,
+        groq_key: document.getElementById('keyGroq').value,
+        cerebras_key: document.getElementById('keyCerebras').value,
+        siliconflow_key: document.getElementById('keySiliconflow').value,
+        routeway_key: document.getElementById('keyRouteway').value,
+        featherless_key: document.getElementById('keyFeatherless').value,
+        github_ai_key: document.getElementById('keyGithubAi').value,
+        opencode_key: document.getElementById('keyOpencode').value,
+        netlify_api_key: document.getElementById('keyNetlifyApi').value,
+        netlify_site_id: document.getElementById('keyNetlifySite').value,
+        site_name: document.getElementById('siteName').value,
+        site_description: document.getElementById('siteDescription').value,
+        blog_url: document.getElementById('blogUrl').value
+      };
+      settings = { ...settings, ...newSettings };
       localStorage.setItem('tr_settings', JSON.stringify(settings));
       checkGitHubConfiguration();
       showToast('تم حفظ الإعدادات بنجاح', 'success');
