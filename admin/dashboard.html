@@ -746,6 +746,7 @@
                 <input type="file" id="postImageFile" style="display:none" onchange="previewPostImage(event)">
                 <img id="postImagePreview" class="image-preview" src="#" alt="Preview">
                 <input type="hidden" id="postImagePath" value="">
+                <input type="hidden" id="postImageData" value="">
               </div>
             </div>
 
@@ -1225,7 +1226,7 @@
         tr.innerHTML = `
           <td>
             <div class="article-row-meta">
-              <img class="article-thumb" src="${art.image || '../blog/text-tools/img/default.png'}" onerror="this.src='../blog/text-tools/img/default.png'">
+              <img class="article-thumb" src="${art.image ? '../blog/' + art.image : '../blog/text-tools/img/default.png'}" onerror="this.src='../blog/text-tools/img/default.png'">
               <span>${art.title}</span>
             </div>
           </td>
@@ -1311,7 +1312,7 @@
         tr.innerHTML = `
           <td>
             <div class="article-row-meta">
-              <img class="article-thumb" src="${art.image || '../blog/text-tools/img/default.png'}" onerror="this.src='../blog/text-tools/img/default.png'">
+              <img class="article-thumb" src="${art.image ? '../blog/' + art.image : '../blog/text-tools/img/default.png'}" onerror="this.src='../blog/text-tools/img/default.png'">
               <strong>${art.title}</strong>
             </div>
           </td>
@@ -1362,9 +1363,13 @@
           preview.src = e.target.result;
           preview.style.display = 'block';
           
-          // Generate simulated path or handle Base64
+          // Store base64 data for GitHub push
+          document.getElementById('postImageData').value = e.target.result;
+          
+          // Generate path: category/img/slug.png
           const category = document.getElementById('postCategory').value;
-          document.getElementById('postImagePath').value = `${category}/img/${file.name}`;
+          const slug = document.getElementById('postSlug').value || 'image';
+          document.getElementById('postImagePath').value = `${category}/img/${slug}.png`;
           
           // Also set image Alt and Title
           document.getElementById('imageAlt').value = document.getElementById('postTitle').value;
@@ -1394,6 +1399,7 @@
       document.getElementById('postSlug').value = '';
       document.getElementById('postExcerpt').value = '';
       document.getElementById('postImagePath').value = '';
+      document.getElementById('postImageData').value = '';
       document.getElementById('imageAlt').value = '';
       document.getElementById('imageTitle').value = '';
       document.getElementById('metaTitle').value = '';
@@ -1419,13 +1425,17 @@
       document.getElementById('postCategory').value = art.category;
       document.getElementById('postExcerpt').value = art.excerpt;
       document.getElementById('postImagePath').value = art.image || '';
+      document.getElementById('postImageData').value = art.imageData || '';
       document.getElementById('imageAlt').value = art.imageAlt || '';
       document.getElementById('imageTitle').value = art.imageTitle || '';
       document.getElementById('metaTitle').value = art.metaTitle || '';
       document.getElementById('metaDesc').value = art.metaDesc || '';
 
-      if (art.image) {
-        document.getElementById('postImagePreview').src = art.image;
+      if (art.imageData) {
+        document.getElementById('postImagePreview').src = art.imageData;
+        document.getElementById('postImagePreview').style.display = 'block';
+      } else if (art.image) {
+        document.getElementById('postImagePreview').src = '../blog/' + art.image;
         document.getElementById('postImagePreview').style.display = 'block';
       }
 
@@ -1485,6 +1495,8 @@
         if (q && a) faq.push({ q, a });
       });
 
+      const imageData = document.getElementById('postImageData').value;
+
       const articleData = {
         id,
         title,
@@ -1492,7 +1504,8 @@
         category,
         excerpt,
         content,
-        image: image || `../blog/${category}/img/default.png`,
+        image: image || `${category}/img/default.png`,
+        imageData: imageData || '',
         imageAlt,
         imageTitle,
         metaTitle: metaTitleVal,
@@ -1886,214 +1899,95 @@
       return saveRes.json();
     }
 
-    // Generate complete blog HTML pages from built-in templates (no external fetch needed)
+    // Generate blog homepage - identical design to the reference blog/index.html
     function generateBlogHomepage() {
       const siteName = settings.site_name || 'ToolRar';
       const siteDesc = settings.site_description || 'أحدث المقالات والأدلة والشروحات';
-      let articleCards = '';
-      const sorted = [...articles].sort((a, b) => new Date(b.date) - new Date(a.date));
-      sorted.forEach(art => {
-        const cat = categories.find(c => c.id === art.category) || { name: '', slug: '' };
-        articleCards += `
-<article class="blog-card">
-  <a href="${art.category}/${art.slug}.html" class="blog-card-link">
-    <div class="blog-card-image"><img src="${art.category}/img/${art.slug}.png" alt="${art.imageAlt || art.title}" loading="lazy"></div>
-    <div class="blog-card-content">
-      <span class="blog-card-category">${cat.name}</span>
-      <h2 class="blog-card-title">${art.title}</h2>
-      <p class="blog-card-excerpt">${art.excerpt}</p>
-      <div class="blog-card-meta"><span>${art.date}</span><span>${art.readTime || 5} دقيقة قراءة</span></div>
-    </div>
-  </a>
-</article>`;
+      const blogUrl = settings.blog_url || 'https://toolrar.com';
+      // Build categories JS array
+      const catsJSON = JSON.stringify(categories.map(c => ({ id: c.id, name: c.name, color: c.color, icon: c.svgIcon || '<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>', desc: c.description || '' })));
+      // Build articles JS array (latest 6 per category)
+      const catGroups = {};
+      categories.forEach(c => { catGroups[c.id] = []; });
+      [...articles].sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(a => {
+        if (catGroups[a.category] && catGroups[a.category].length < 6) {
+          catGroups[a.category].push(a);
+        }
       });
-      return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>المدونة - ${siteName}</title>
-  <meta name="description" content="${siteDesc}">
-  <meta property="og:title" content="المدونة - ${siteName}">
-  <meta property="og:description" content="${siteDesc}">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="canonical" href="https://toolrar.com/blog/">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Cairo',sans-serif;background:#0f0f1a;color:#e2e8f0;line-height:1.8}
-    .container{max-width:1000px;margin:0 auto;padding:20px}
-    h1{font-size:2rem;margin-bottom:10px;background:linear-gradient(135deg,#a5b4fc,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .blog-grid{display:grid;gap:24px;margin-top:30px}
-    .blog-card{background:#1a1a2e;border-radius:16px;overflow:hidden;transition:transform .2s}
-    .blog-card:hover{transform:translateY(-4px)}
-    .blog-card img{width:100%;height:200px;object-fit:cover}
-    .blog-card-content{padding:20px}
-    .blog-card-category{color:#a5b4fc;font-size:.85rem}
-    .blog-card-title{font-size:1.2rem;margin:8px 0;color:#f1f5f9}
-    .blog-card-excerpt{color:#94a3b8;font-size:.95rem}
-    .blog-card-meta{display:flex;gap:16px;margin-top:12px;font-size:.85rem;color:#64748b}
-    a{text-decoration:none;color:inherit}
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>📝 المدونة</h1>
-    <p style="color:#94a3b8;margin-bottom:20px">${siteDesc}</p>
-    <div class="blog-grid">${articleCards}</div>
-  </div>
-</body>
-</html>`;
+      const allArticles = Object.values(catGroups).flat();
+      const artsJSON = JSON.stringify(allArticles.map(a => {
+        const cat = categories.find(c => c.id === a.category);
+        return { id: a.id, cat: a.category, title: a.title, excerpt: a.excerpt, date: a.date, author: a.author || 'Toolrar', readTime: a.readTime || 5, link: a.category + '/' + a.slug + '.html', image: a.category + '/img/' + a.slug + '.png' };
+      }));
+      return '<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>المدونة - ' + siteName + '</title>\n  <meta name="description" content="' + siteDesc + '">\n  <meta name="keywords" content="مدونة, أدوات ويب, مقالات, شروحات, برمجة, تصميم, SEO">\n  <link rel="canonical" href="' + blogUrl + '/blog/">\n  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"مدونة ' + siteName + '","description":"' + siteDesc + '","url":"' + blogUrl + '/blog/","publisher":{"@type":"Organization","name":"' + siteName + '","url":"' + blogUrl + '"}}</script>\n  <link rel="stylesheet" href="../admin/assets/css/fonts-cairo.css">\n  <style>\n*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}\nhtml{scroll-behavior:smooth}\nbody{font-family:\'Cairo\',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column;transition:background-color .3s ease,color .3s ease;background:#fff;color:#1e293b;-webkit-font-smoothing:antialiased;line-height:1.6}\n.dark body{background:#080C1A;color:#e2e8f0}\n.dark .header{background:#080C1A}\n.dark .page-header{background:#080C1A}\n.dark .page-section{background:#0F172A}\n.dark .blog-card{background:#1E293B;border-color:rgba(55,65,81,.5)}\n.dark .blog-card:hover{box-shadow:0 10px 15px -3px rgba(0,0,0,.3)}\n.dark .blog-card-title{color:#fff}\n.dark .blog-card-excerpt{color:#9ca3af}\n.dark .blog-card-date{color:#6b7280}\n.dark .footer{background:#080C1A}\n.dark .section-title{color:#fff}\n.dark .section-desc{color:#9ca3af}\n.dark .cat-section-title{color:#e2e8f0}\n.dark .cat-section-title::after{background:rgba(255,255,255,.1)}\n.container{max-width:1280px;margin:0 auto;padding:0 1rem}\n@media(min-width:640px){.container{padding:0 1.5rem}}\n@media(min-width:1024px){.container{padding:0 2rem}}\n.header{background:#0F172A;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,.05)}\n.header-inner{display:flex;align-items:center;justify-content:space-between;height:64px}\n.logo{display:flex;align-items:center;gap:10px;text-decoration:none}\n.logo-icon{width:36px;height:36px;background:#6366F1;border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(99,102,241,.3)}\n.logo-icon svg{width:20px;height:20px;color:#fff}\n.logo-text{color:#fff;font-weight:700;font-size:1.5rem}\n.desktop-nav{display:none;align-items:center;flex:1}\n.nav-links-center{display:flex;align-items:center;gap:2px;flex:1;justify-content:center}\n@media(min-width:1024px){.desktop-nav{display:flex}}\n.nav-link{color:#fff;text-decoration:none;padding:8px 10px;font-size:.875rem;font-weight:500;transition:color .2s;display:flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;font-family:inherit}\n.nav-link:hover{color:#d1d5db}\n.nav-link.active{color:#6366F1}\n.cat-item{display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:.875rem;font-weight:500;color:#d1d5db;text-decoration:none;transition:background .2s}\n.cat-item:hover{background:rgba(255,255,255,.1);color:#fff}\n.cat-item-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center}\n.cat-item-icon svg{width:14px;height:14px;color:#fff}\n.page-header{background:#0F172A;position:relative;overflow:hidden}\n.page-header-content{position:relative;z-index:10;text-align:center;padding:56px 1rem 48px}\n@media(min-width:640px){.page-header-content{padding:72px 1.5rem 56px}}\n@media(min-width:768px){.page-header-content{padding:88px 1.5rem 64px}}\n.page-header h1{font-size:1.75rem;font-weight:900;color:#fff;margin-bottom:12px}\n@media(min-width:640px){.page-header h1{font-size:2.25rem}}\n.page-header p{color:#94a3b8;font-size:.9rem;max-width:640px;margin:0 auto;line-height:1.7}\n.page-header .count-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.25);border-radius:9999px;padding:6px 16px;margin-bottom:16px}\n.page-header .count-badge span{font-size:.75rem;color:#A5B4FC;font-weight:600}\n.page-section{background:#F8FAFC;flex:1;transition:background-color .3s}\n.page-inner{padding:40px 1rem;max-width:1200px;margin:0 auto}\n@media(min-width:640px){.page-inner{padding:56px 1.5rem}}\n.cat-section{margin-bottom:48px}\n.cat-section:last-child{margin-bottom:0}\n.cat-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}\n.cat-section-title{font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:10px;color:#111827}\n.cat-section-title::after{content:\'\';flex:1;height:1px;background:#E2E8F0;margin-right:16px;min-width:40px}\n.cat-section-title svg{width:24px;height:24px;flex-shrink:0}\n.cat-show-all{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:#6366F1;text-decoration:none;padding:8px 16px;border-radius:8px;border:1px solid #6366F1;transition:all .2s;white-space:nowrap}\n.cat-show-all:hover{background:#6366F1;color:#fff;gap:10px}\n.cat-show-all svg{width:14px;height:14px}\n.blog-grid{display:grid;grid-template-columns:1fr;gap:20px}\n@media(min-width:640px){.blog-grid{grid-template-columns:repeat(2,1fr);gap:24px}}\n@media(min-width:1024px){.blog-grid{grid-template-columns:repeat(3,1fr);gap:24px}}\n.blog-card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid rgba(243,244,246,.8);box-shadow:0 1px 2px rgba(0,0,0,.05);transition:all .3s;display:flex;flex-direction:column}\n.blog-card:hover{box-shadow:0 10px 15px -3px rgba(0,0,0,.1);transform:translateY(-4px)}\n.blog-card-image{width:100%;height:180px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}\n.blog-card-image svg{width:42px;height:42px;opacity:.5}\n.blog-card-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1}\n.blog-card-meta{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}\n.blog-card-category{font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:9999px;text-transform:uppercase;letter-spacing:.3px}\n.blog-card-date{font-size:.65rem;color:#9ca3af}\n.blog-card-title{font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}\n.blog-card-excerpt{font-size:.8rem;color:#6b7280;line-height:1.65;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}\n.blog-card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}\n.blog-card-link{font-size:.8rem;font-weight:600;color:#6366F1;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:gap .2s}\n.blog-card-link:hover{gap:8px}\n.blog-card-link svg{width:13px;height:13px}\n.blog-card-author{display:flex;align-items:center;gap:6px;font-size:.7rem;color:#9ca3af}\n.blog-card-author-avatar{width:22px;height:22px;border-radius:50%;background:#6366F1;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.55rem;font-weight:700;flex-shrink:0}\n.footer{background:#0F172A;transition:background-color .3s}\n.footer-inner{padding:40px 1rem}\n@media(min-width:640px){.footer-inner{padding:48px 1.5rem}}\n.footer-grid{display:grid;grid-template-columns:1fr;gap:32px}\n@media(min-width:640px){.footer-grid{grid-template-columns:repeat(2,1fr)}}\n@media(min-width:1024px){.footer-grid{grid-template-columns:repeat(4,1fr);gap:48px}}\n.footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px}\n.footer-desc{color:#9ca3af;font-size:.875rem;line-height:1.625;margin-bottom:20px}\n.footer-social{display:flex;align-items:center;gap:12px}\n.footer-social a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;transition:background .2s;text-decoration:none}\n.footer-social a:hover{background:#6366F1}\n.footer-social a svg{width:16px;height:16px;color:#fff}\n.footer-col-title{color:#fff;font-weight:700;font-size:1rem;margin-bottom:20px}\n.footer-col ul{list-style:none}\n.footer-col li{margin-bottom:12px}\n.footer-link{color:#9ca3af;text-decoration:none;font-size:.875rem;transition:color .2s}\n.footer-link:hover{color:#fff}\n.footer-bottom{border-top:1px solid rgba(255,255,255,.1);margin-top:32px;padding-top:20px;display:flex;flex-direction:column;gap:12px;align-items:center}\n@media(min-width:640px){.footer-bottom{margin-top:40px;padding-top:24px;flex-direction:row;justify-content:space-between}}\n.footer-bottom p{color:#6b7280;font-size:.75rem}\n.footer-bottom-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}\n.footer-bottom-links a{color:#6b7280;text-decoration:none;font-size:.75rem;transition:color .2s}\n.footer-bottom-links a:hover{color:#fff}\n  </style>\n</head>\n<body>\n  <header class="header">\n    <div class="container">\n      <div class="header-inner">\n        <a href="../index.html" class="logo">\n          <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>\n          <span class="logo-text">' + siteName + '</span>\n        </a>\n        <nav class="desktop-nav">\n          <div class="nav-links-center">\n            <a href="../index.html" class="nav-link">الرئيسية</a>\n            <a href="index.html" class="nav-link active">المدونة</a>\n          </div>\n        </nav>\n      </div>\n    </div>\n  </header>\n\n  <section class="page-header">\n    <div class="container page-header-content">\n      <div class="count-badge">\n        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>\n        <span id="articleCount">0 مقالة</span>\n      </div>\n      <h1>مدونة ' + siteName + '</h1>\n      <p>' + siteDesc + '</p>\n    </div>\n  </section>\n\n  <section class="page-section">\n    <div class="container">\n      <div class="page-inner" id="blogContent"></div>\n    </div>\n  </section>\n\n  <footer class="footer">\n    <div class="container">\n      <div class="footer-inner">\n        <div class="footer-grid">\n          <div>\n            <div class="footer-logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div><span class="logo-text">' + siteName + '</span></div>\n            <p class="footer-desc">' + siteDesc + '</p>\n          </div>\n          <div class="footer-col">\n            <h4 class="footer-col-title">روابط سريعة</h4>\n            <ul>\n              <li><a href="../index.html" class="footer-link">الرئيسية</a></li>\n              <li><a href="index.html" class="footer-link">المدونة</a></li>\n            </ul>\n          </div>\n          <div class="footer-col">\n            <h4 class="footer-col-title">الأقسام</h4>\n            <ul>' + categories.map(c => \'<li><a href="\' + c.slug + \'/" class="footer-link">\' + c.name + \'</a></li>\').join(\'\') + '</ul>\n          </div>\n        </div>\n        <div class="footer-bottom">\n          <p>' + siteName + ' &copy; ' + new Date().getFullYear() + ' جميع الحقوق محفوظة</p>\n        </div>\n      </div>\n    </div>\n  </footer>\n\n  <script>\n    var categories = ' + catsJSON + ';\n    var articles = ' + artsJSON + ';\n    document.getElementById("articleCount").textContent = articles.length + " مقالة";\n    function renderBlog() {\n      var c = document.getElementById("blogContent"), h = "";\n      categories.forEach(function(cat) {\n        var ca = articles.filter(function(a) { return a.cat === cat.id; }).slice(0, 6);\n        if (ca.length === 0) return;\n        h += \'<div class="cat-section">\';\n        h += \'<div class="cat-section-header"><h2 class="cat-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="\' + cat.color + \'" stroke-width="2">\' + cat.icon + \'</svg>\' + cat.name + \'</h2><a href="\' + cat.id + \'/" class="cat-show-all">عرض الكل <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>\';\n        h += \'<div class="blog-grid">\';\n        ca.forEach(function(a) {\n          h += \'<article class="blog-card"><div class="blog-card-image" style="background:\' + cat.color + \'22;overflow:hidden"><img src="\' + a.image + \'" alt="\' + a.title.replace(/\x22/g,\'&quot;\') + \'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div><div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-category" style="background:\' + cat.color + \'22;color:\' + cat.color + \'">\' + cat.name.replace(/^أدوات /,\'\') + \'</span><span class="blog-card-date">\' + a.date + \'</span></div><h3 class="blog-card-title"><a href="\' + a.link + \'" style="color:inherit;text-decoration:none">\' + a.title + \'</a></h3><p class="blog-card-excerpt">\' + a.excerpt + \'</p><div class="blog-card-footer"><a href="\' + a.link + \'" class="blog-card-link">اقرأ المزيد <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a><div class="blog-card-author"><div class="blog-card-author-avatar">\' + a.author.charAt(0) + \'</div><span>\' + a.author + \'</span></div></div></div></article>\';\n        });\n        h += \'</div></div>\';\n      });\n      c.innerHTML = h;\n    }\n    renderBlog();\n  </script>\n</body>\n</html>';
     }
 
+    // Generate category page with full design matching reference
     function generateCategoryPage(cat) {
+      const siteName = settings.site_name || 'ToolRar';
+      const blogUrl = settings.blog_url || 'https://toolrar.com';
       const catArticles = articles.filter(a => a.category === cat.id);
-      let articleCards = '';
-      catArticles.forEach(art => {
-        articleCards += `
-<article class="blog-card">
-  <a href="${art.slug}.html" class="blog-card-link">
-    <div class="blog-card-image"><img src="img/${art.slug}.png" alt="${art.imageAlt || art.title}" loading="lazy"></div>
-    <div class="blog-card-content">
-      <h2 class="blog-card-title">${art.title}</h2>
-      <p class="blog-card-excerpt">${art.excerpt}</p>
-      <div class="blog-card-meta"><span>${art.date}</span><span>${art.readTime || 5} دقيقة قراءة</span></div>
-    </div>
-  </a>
-</article>`;
+      const artsJSON = JSON.stringify(catArticles.map(a => ({
+        id: a.id, cat: a.category, title: a.title, excerpt: a.excerpt,
+        date: a.date, author: a.author || 'Toolrar', readTime: a.readTime || 5,
+        link: a.slug + '.html', image: 'img/' + a.slug + '.png'
+      })));
+      return '<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>' + cat.name + ' - ' + siteName + '</title>\n  <meta name="description" content="' + (cat.description || '') + '">\n  <link rel="canonical" href="' + blogUrl + '/blog/' + cat.slug + '/">\n  <link rel="stylesheet" href="../../admin/assets/css/fonts-cairo.css">\n  <style>\n*{margin:0;padding:0;box-sizing:border-box}\nbody{font-family:\'Cairo\',sans-serif;min-height:100vh;display:flex;flex-direction:column;background:#fff;color:#1e293b;line-height:1.6}\n.dark body{background:#080C1A;color:#e2e8f0}\n.dark .page-section{background:#0F172A}\n.dark .blog-card{background:#1E293B;border-color:rgba(55,65,81,.5)}\n.dark .blog-card-title{color:#fff}\n.dark .blog-card-excerpt{color:#9ca3af}\n.dark .footer{background:#080C1A}\n.dark .cat-section-title{color:#e2e8f0}\n.container{max-width:1200px;margin:0 auto;padding:0 1rem}\n.header{background:#0F172A;padding:16px 0}\n.header-inner{display:flex;align-items:center;gap:16px}\n.logo{display:flex;align-items:center;gap:10px;text-decoration:none}\n.logo-icon{width:36px;height:36px;background:#6366F1;border-radius:8px;display:flex;align-items:center;justify-content:center}\n.logo-icon svg{width:20px;height:20px;color:#fff}\n.logo-text{color:#fff;font-weight:700;font-size:1.3rem}\n.breadcrumb{color:#94a3b8;font-size:.9rem;margin:20px 0}\n.breadcrumb a{color:#6366F1;text-decoration:none}\n.breadcrumb a:hover{text-decoration:underline}\nh1{font-size:1.8rem;font-weight:800;margin-bottom:8px;color:#111827}\n.dark h1{color:#e2e8f0}\n.cat-desc{color:#6b7280;margin-bottom:24px}\n.dark .cat-desc{color:#9ca3af}\n.blog-grid{display:grid;grid-template-columns:1fr;gap:20px}\n@media(min-width:640px){.blog-grid{grid-template-columns:repeat(2,1fr);gap:24px}}\n@media(min-width:1024px){.blog-grid{grid-template-columns:repeat(3,1fr);gap:24px}}\n.blog-card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid rgba(243,244,246,.8);box-shadow:0 1px 2px rgba(0,0,0,.05);transition:all .3s;display:flex;flex-direction:column}\n.blog-card:hover{box-shadow:0 10px 15px -3px rgba(0,0,0,.1);transform:translateY(-4px)}\n.blog-card-image{width:100%;height:160px;overflow:hidden}\n.blog-card-image img{width:100%;height:100%;object-fit:cover}\n.blog-card-body{padding:16px 20px 20px;display:flex;flex-direction:column;flex:1}\n.blog-card-meta{display:flex;align-items:center;gap:10px;margin-bottom:8px}\n.blog-card-date{font-size:.7rem;color:#9ca3af}\n.blog-card-title{font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}\n.blog-card-title a{color:inherit;text-decoration:none}\n.blog-card-title a:hover{color:#6366F1}\n.blog-card-excerpt{font-size:.8rem;color:#6b7280;line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}\n.blog-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto}\n.blog-card-link{font-size:.8rem;font-weight:600;color:#6366F1;text-decoration:none;display:inline-flex;align-items:center;gap:4px}\n.blog-card-link:hover{gap:8px}\n.blog-card-link svg{width:13px;height:13px}\n.blog-card-author{display:flex;align-items:center;gap:6px;font-size:.7rem;color:#9ca3af}\n.blog-card-author-avatar{width:22px;height:22px;border-radius:50%;background:#6366F1;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.55rem;font-weight:700}\n.page-inner{padding:30px 0 50px;flex:1}\n.footer{background:#0F172A;margin-top:40px;padding:24px 0;text-align:center}\n.footer p{color:#6b7280;font-size:.8rem}\n  </style>\n</head>\n<body>\n  <header class="header">\n    <div class="container">\n      <div class="header-inner">\n        <a href="../" class="logo">\n          <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>\n          <span class="logo-text">' + siteName + '</span>\n        </a>\n      </div>\n    </div>\n  </header>\n\n  <div class="container page-inner">\n    <div class="breadcrumb"><a href="../">الرئيسية</a> / <a href="../">المدونة</a> / ' + cat.name + '</div>\n    <h1>' + cat.name + '</h1>\n    <p class="cat-desc">' + (cat.description || '') + '</p>\n    <div class="blog-grid" id="articlesGrid"></div>\n  </div>\n\n  <footer class="footer">\n    <div class="container"><p>' + siteName + ' &copy; ' + new Date().getFullYear() + '</p></div>\n  </footer>\n\n  <script>\n    var articles = ' + artsJSON + ';\n    var catColor = "' + (cat.color || '#6366F1') + '";\n    var catName = "' + cat.name + '";\n    function render() {\n      var g = document.getElementById("articlesGrid"), h = "";\n      articles.forEach(function(a) {\n        h += \'<article class="blog-card"><div class="blog-card-image" style="background:\' + catColor + \'22"><img src="\' + a.image + \'" alt="\' + a.title.replace(/\x22/g,\'&quot;\') + \'" loading="lazy"></div><div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-date">\' + a.date + \'</span></div><h3 class="blog-card-title"><a href="\' + a.link + \'">\' + a.title + \'</a></h3><p class="blog-card-excerpt">\' + a.excerpt + \'</p><div class="blog-card-footer"><a href="\' + a.link + \'" class="blog-card-link">اقرأ المزيد <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a><div class="blog-card-author"><div class="blog-card-author-avatar">\' + a.author.charAt(0) + \'</div><span>\' + a.author + \'</span></div></div></div></article>\';\n      });\n      if (!articles.length) h = \'<p style="text-align:center;padding:40px;color:#94a3b8">لا توجد مقالات في هذا القسم بعد.</p>\';\n      g.innerHTML = h;\n    }\n    render();\n  </script>\n</body>\n</html>';
+    }
+
+    // Generate article page - uses real FAQ and TOC from article data
+    // Add id attributes to h2/h3 headings for TOC anchor linking
+    function addHeadingIds(html) {
+      return html.replace(/<(h[23])(\s[^>]*)?>/gi, function(match, tag, attrs, offset) {
+        // Extract text content using the actual offset, not indexOf
+        var textMatch = html.substring(offset + match.length);
+        var endTag = '</' + tag + '>';
+        var endIdx = textMatch.indexOf(endTag);
+        if (endIdx === -1) return match;
+        var text = textMatch.substring(0, endIdx).replace(/<[^>]+>/g, '').trim();
+        var id = slugify(text);
+        if (attrs && /id\s*=/.test(attrs)) return match;
+        return '<' + tag + (attrs || '') + ' id="' + id + '">';
       });
-      return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${cat.name} - ${settings.site_name || 'ToolRar'}</title>
-  <meta name="description" content="${cat.description || ''}">
-  <meta property="og:title" content="${cat.name}">
-  <meta property="og:description" content="${cat.description || ''}">
-  <link rel="canonical" href="https://toolrar.com/blog/${cat.slug}/">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Cairo',sans-serif;background:#0f0f1a;color:#e2e8f0;line-height:1.8}
-    .container{max-width:1000px;margin:0 auto;padding:20px}
-    h1{font-size:2rem;margin-bottom:10px;color:#a5b4fc}
-    .blog-grid{display:grid;gap:24px;margin-top:30px}
-    .blog-card{background:#1a1a2e;border-radius:16px;overflow:hidden;transition:transform .2s}
-    .blog-card:hover{transform:translateY(-4px)}
-    .blog-card img{width:100%;height:200px;object-fit:cover}
-    .blog-card-content{padding:20px}
-    .blog-card-title{font-size:1.2rem;margin:8px 0;color:#f1f5f9}
-    .blog-card-excerpt{color:#94a3b8;font-size:.95rem}
-    .blog-card-meta{display:flex;gap:16px;margin-top:12px;font-size:.85rem;color:#64748b}
-    a{text-decoration:none;color:inherit}
-    .breadcrumb{color:#64748b;font-size:.9rem;margin-bottom:20px}
-    .breadcrumb a{color:#a5b4fc}
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="breadcrumb"><a href="../">الرئيسية</a> / ${cat.name}</div>
-    <h1>📂 ${cat.name}</h1>
-    <p style="color:#94a3b8;margin-bottom:20px">${cat.description || ''}</p>
-    <div class="blog-grid">${articleCards}</div>
-  </div>
-</body>
-</html>`;
     }
 
     function generateArticlePage(art) {
       const cat = categories.find(c => c.id === art.category) || { name: '', slug: '' };
       const siteName = settings.site_name || 'ToolRar';
       const blogUrl = settings.blog_url || 'https://toolrar.com';
-      const faqSchema = art.faq && art.faq.length > 0 ? `,
-  "mainEntity": ${JSON.stringify(art.faq.map(f => ({
-    "@type": "Question",
-    "name": f.q,
-    "acceptedAnswer": { "@type": "Answer", "text": f.a }
-  })))}` : '';
-      let faqHTML = '';
+      const faqSchema = art.faq && art.faq.length > 0 ? ',\n  "mainEntity": ' + JSON.stringify(art.faq.map(function(f) { return {"@type":"Question","name":f.q,"acceptedAnswer":{"@type":"Answer","text":f.a}}; })) : '';
+      // Build FAQ HTML from real data
+      var faqHTML = '';
       if (art.faq && art.faq.length > 0) {
         faqHTML = '<div class="faq-section"><h2>❓ الأسئلة الشائعة</h2>';
-        art.faq.forEach((f, i) => {
+        for (var fi = 0; fi < art.faq.length; fi++) {
+          var f = art.faq[fi];
           faqHTML += '<div class="faq-item"><button class="faq-q" onclick="this.nextElementSibling.classList.toggle(\'open\')">' + f.q + '</button><div class="faq-a"><p>' + f.a + '</p></div></div>';
-        });
+        }
         faqHTML += '</div>';
       }
-      const tagsHTML = art.tags && art.tags.length ? art.tags.map(t => '<span class="tag">#' + t + '</span>').join(' ') : '';
-      const tocHTML = generateArticleTOC(art.content);
-      return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${art.metaTitle || art.title} - ${siteName}</title>
-  <meta name="description" content="${art.metaDesc || art.excerpt}">
-  <meta property="og:title" content="${art.title}">
-  <meta property="og:description" content="${art.metaDesc || art.excerpt}">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="${blogUrl}/blog/${art.category}/${art.slug}.html">
-  <meta property="og:image" content="${blogUrl}/blog/${art.category}/img/${art.slug}.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="canonical" href="${blogUrl}/blog/${art.category}/${art.slug}.html">
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Article","headline":${JSON.stringify(art.title)},"description":${JSON.stringify(art.metaDesc || art.excerpt)},"url":"${blogUrl}/blog/${art.category}/${art.slug}.html","datePublished":"${art.createdAt || art.date}","dateModified":"${art.updatedAt || art.date}","author":{"@type":"Person","name":"${art.author || 'Toolrar'}"},"publisher":{"@type":"Organization","name":"${siteName}","url":"${blogUrl}"},"image":"${blogUrl}/blog/${art.category}/img/${art.slug}.png"${faqSchema}}
-  <\/script>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Cairo',sans-serif;background:#0f0f1a;color:#e2e8f0;line-height:1.9;padding:20px}
-    .article-wrap{max-width:800px;margin:0 auto}
-    .breadcrumb{color:#64748b;font-size:.9rem;margin-bottom:20px}
-    .breadcrumb a{color:#a5b4fc;text-decoration:none}
-    h1{font-size:2rem;margin:16px 0;background:linear-gradient(135deg,#f1f5f9,#a5b4fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .article-meta{display:flex;gap:20px;font-size:.9rem;color:#94a3b8;margin-bottom:20px;flex-wrap:wrap}
-    .article-meta span{display:flex;align-items:center;gap:6px}
-    .featured-image{margin:20px 0;border-radius:16px;overflow:hidden}
-    .featured-image img{width:100%;height:auto;border-radius:16px}
-    .article-content h2{font-size:1.5rem;margin:30px 0 12px;color:#a5b4fc}
-    .article-content h3{font-size:1.2rem;margin:24px 0 10px;color:#cbd5e1}
-    .article-content p{margin-bottom:16px;color:#e2e8f0}
-    .article-content ul,.article-content ol{margin:12px 0 16px 20px;color:#e2e8f0}
-    .article-content li{margin-bottom:8px}
-    .article-content img{max-width:100%;border-radius:12px;margin:16px 0}
-    .article-content a{color:#818cf8}
-    .toc-card{background:#1a1a2e;border-radius:16px;padding:20px;margin:20px 0}
-    .toc-card h3{margin-bottom:12px;color:#a5b4fc}
-    .toc-card ul{list-style:none;padding:0}
-    .toc-card li{margin-bottom:8px}
-    .toc-card a{color:#94a3b8;text-decoration:none}
-    .toc-card a:hover{color:#a5b4fc}
-    .faq-section{background:#1a1a2e;border-radius:16px;padding:24px;margin:30px 0}
-    .faq-section h2{margin-bottom:16px;color:#a5b4fc}
-    .faq-item{border-bottom:1px solid #2d2d4a;padding:12px 0}
-    .faq-q{background:none;border:none;color:#e2e8f0;font-size:1rem;cursor:pointer;width:100%;text-align:right;padding:8px 0}
-    .faq-a{display:none;padding:8px 0;color:#94a3b8}
-    .faq-a.open{display:block}
-    .tags{margin:20px 0}
-    .tag{display:inline-block;background:#2d2d4a;color:#a5b4fc;padding:4px 12px;border-radius:20px;font-size:.85rem;margin:4px}
-    .author-box{display:flex;align-items:center;gap:16px;background:#1a1a2e;border-radius:16px;padding:20px;margin:30px 0}
-    .author-box strong{color:#f1f5f9}
-    .author-box p{color:#94a3b8;font-size:.9rem}
-  </style>
-</head>
-<body>
-  <div class="article-wrap">
-    <div class="breadcrumb"><a href="../">الرئيسية</a> / <a href="../${cat.slug}/">${cat.name}</a> / ${art.title}</div>
-    <h1>${art.title}</h1>
-    <div class="article-meta">
-      <span>📅 ${art.date}</span>
-      <span>👤 ${art.author || 'Toolrar'}</span>
-      <span>⏱ ${art.readTime || 5} دقيقة قراءة</span>
-    </div>
-    ${tagsHTML ? '<div class="tags">' + tagsHTML + '</div>' : ''}
-    <div class="featured-image"><img src="img/${art.slug}.png" alt="${art.imageAlt || art.title}" title="${art.imageTitle || art.title}" loading="lazy"></div>
-    ${tocHTML}
-    <div class="article-content">${art.content}</div>
-    ${faqHTML}
-    <div class="author-box"><div><strong>✍️ ${art.author || 'Toolrar'}</strong><p>كاتب محتوى متخصص في أدوات الويب والتقنية</p></div></div>
-  </div>
-</body>
-</html>`;
+      // Build TOC from article content headings (real data, not hardcoded)
+      var tocHTML = '';
+      var processedContent = addHeadingIds(art.content);
+      try {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(processedContent, 'text/html');
+        var headings = doc.querySelectorAll('h2, h3');
+        if (headings.length > 0) {
+          tocHTML = '<div class="toc-card"><h3>📋 فهرس المقال</h3><ul>';
+          for (var hi = 0; hi < headings.length; hi++) {
+            var text = headings[hi].textContent;
+            var tag = headings[hi].tagName.toLowerCase();
+            tocHTML += '<li' + (tag === 'h3' ? ' style="margin-right:16px"' : '') + '><a href="#' + slugify(text) + '">' + text + '</a></li>';
+          }
+          tocHTML += '</ul></div>';
+        }
+      } catch(e) {}
+      var tagsHTML = (art.tags && art.tags.length) ? art.tags.map(function(t) { return '<span class="tag">#' + t + '</span>'; }).join(' ') : '';
+      return '<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>' + (art.metaTitle || art.title) + ' - ' + siteName + '</title>\n  <meta name="description" content="' + (art.metaDesc || art.excerpt) + '">\n  <meta property="og:title" content="' + art.title + '">\n  <meta property="og:description" content="' + (art.metaDesc || art.excerpt) + '">\n  <meta property="og:type" content="article">\n  <meta property="og:url" content="' + blogUrl + '/blog/' + art.category + '/' + art.slug + '.html">\n  <meta property="og:image" content="' + blogUrl + '/blog/' + art.category + '/img/' + art.slug + '.png">\n  <meta name="twitter:card" content="summary_large_image">\n  <link rel="canonical" href="' + blogUrl + '/blog/' + art.category + '/' + art.slug + '.html">\n  <script type="application/ld+json">\n  {"@context":"https://schema.org","@type":"Article","headline":' + JSON.stringify(art.title) + ',"description":' + JSON.stringify(art.metaDesc || art.excerpt) + ',"url":"' + blogUrl + '/blog/' + art.category + '/' + art.slug + '.html","datePublished":"' + (art.createdAt || art.date) + '","dateModified":"' + (art.updatedAt || art.date) + '","author":{"@type":"Person","name":"' + (art.author || 'Toolrar') + '"},"publisher":{"@type":"Organization","name":"' + siteName + '","url":"' + blogUrl + '"},"image":"' + blogUrl + '/blog/' + art.category + '/img/' + art.slug + '.png"' + faqSchema + '}\n  </script>\n  <link rel="stylesheet" href="../../admin/assets/css/fonts-cairo.css">\n  <style>\n*{margin:0;padding:0;box-sizing:border-box}\nbody{font-family:\'Cairo\',sans-serif;background:#fff;color:#1e293b;line-height:1.9;padding:0}\n.dark body{background:#080C1A;color:#e2e8f0}\n.dark .header{background:#080C1A}\n.dark .article-meta{color:#94a3b8}\n.dark .article-content{color:#e2e8f0}\n.dark .article-content h2{color:#a5b4fc}\n.dark .article-content h3{color:#cbd5e1}\n.dark .article-content p{color:#e2e8f0}\n.dark .toc-card{background:#1E293B}\n.dark .toc-card a{color:#94a3b8}\n.dark .faq-section{background:#1E293B}\n.dark .faq-q{color:#e2e8f0}\n.dark .faq-a{color:#94a3b8}\n.dark .author-box{background:#1E293B}\n.dark .author-box strong{color:#f1f5f9}\n.dark .author-box p{color:#94a3b8}\n.dark .footer{background:#080C1A}\n.header{background:#0F172A;padding:16px 0}\n.header-inner{display:flex;align-items:center;gap:16px;max-width:1100px;margin:0 auto;padding:0 1rem}\n.logo{display:flex;align-items:center;gap:10px;text-decoration:none}\n.logo-icon{width:36px;height:36px;background:#6366F1;border-radius:8px;display:flex;align-items:center;justify-content:center}\n.logo-icon svg{width:20px;height:20px;color:#fff}\n.logo-text{color:#fff;font-weight:700;font-size:1.3rem}\n.article-wrap{max-width:800px;margin:0 auto;padding:20px}\n.breadcrumb{color:#64748b;font-size:.9rem;margin-bottom:20px}\n.breadcrumb a{color:#6366F1;text-decoration:none}\nh1{font-size:1.8rem;font-weight:800;margin:16px 0;color:#111827}\n.dark h1{color:#e2e8f0}\n.article-meta{display:flex;gap:20px;font-size:.9rem;color:#64748b;margin-bottom:20px;flex-wrap:wrap}\n.article-meta span{display:flex;align-items:center;gap:6px}\n.featured-image{margin:20px 0;border-radius:12px;overflow:hidden}\n.featured-image img{width:100%;height:auto;border-radius:12px}\n.article-content h2{font-size:1.4rem;margin:30px 0 12px;color:#111827}\n.article-content h3{font-size:1.15rem;margin:24px 0 10px;color:#374151}\n.article-content p{margin-bottom:16px;color:#374151}\n.article-content ul,.article-content ol{margin:12px 0 16px 20px}\n.article-content li{margin-bottom:8px}\n.article-content img{max-width:100%;border-radius:12px;margin:16px 0}\n.article-content a{color:#6366F1}\n.toc-card{background:#F8FAFC;border-radius:12px;padding:20px;margin:20px 0;border:1px solid #E2E8F0}\n.toc-card h3{margin-bottom:12px;color:#6366F1}\n.toc-card ul{list-style:none;padding:0}\n.toc-card li{margin-bottom:8px}\n.toc-card a{color:#64748b;text-decoration:none}\n.toc-card a:hover{color:#6366F1}\n.faq-section{background:#F8FAFC;border-radius:12px;padding:24px;margin:30px 0;border:1px solid #E2E8F0}\n.faq-section h2{margin-bottom:16px;color:#6366F1}\n.faq-item{border-bottom:1px solid #E2E8F0;padding:12px 0}\n.faq-q{background:none;border:none;color:#1e293b;font-size:.95rem;cursor:pointer;width:100%;text-align:right;padding:8px 0;font-family:inherit}\n.faq-a{display:none;padding:8px 0;color:#64748b}\n.faq-a.open{display:block}\n.tags{margin:20px 0}\n.tag{display:inline-block;background:#EEF2FF;color:#6366F1;padding:4px 12px;border-radius:20px;font-size:.8rem;margin:4px}\n.author-box{display:flex;align-items:center;gap:16px;background:#F8FAFC;border-radius:12px;padding:20px;margin:30px 0;border:1px solid #E2E8F0}\n.author-box strong{color:#111827}\n.author-box p{color:#64748b;font-size:.85rem}\n.footer{background:#0F172A;margin-top:40px;padding:24px 0;text-align:center;margin-top:40px}\n.footer p{color:#6b7280;font-size:.8rem}\n  </style>\n</head>\n<body>\n  <header class="header">\n    <div class="header-inner">\n      <a href="../../" class="logo">\n        <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>\n        <span class="logo-text">' + siteName + '</span>\n      </a>\n    </div>\n  </header>\n  <div class="article-wrap">\n    <div class="breadcrumb"><a href="../../">الرئيسية</a> / <a href="../">المدونة</a> / <a href="../' + cat.slug + '/">' + cat.name + '</a> / ' + art.title + '</div>\n    <h1>' + art.title + '</h1>\n    <div class="article-meta">\n      <span>📅 ' + art.date + '</span>\n      <span>👤 ' + (art.author || 'Toolrar') + '</span>\n      <span>⏱ ' + (art.readTime || 5) + ' دقيقة قراءة</span>\n    </div>\n    ' + (tagsHTML ? '<div class="tags">' + tagsHTML + '</div>' : '') + '\n    <div class="featured-image"><img src="img/' + art.slug + '.png" alt="' + (art.imageAlt || art.title) + '" title="' + (art.imageTitle || art.title) + '" loading="lazy"></div>\n    ' + tocHTML + '\n    <div class="article-content">' + processedContent + '</div>\n    ' + faqHTML + '\n    <div class="author-box"><div><strong>✍️ ' + (art.author || 'Toolrar') + '</strong><p>كاتب محتوى متخصص في أدوات الويب والتقنية</p></div></div>\n  </div>\n  <footer class="footer"><div class="article-wrap"><p>' + siteName + ' &copy; ' + new Date().getFullYear() + ' جميع الحقوق محفوظة</p></div></footer>\n</body>\n</html>';
     }
+
+    // generateArticleTOC must come before generateArticlePage since it's called by it
 
     function generateArticleTOC(content) {
       const parser = new DOMParser();
@@ -2154,8 +2048,29 @@
       html = html.replace(/<span style="color:#A5B4FC">[^<]*<\/span>/, '<span style="color:#A5B4FC">'+art.title+'<\/span>');
       // Replace date
       html = html.replace(/> \d{4}-\d{2}-\d{2}<\/span>/g, '> '+art.date+'<\/span>');
-      // Replace article content
-      html = html.replace(/<div class="article-content">[\s\S]*?<div class="faq-inline">/, '<div class="article-content">\n<div class="featured-image-wrap"><img src="img/'+art.slug+'.png" alt="'+(art.imageAlt||art.title)+'" title="'+(art.imageTitle||art.title)+'" width="1200" height="630" loading="lazy" class="article-featured-image"><span class="watermark">www.toolrar.com</span></div>\n'+art.content+'\n</div>\n<div class="faq-inline">');
+      // Replace article content (with heading IDs for TOC)
+      var processedContent = addHeadingIds(art.content);
+      html = html.replace(/<div class="article-content">[\s\S]*?<div class="faq-inline">/, '<div class="article-content">\n<div class="featured-image-wrap"><img src="img/'+art.slug+'.png" alt="'+(art.imageAlt||art.title)+'" title="'+(art.imageTitle||art.title)+'" width="1200" height="630" loading="lazy" class="article-featured-image"><span class="watermark">www.toolrar.com</span></div>\n'+processedContent+'\n</div>\n<div class="faq-inline">');
+      // Replace TOC section with dynamically generated one from article content
+      var tocHTML = generateArticleTOC(processedContent);
+      if (tocHTML) {
+        html = html.replace(/<div class="toc-card">[\s\S]*?<\/div>\s*<\/div>/, tocHTML + '\n');
+      }
+      // Replace FAQ section with dynamically generated one from article data
+      var faqHTML = '';
+      if (art.faq && art.faq.length > 0) {
+        faqHTML = '<div class="faq-section"><h2>❓ الأسئلة الشائعة</h2>';
+        art.faq.forEach(function(f) {
+          faqHTML += '<div class="faq-item"><button class="faq-q" onclick="this.nextElementSibling.classList.toggle(\'open\')">' + f.q + '</button><div class="faq-a"><p>' + f.a + '</p></div></div>';
+        });
+        faqHTML += '</div>';
+        // Replace existing FAQ section or append before author box
+        if (/<div class="faq-section">/.test(html)) {
+          html = html.replace(/<div class="faq-section">[\s\S]*?<\/div>\s*<\/div>/, faqHTML);
+        } else {
+          html = html.replace(/<div class="author-box"/, faqHTML + '\n    <div class="author-box"');
+        }
+      }
       // Replace image src in content
       html = html.replace(/src="img\/[^"]+"/g, 'src="img/'+art.slug+'.png"');
       return html;
@@ -2200,7 +2115,36 @@
           artHTML = generateArticlePage(art);
         }
         await commitFileToGitHub(repo, branch, token, 'blog/'+art.category+'/'+art.slug+'.html', artHTML, 'تحديث صفحة: '+art.title);
+
+        // 4. Push article image if base64 data is available
+        if (art.imageData && art.imageData.startsWith('data:')) {
+          const imgPath = 'blog/' + art.category + '/img/' + art.slug + '.png';
+          const base64Data = art.imageData.split(',')[1];
+          await commitRawFileToGitHub(repo, branch, token, imgPath, base64Data, 'رفع صورة: ' + art.slug + '.png');
+        }
       }
+    }
+
+    // Push raw binary file (image) to GitHub
+    async function commitRawFileToGitHub(repo, branch, token, path, base64Content, message) {
+      const url = 'https://api.github.com/repos/' + repo + '/contents/' + path;
+      let sha = '';
+      try {
+        const res = await fetch(url + '?ref=' + branch, {
+          headers: { 'Authorization': 'token ' + token }
+        });
+        if (res.status === 200) {
+          const data = await res.json();
+          sha = data.sha;
+        }
+      } catch (e) {}
+      const body = { message: message, content: base64Content, branch: branch };
+      if (sha) body.sha = sha;
+      await fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
     }
   </script>
 </body>
