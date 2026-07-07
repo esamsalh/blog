@@ -1193,7 +1193,7 @@
       return fetch(api, { method: "PUT", headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" }, body: JSON.stringify(body) });
     }
 
-    async function generateField(fieldType) {
+    async     async function generateField(fieldType) {
       const provider = document.getElementById("aiProvider").value;
       const model = document.getElementById("aiModel").value;
       const title = document.getElementById("postTitle").value;
@@ -1231,7 +1231,7 @@
       } catch (err) { showToast("خطأ: " + err.message, "error"); }
     }
 
-    async function generateContentWithAI() {
+    async     async function generateContentWithAI() {
       const provider = document.getElementById("aiProvider").value;
       const model = document.getElementById("aiModel").value;
       const genType = document.getElementById("aiGenType").value;
