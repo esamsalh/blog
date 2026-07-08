@@ -367,7 +367,7 @@
         '<input type="file" id="postImageInput" accept="image/*">' +
         '</div>' +
         '<div class="image-preview' + ((post && post.image) ? ' show' : '') + '" id="imagePreview">' +
-        '<img id="imagePreviewImg" src="' + ((post && post.image) ? '../../blog2/' + post.category_id + '/img/' + post.image : '') + '" alt="Preview">' +
+        '<img id="imagePreviewImg" src="' + ((post && post.image) ? '../../blog/' + post.category_id + '/img/' + post.image : '') + '" alt="Preview">' +
         '<button class="remove-img" id="removeImageBtn" type="button">&times;</button>' +
         '</div>' +
         '<input type="hidden" id="postImage" value="' + (post ? self._escHtml(post.image || '') : '') + '">' +
@@ -474,7 +474,7 @@
         var slug = slugInput.value || window.BlogAPI.generateSlug(titleInput.value || '');
         var cat = document.getElementById('postCategory');
         var catId = cat ? cat.value : 'text-tools';
-        seoUrl.textContent = settings.site_url + '/blog2/' + catId + '/' + slug + '.html';
+        seoUrl.textContent = settings.site_url + '/blog/' + catId + '/' + slug + '.html';
         seoTitle.textContent = title + ' - ' + settings.blog_title;
         seoDesc.textContent = metaDesc.value || excerptEl.value || 'وصف المقال الذي سيظهر في نتائج البحث';
       }
@@ -611,7 +611,7 @@
         document.getElementById('postImage').value = this._pendingPostImage.fileName;
         if (document.getElementById('postImageName')) document.getElementById('postImageName').value = this._pendingPostImage.fileName;
         imageAsset = {
-          path: 'blog2/' + categoryId + '/img/' + this._pendingPostImage.fileName,
+          path: 'blog/' + categoryId + '/img/' + this._pendingPostImage.fileName,
           content: this._pendingPostImage.content
         };
       } else if (requestedImageName) {
