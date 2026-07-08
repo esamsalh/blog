@@ -152,7 +152,7 @@ exports.handler = async (event, context) => {
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing required fields' }) };
       }
 
-      const filePath = `blog/${category}/${path}`;
+      const filePath = `blog2/${category}/${path}`;
       const encoded = Buffer.from(content).toString('base64');
 
       let existingSha = null;
