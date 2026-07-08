@@ -181,7 +181,7 @@ window.BlogAPI = {
         return self.getCategoryPath(item.category_id) === categoryPath;
       });
       return {
-        path: 'blog2/' + categoryPath + '/posts.json',
+        path: 'blog/' + categoryPath + '/posts.json',
         content: JSON.stringify(categoryPosts, null, 2)
       };
     });
@@ -204,14 +204,14 @@ window.BlogAPI = {
 
   buildBlogListingFiles: function(posts) {
     var self = this;
-    var files = [{ path: 'blog2/latest-posts.json', content: JSON.stringify(this.sortPostsByDate(posts).slice(0, 9), null, 2) }];
+    var files = [{ path: 'blog/latest-posts.json', content: JSON.stringify(this.sortPostsByDate(posts).slice(0, 9), null, 2) }];
     var paths = this.getCategoryPathMap(posts);
     Object.keys(paths).forEach(function(categoryPath) {
       var categoryPosts = self.sortPostsByDate(posts.filter(function(item) {
         return self.getCategoryPath(item.category_id) === categoryPath;
       }));
       files.push({
-        path: 'blog2/' + categoryPath + '/posts.json',
+        path: 'blog/' + categoryPath + '/posts.json',
         content: JSON.stringify(categoryPosts, null, 2)
       });
     });
@@ -256,11 +256,11 @@ window.BlogAPI = {
     '<meta name="description" content="' + (post.meta_desc || post.excerpt || '') + '">' +
     '<meta name="keywords" content="' + (post.keywords || '') + '">' +
     '<meta name="author" content="' + (post.author || settings.author_name) + '">' +
-    '<link rel="canonical" href="' + settings.site_url + '/blog2/' + catPath + '/' + post.slug + '.html">' +
+    '<link rel="canonical" href="' + settings.site_url + '/blog/' + catPath + '/' + post.slug + '.html">' +
     '<meta property="og:title" content="' + post.title + '">' +
     '<meta property="og:description" content="' + (post.meta_desc || post.excerpt || '') + '">' +
-    '<meta property="og:image" content="' + (post.image ? settings.site_url + '/blog2/' + catPath + '/img/' + post.image : '') + '">' +
-    '<meta property="og:url" content="' + settings.site_url + '/blog2/' + catPath + '/' + post.slug + '.html">' +
+    '<meta property="og:image" content="' + (post.image ? settings.site_url + '/blog/' + catPath + '/img/' + post.image : '') + '">' +
+    '<meta property="og:url" content="' + settings.site_url + '/blog/' + catPath + '/' + post.slug + '.html">' +
     '<meta property="og:type" content="article">' +
     '<script type="application/ld+json">' +
     JSON.stringify({
@@ -268,13 +268,13 @@ window.BlogAPI = {
       "@type": "Article",
       "headline": post.title,
       "description": post.meta_desc || post.excerpt || '',
-      "url": settings.site_url + '/blog2/' + catPath + '/' + post.slug + '.html',
+      "url": settings.site_url + '/blog/' + catPath + '/' + post.slug + '.html',
       "datePublished": this.toSchemaDate(post.created_at),
       "dateModified": this.toSchemaDate(post.updated_at, post.created_at),
       "author": { "@type": "Person", "name": post.author || settings.author_name },
       "publisher": { "@type": "Organization", "name": settings.site_name, "url": settings.site_url },
-      "mainEntityOfPage": { "@type": "WebPage", "@id": settings.site_url + '/blog2/' + catPath + '/' + post.slug + '.html' },
-      "image": post.image ? settings.site_url + '/blog2/' + catPath + '/img/' + post.image : ''
+      "mainEntityOfPage": { "@type": "WebPage", "@id": settings.site_url + '/blog/' + catPath + '/' + post.slug + '.html' },
+      "image": post.image ? settings.site_url + '/blog/' + catPath + '/img/' + post.image : ''
     }) +
     '</script>' +
     '<script type="application/ld+json">' +
@@ -283,8 +283,8 @@ window.BlogAPI = {
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": settings.site_url + '/' },
-        { "@type": "ListItem", "position": 2, "name": "المدونة", "item": settings.site_url + '/blog2/' },
-        { "@type": "ListItem", "position": 3, "name": catName, "item": settings.site_url + '/blog2/' + catPath + '/' },
+        { "@type": "ListItem", "position": 2, "name": "المدونة", "item": settings.site_url + '/blog/' },
+        { "@type": "ListItem", "position": 3, "name": catName, "item": settings.site_url + '/blog/' + catPath + '/' },
         { "@type": "ListItem", "position": 4, "name": post.title }
       ]
     }) +
@@ -372,7 +372,7 @@ window.BlogAPI = {
     var html = this.createPostHTML(post);
     var slug = post.slug || this.generateSlug(post.title);
     return {
-      path: 'blog2/' + this.getCategoryPath(post.category_id) + '/' + slug + '.html',
+      path: 'blog/' + this.getCategoryPath(post.category_id) + '/' + slug + '.html',
       content: html
     };
   },
