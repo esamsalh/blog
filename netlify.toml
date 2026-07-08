@@ -31,25 +31,25 @@
   to = "/admin/dashboard/settings.html"
   status = 200
 
-# Clean URLs for blog2
+# Clean URLs for blog
 [[redirects]]
-  from = "/blog2"
-  to = "/blog2/"
+  from = "/blog"
+  to = "/blog/"
   status = 200
 
 [[redirects]]
-  from = "/blog2/:category/"
-  to = "/blog2/:category/index.html"
+  from = "/blog/:category/"
+  to = "/blog/:category/index.html"
   status = 200
 
 [[redirects]]
-  from = "/blog2/:category"
-  to = "/blog2/:category/index.html"
+  from = "/blog/:category"
+  to = "/blog/:category/index.html"
   status = 200
 
 [[redirects]]
-  from = "/blog2/:category/:article"
-  to = "/blog2/:category/:article"
+  from = "/blog/:category/:article"
+  to = "/blog/:category/:article"
   status = 200
 
 # Netlify Identity
@@ -86,7 +86,7 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/blog2/*/img/*"
+  for = "/blog/*/img/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
