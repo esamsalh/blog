@@ -10,8 +10,8 @@ backend:
 
 local_backend: false
 publish_mode: editorial_workflow
-media_folder: "blog/{{fields.category}}/img"
-public_folder: "/blog/{{fields.category}}/img"
+media_folder: "blog2/{{fields.category}}/img"
+public_folder: "/blog2/{{fields.category}}/img"
 
 slug:
   encoding: "ascii"
@@ -22,13 +22,13 @@ collections:
   - name: "blog"
     label: "المقالات"
     label_singular: "مقال"
-    folder: "blog"
+    folder: "blog2"
     create: true
     delete: true
     path: "{{category}}/{{slug}}"
     media_folder: "{{category}}/img"
-    public_folder: "/blog/{{category}}/img"
-    preview_path: "blog/{{category}}/{{slug}}"
+    public_folder: "/blog2/{{category}}/img"
+    preview_path: "blog2/{{category}}/{{slug}}"
     extension: .html
     format: "frontmatter"
     fields:

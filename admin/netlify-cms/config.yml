@@ -5,14 +5,14 @@ backend:
   name: git-gateway
   branch: main
 
-media_folder: "blog/{{category}}/img"
-public_folder: "/blog/{{category}}/img"
+media_folder: "blog2/{{category}}/img"
+public_folder: "/blog2/{{category}}/img"
 
 collections:
   - name: "posts"
     label: "المقالات"
     label_singular: "مقال"
-    folder: "blog"
+    folder: "blog2"
     create: true
     delete: true
     path: "{{category}}/{{slug}}"
