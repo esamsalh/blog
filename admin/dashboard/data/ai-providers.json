@@ -1,0 +1,486 @@
+{
+  "providers": [
+    {
+      "id": "google",
+      "name": "Google AI Studio",
+      "name_ar": "Google AI Studio (قوقل AI ستوديو)",
+      "api_endpoint": "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+      "api_key": "AQ.Ab8RN6KhduQtbtmII7u0ijcaZDzc7xb8iZCTnPETVnZ2F3nfog",
+      "default_model": "gemini-1.5-flash",
+      "models": [
+        {
+          "id": "gemini-2.5-flash",
+          "name": "gemini-2.5-flash (أحدث نموذج سريع - توليد نصوص وأكواد)"
+        },
+        {
+          "id": "gemini-2.5-pro",
+          "name": "gemini-2.5-pro (ذكاء فائق ومنطق عالي - نصوص وأكواد معقدة)"
+        },
+        {
+          "id": "gemini-2.0-flash",
+          "name": "gemini-2.0-flash (سريع جداً وذكي - نصوص وأكواد)"
+        },
+        {
+          "id": "gemini-2.0-flash-thinking-exp",
+          "name": "gemini-2.0-flash-thinking-exp (استدلال وتفكير عميق)"
+        },
+        {
+          "id": "gemini-1.5-flash",
+          "name": "gemini-1.5-flash (افتراضي متزن وسياق طويل - نصوص وأكواد)"
+        },
+        {
+          "id": "gemini-1.5-pro",
+          "name": "gemini-1.5-pro (تحليل عميق وسياق ضخم - نصوص وأكواد)"
+        }
+      ],
+      "extra_headers": {}
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode Zen",
+      "name_ar": "OpenCode Zen (خطة زين)",
+      "api_endpoint": "https://opencode.ai/zen/v1/chat/completions",
+      "api_key": "sk-KQSYcYOXAr5YDBCzFh7jlVlxoSR5ZI4cnc8y56RlJJ9YjROqQhkmuG6fvKLwsWrR",
+      "default_model": "deepseek-v4-flash-free",
+      "models": [
+        {
+          "id": "qwen3.6-plus-free",
+          "name": "qwen3.6-plus-free (كوين 3.6 بلس مجاني - نصوص وبرمجة)"
+        },
+        {
+          "id": "deepseek-v4-flash-free",
+          "name": "deepseek-v4-flash-free (ديب سيك v4 فلاش مجاني - سريع جداً)"
+        },
+        {
+          "id": "minimax-m3-free",
+          "name": "minimax-m3-free (مينيمكس 3 مجاني - نصوص ومقالات وسياق كبير)"
+        },
+        {
+          "id": "mimo-v2.5-free",
+          "name": "mimo-v2.5-free (ميمو 2.5 مجاني - برمجة وتوليد أكواد)"
+        },
+        {
+          "id": "big-pickle",
+          "name": "big-pickle (بيج بيكل مجاني - برمجة وتوليد أكواد)"
+        },
+        {
+          "id": "nemotron-3-ultra-free",
+          "name": "nemotron-3-ultra-free (نيموترون 3 الترا مجاني)"
+        },
+        {
+          "id": "nemotron-3-super-free",
+          "name": "nemotron-3-super-free (نيموترون مجاني - نصوص ومقالات)"
+        }
+      ],
+      "extra_headers": {}
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "name_ar": "OpenRouter (أوبن راوتر)",
+      "api_endpoint": "https://openrouter.ai/api/v1/chat/completions",
+      "api_key": "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",
+      "default_model": "deepseek/deepseek-v4-flash:free",
+      "models": [
+        {
+          "id": "deepseek/deepseek-v4-flash:free",
+          "name": "DeepSeek V4 Flash (free) - ديب سيك V4 فلاش مجاني"
+        },
+        {
+          "id": "z-ai/glm-4.5-air:free",
+          "name": "GLM 4.5 Air (free) - جي إل إم 4.5 إير مجاني"
+        },
+        {
+          "id": "moonshotai/kimi-k2.6:free",
+          "name": "Kimi K2.6 (free) - كيمي K2.6 مجاني"
+        },
+        {
+          "id": "poolside/laguna-m.1:free",
+          "name": "Laguna M.1 (free) - لاجونا M.1 مجاني"
+        },
+        {
+          "id": "poolside/laguna-xs.2:free",
+          "name": "Laguna XS.2 (free) - لاجونا XS.2 مجاني"
+        },
+        {
+          "id": "openai/gpt-oss-120b:free",
+          "name": "gpt-oss-120b (free) - جي بي تي أوس 120b مجاني"
+        }
+      ],
+      "extra_headers": {
+        "HTTP-Referer": "https://toolrar.com",
+        "X-Title": "ToolRar"
+      }
+    },
+    {
+      "id": "groq",
+      "name": "Groq",
+      "name_ar": "Groq (منصة جروك)",
+      "api_endpoint": "https://api.groq.com/openai/v1/chat/completions",
+      "api_key": "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",
+      "default_model": "llama-3.3-70b-versatile",
+      "models": [
+        {
+          "id": "llama-3.3-70b-versatile",
+          "name": "llama-3.3-70b-versatile (نموذج ميتا القوي - نصوص ومقالات)"
+        },
+        {
+          "id": "deepseek-r1-distill-llama-70b",
+          "name": "deepseek-r1-distill-llama-70b (تفكير واستدلال - برمجة)"
+        },
+        {
+          "id": "deepseek-r1-distill-qwen-32b",
+          "name": "deepseek-r1-distill-qwen-32b (تفكير واستدلال ممتاز)"
+        },
+        {
+          "id": "qwen-2.5-coder-32b",
+          "name": "qwen-2.5-coder-32b (نموذج علي بابا - برمجة وتوليد أكواد)"
+        },
+        {
+          "id": "llama-3.1-8b-instant",
+          "name": "llama-3.1-8b-instant (نموذج ميتا السريع - نصوص)"
+        },
+        {
+          "id": "mixtral-8x7b-32768",
+          "name": "mixtral-8x7b-32768 (سياق طويل 32k - نصوص وبرمجة)"
+        },
+        {
+          "id": "gemma2-9b-it",
+          "name": "gemma2-9b-it (نموذج قوقل خفيف - نصوص)"
+        }
+      ],
+      "extra_headers": {}
+    },
+    {
+      "id": "agentrouter",
+      "name": "AgentRouter",
+      "name_ar": "AgentRouter (agentrouter.org)",
+      "api_endpoint": "https://agentrouter.org/v1/chat/completions",
+      "api_key": "sk-Ry7ht1FvHQ7NE4OjN9Cc9wKqZBSVP8Jwm9MwH1VyK4OeLuEl",
+      "default_model": "glm-5.2",
+      "models": [
+        {
+          "id": "glm-5.2",
+          "name": "GLM 5.2"
+        },
+        {
+          "id": "claude-opus-4-6",
+          "name": "Claude Opus 4.6"
+        },
+        {
+          "id": "gpt-5.5",
+          "name": "GPT-5.5"
+        },
+        {
+          "id": "claude-opus-4-8",
+          "name": "Claude Opus 4.8"
+        }
+      ],
+      "extra_headers": {}
+    },
+    {
+      "id": "cerebras",
+      "name": "Cerebras",
+      "name_ar": "Cerebras (منصة سيريبراس السريعة)",
+      "api_endpoint": "https://api.cerebras.ai/v1/chat/completions",
+      "api_key": "csk-8hnwewjmfy46xthhwcn3t22n94tt9t349e2rdkw9xvnf28pc",
+      "default_model": "gpt-oss-120b",
+      "models": [
+        {
+          "id": "gpt-oss-120b",
+          "name": "gpt-oss-120b (استدلال وتفكير عميق فائق السرعة)"
+        },
+        {
+          "id": "zai-glm-4.7",
+          "name": "zai-glm-4.7 (نموذج محادثة ذكي وفائق السرعة)"
+        }
+      ],
+      "extra_headers": {}
+    },
+    {
+      "id": "siliconflow",
+      "name": "SiliconFlow",
+      "name_ar": "SiliconFlow (سيليكون فلو - GLM)",
+      "api_endpoint": "https://api.siliconflow.com/v1/chat/completions",
+      "api_key": "sk-uksfscrxjhaynjmlcpbhcvykqqkukmjwqdidjbvsczsjdsge",
+      "default_model": "deepseek-ai/DeepSeek-V4-Flash",
+      "models": [
+        {
+          "id": "deepseek-ai/DeepSeek-R1",
+          "name": "DeepSeek-R1 (برمجة/تفكير - الأقوى)"
+        },
+        {
+          "id": "deepseek-ai/DeepSeek-V4-Pro",
+          "name": "DeepSeek-V4-Pro (برمجة)"
+        },
+        {
+          "id": "deepseek-ai/DeepSeek-V4-Flash",
+          "name": "DeepSeek-V4-Flash (برمجة/سريع)"
+        },
+        {
+          "id": "zai-org/GLM-5.1",
+          "name": "GLM-5.1 (برمجة - GLM)"
+        },
+        {
+          "id": "deepseek-ai/DeepSeek-V3.2",
+          "name": "DeepSeek-V3.2 (برمجة/نصوص)"
+        },
+        {
+          "id": "zai-org/GLM-5",
+          "name": "GLM-5 (برمجة - GLM)"
+        },
+        {
+          "id": "deepseek-ai/DeepSeek-V3.1",
+          "name": "DeepSeek-V3.1 (برمجة/نصوص)"
+        },
+        {
+          "id": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+          "name": "Qwen3-Coder-30B (برمجة)"
+        },
+        {
+          "id": "Qwen/Qwen3-32B",
+          "name": "Qwen3-32B (نصوص/برمجة)"
+        },
+        {
+          "id": "zai-org/GLM-4.5-Air",
+          "name": "GLM-4.5-Air (نصوص - GLM)"
+        },
+        {
+          "id": "zai-org/GLM-5V-Turbo",
+          "name": "GLM-5V-Turbo (نصوص - GLM)"
+        },
+        {
+          "id": "google/gemma-4-31B-it",
+          "name": "Gemma-4-31B (نصوص)"
+        },
+        {
+          "id": "MiniMaxAI/MiniMax-M3",
+          "name": "MiniMax-M3 (نصوص)"
+        },
+        {
+          "id": "moonshotai/Kimi-K2.6",
+          "name": "Kimi-K2.6 (نصوص)"
+        },
+        {
+          "id": "openai/gpt-oss-120b",
+          "name": "GPT-OSS-120B (نصوص)"
+        },
+        {
+          "id": "stepfun-ai/Step-3.5-Flash",
+          "name": "Step-3.5-Flash (نصوص)"
+        },
+        {
+          "id": "Qwen/Qwen3-14B",
+          "name": "Qwen3-14B (نصوص)"
+        },
+        {
+          "id": "Qwen/Qwen3-8B",
+          "name": "Qwen3-8B (نصوص)"
+        },
+        {
+          "id": "Qwen/Qwen2.5-72B-Instruct",
+          "name": "Qwen2.5-72B (نصوص)"
+        },
+        {
+          "id": "Qwen/Qwen2.5-7B-Instruct",
+          "name": "Qwen2.5-7B (نصوص)"
+        }
+      ],
+      "extra_headers": {}
+    },
+    {
+      "id": "routeway",
+      "name": "Routeway",
+      "name_ar": "Routeway (منصة راوت واي)",
+      "api_endpoint": "https://api.routeway.ai/v1/chat/completions",
+      "api_key": "sk-Mrl1csStecbVXviGdJaae157NT5Whg9WVY6ZMqy8wg05AcmJhokX0l9e5SHQjjltcsTlaLhwN8H8HDf1-w5O",
+      "default_model": "deepseek-v4-flash:free",
+      "models": [
+        {
+          "id": "deepseek-v4-flash:free",
+          "name": "DeepSeek V4 Flash (برمجة/سريع)"
+        },
+        {
+          "id": "llama-3.3-70b-instruct:free",
+          "name": "Llama 3.3 70B (نصوص/برمجة)"
+        },
+        {
+          "id": "nemotron-3-nano-30b-a3b:free",
+          "name": "Nemotron 3 Nano 30B (نصوص)"
+        },
+        {
+          "id": "llama-3.1-8b-instruct:free",
+          "name": "Llama 3.1 8B (نصوص)"
+        },
+        {
+          "id": "llama-3.2-3b-instruct:free",
+          "name": "Llama 3.2 3B (نصوص)"
+        },
+        {
+          "id": "llama-3.2-1b-instruct:free",
+          "name": "Llama 3.2 1B (نصوص)"
+        },
+        {
+          "id": "mistral-nemo-instruct:free",
+          "name": "Mistral Nemo (نصوص)"
+        },
+        {
+          "id": "nemotron-nano-9b-v2:free",
+          "name": "Nemotron Nano 9B (نصوص)"
+        },
+        {
+          "id": "minimax-m2:free",
+          "name": "MiniMax M2 (نصوص)"
+        },
+        {
+          "id": "gpt-oss-120b:free",
+          "name": "GPT-OSS 120B (نصوص)"
+        },
+        {
+          "id": "step-3.5-flash:free",
+          "name": "Step 3.5 Flash (نصوص)"
+        },
+        {
+          "id": "ling-2.6-flash:free",
+          "name": "Ling 2.6 Flash (نصوص)"
+        },
+        {
+          "id": "laguna-xs.2:free",
+          "name": "Laguna XS.2 (نصوص)"
+        },
+        {
+          "id": "laguna-m.1:free",
+          "name": "Laguna M.1 (نصوص)"
+        }
+      ],
+      "extra_headers": {}
+    },
+    {
+      "id": "featherless",
+      "name": "Featherless",
+      "name_ar": "Featherless (مخدم GLM)",
+      "api_endpoint": "https://api.featherless.ai/v1/chat/completions",
+      "api_key": "rc_ad3f761e6bcecf4c751c248e549bc2a045438e268d4c995172d338155615db0d",
+      "default_model": "zai-org/GLM-5.1",
+      "models": [
+        {
+          "id": "zai-org/GLM-5.1",
+          "name": "GLM-5.1 (برمجة - GLM الأحدث)"
+        },
+        {
+          "id": "zai-org/GLM-5",
+          "name": "GLM-5 (برمجة - GLM)"
+        },
+        {
+          "id": "zai-org/GLM-4.7",
+          "name": "GLM-4.7 (نصوص/برمجة - GLM)"
+        },
+        {
+          "id": "zai-org/GLM-4.6",
+          "name": "GLM-4.6 (نصوص/برمجة - GLM)"
+        }
+      ],
+      "extra_headers": {}
+    },
+    {
+      "id": "github",
+      "name": "GitHub Models",
+      "name_ar": "GitHub Models (نماذج GPT)",
+      "api_endpoint": "https://models.github.ai/inference/chat/completions",
+      "api_key": "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",
+      "default_model": "openai/gpt-4.1",
+      "models": [
+        {
+          "id": "openai/gpt-4.1",
+          "name": "GPT-4.1 (برمجة - الأقوى)"
+        },
+        {
+          "id": "deepseek/deepseek-r1",
+          "name": "DeepSeek R1 (برمجة/تفكير)"
+        },
+        {
+          "id": "deepseek/deepseek-r1-0528",
+          "name": "DeepSeek R1-0528 (برمجة/تفكير)"
+        },
+        {
+          "id": "openai/gpt-4o",
+          "name": "GPT-4o (برمجة/نصوص)"
+        },
+        {
+          "id": "deepseek/deepseek-v3-0324",
+          "name": "DeepSeek V3-0324 (برمجة)"
+        },
+        {
+          "id": "mistral-ai/codestral-2501",
+          "name": "Codestral 2501 (برمجة - كود)"
+        },
+        {
+          "id": "meta/meta-llama-3.1-405b-instruct",
+          "name": "Llama 3.1 405B (برمجة/نصوص)"
+        },
+        {
+          "id": "meta/llama-4-maverick-17b-128e-instruct-fp8",
+          "name": "Llama 4 Maverick 17B (نصوص)"
+        },
+        {
+          "id": "meta/llama-3.3-70b-instruct",
+          "name": "Llama 3.3 70B (نصوص)"
+        },
+        {
+          "id": "microsoft/phi-4-reasoning",
+          "name": "Phi-4 Reasoning (برمجة/تفكير)"
+        },
+        {
+          "id": "microsoft/phi-4-mini-reasoning",
+          "name": "Phi-4 Mini Reasoning (برمجة/تفكير)"
+        },
+        {
+          "id": "mistral-ai/mistral-medium-2505",
+          "name": "Mistral Medium 2505 (نصوص)"
+        },
+        {
+          "id": "microsoft/phi-4",
+          "name": "Phi-4 (نصوص/برمجة)"
+        },
+        {
+          "id": "mistral-ai/mistral-small-2503",
+          "name": "Mistral Small 2503 (نصوص)"
+        },
+        {
+          "id": "meta/llama-4-scout-17b-16e-instruct",
+          "name": "Llama 4 Scout 17B (نصوص)"
+        },
+        {
+          "id": "openai/gpt-4.1-mini",
+          "name": "GPT-4.1 Mini (نصوص/سريع)"
+        },
+        {
+          "id": "openai/gpt-4.1-nano",
+          "name": "GPT-4.1 Nano (نصوص/سريع)"
+        },
+        {
+          "id": "openai/gpt-4o-mini",
+          "name": "GPT-4o Mini (نصوص/سريع)"
+        },
+        {
+          "id": "meta/meta-llama-3.1-8b-instruct",
+          "name": "Llama 3.1 8B (نصوص)"
+        },
+        {
+          "id": "mistral-ai/ministral-3b",
+          "name": "Ministral 3B (نصوص)"
+        },
+        {
+          "id": "cohere/cohere-command-a",
+          "name": "Cohere Command A (نصوص)"
+        }
+      ],
+      "extra_headers": {
+        "Accept": "application/vnd.github+json"
+      }
+    }
+  ],
+  "selected_provider": "openrouter",
+  "selected_model": "deepseek/deepseek-v4-flash:free",
+  "selected_lang": "ar"
+}

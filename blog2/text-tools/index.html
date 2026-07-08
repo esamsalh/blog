@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أدوات النصوص والكلمات - ToolRar Blog</title>
+<meta name="description" content="أدوات النصوص والكلمات: شروحات وأدوات لتحرير النصوص، الكتابة، الترجمة، والتدقيق اللغوي">
+<link rel="preload" href="../../../admin/assets/css/fonts-cairo.css" as="style">
+<link rel="stylesheet" href="../../../admin/assets/css/fonts-cairo.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="../../../admin/assets/css/fonts-cairo.css"></noscript>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden;width:100%;max-width:100vw}
+body{font-family:'Cairo',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;background:#fff;color:#1e293b;-webkit-font-smoothing:antialiased;line-height:1.8;overflow-x:hidden;width:100%;max-width:100vw;word-break:break-word}
+.dark body{background:#080C1A;color:#e2e8f0}
+.dark .header{background:#080C1A}
+.dark .cat-header{background:#080C1A}
+.dark .cat-header h1{color:#e2e8f0}
+.dark .cat-section{background:#080C1A}
+.dark .post-card{background:#0F172A;border-color:#1E293B}
+.dark .post-card:hover{background:#162032}
+.dark .post-title{color:#e2e8f0}
+.dark .post-excerpt{color:#94a3b8}
+.dark .post-meta{color:#64748b}
+.dark .sidebar-card{background:#0F172A;border-color:#1E293B}
+.dark .toc-link{color:#94a3b8}
+.dark .toc-link:hover{color:#A5B4FC}
+.dark .footer{background:#080C1A}
+.container{max-width:1280px;margin:0 auto;padding:0 1rem}
+@media(min-width:640px){.container{padding:0 1.5rem}}
+@media(min-width:1024px){.container{padding:0 2rem}}
+.header{background:#0F172A;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,.05)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:36px;height:36px;background:#6366F1;border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(99,102,241,.3)}
+.logo-icon svg{width:20px;height:20px;color:#fff}
+.logo-text{color:#fff;font-weight:700;font-size:1.5rem}
+.desktop-nav{display:none;align-items:center;flex:1}
+.nav-links-center{display:flex;align-items:center;gap:2px;flex:1;justify-content:center}
+.nav-controls{display:flex;align-items:center}
+@media(min-width:1024px){.desktop-nav{display:flex}}
+.nav-link{color:#fff;text-decoration:none;padding:8px 10px;font-size:.875rem;font-weight:500;transition:color .2s;display:flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;font-family:inherit}
+.nav-link:hover{color:#d1d5db}
+.nav-link.active{color:#6366F1}
+.dropdown-wrap{position:relative}
+.dropdown-menu{position:absolute;top:100%;margin-top:4px;background:#1E293B;border-radius:12px;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);overflow:hidden;z-index:50;opacity:0;transform:translateY(-8px);visibility:hidden;transition:opacity .2s,transform .2s,visibility .2s}
+.dark .dropdown-menu{background:#162032}
+.dropdown-wrap:hover .dropdown-menu,.dropdown-wrap.open .dropdown-menu{opacity:1;transform:translateY(0);visibility:visible}
+.dropdown-chevron{transition:transform .2s}
+.dropdown-wrap:hover .dropdown-chevron,.dropdown-wrap.open .dropdown-chevron{transform:rotate(180deg)}
+.cat-dropdown{right:0;width:224px}
+.lang-dropdown{left:0;width:176px}
+.lang-item{width:100%;display:flex;align-items:center;gap:12px;padding:12px 16px;font-size:.875rem;font-weight:500;transition:background .2s;cursor:pointer;border:none;background:none;font-family:inherit;text-align:right}
+.lang-item:hover{background:rgba(255,255,255,.1)}
+.lang-item.active{color:#6366F1;background:rgba(255,255,255,.05)}
+.lang-item:not(.active){color:#d1d5db}
+.lang-flag{font-size:1.125rem}
+.lang-check{margin-right:auto;width:16px;height:16px;color:#6366F1}
+.cat-item{display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:.875rem;font-weight:500;color:#d1d5db;text-decoration:none;transition:background .2s,color .2s}
+.cat-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.cat-item-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.cat-item-icon svg{width:14px;height:14px;color:#fff}
+.dark-toggle{display:flex;align-items:center;gap:6px;color:#fff;padding:8px 10px;font-size:.875rem;font-weight:500;transition:color .2s;cursor:pointer;background:none;border:none;font-family:inherit}
+.dark-toggle:hover{color:#6366F1}
+.dark-toggle svg{width:16px;height:16px}
+.mobile-controls{display:flex;align-items:center;gap:4px}
+@media(min-width:1024px){.mobile-controls{display:none}}
+.mobile-btn{color:#fff;padding:8px;background:none;border:none;cursor:pointer}
+.mobile-btn svg{width:20px;height:20px}
+.mobile-btn.hamburger svg{width:24px;height:24px}
+.mobile-menu{display:none;border-top:1px solid rgba(255,255,255,.1);padding:16px 0}
+.mobile-menu.open{display:block}
+.mobile-menu a{display:block;color:#fff;text-decoration:none;padding:10px 12px;font-size:.875rem;font-weight:500;transition:color .2s}
+.mobile-menu a:hover{color:#d1d5db}
+.cat-header{background:#0F172A;position:relative;overflow:hidden;padding:48px 0 40px;text-align:center}
+.cat-header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 50% 50%,rgba(99,102,241,.08) 0%,transparent 60%);pointer-events:none}
+.cat-header-content{position:relative;z-index:10;max-width:700px;margin:0 auto}
+.cat-header .breadcrumb{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.78rem;color:#94a3b8;margin-bottom:16px;flex-wrap:wrap}
+.cat-header .breadcrumb a{color:#A5B4FC;text-decoration:none}
+.cat-header .breadcrumb a:hover{color:#fff}
+.cat-header .breadcrumb span{color:#64748b}
+.cat-header .cat-icon-large{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.cat-header .cat-icon-large svg{width:28px;height:28px;color:#fff}
+.cat-header h1{font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:8px}
+@media(min-width:640px){.cat-header h1{font-size:2rem}}
+.cat-header p{font-size:.9rem;color:#94a3b8;max-width:550px;margin:0 auto;line-height:1.7}
+.cat-section{background:#F8FAFC;flex:1}
+.cat-body{padding:40px 1rem}
+@media(min-width:640px){.cat-body{padding:48px 1.5rem}}
+@media(min-width:1024px){.cat-body{padding:56px 1.5rem}}
+.cat-layout{display:grid;grid-template-columns:1fr;gap:32px}
+@media(min-width:1024px){.cat-layout{grid-template-columns:1fr 300px}}
+.cat-main{min-width:0}
+.sidebar{min-width:0;order:-1}
+@media(min-width:1024px){.sidebar{order:1;position:sticky;top:80px;align-self:start}}
+.sidebar-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:20px;margin-bottom:20px}
+.sidebar-card h3{font-size:.9rem;font-weight:800;color:#1e293b;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #6366F1;display:inline-block}
+.sidebar-card ul{list-style:none;padding:0;margin:0}
+.sidebar-card li{margin-bottom:8px}
+.sidebar-card li a{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:.78rem;color:#475569;text-decoration:none;border-radius:6px;transition:all .2s;line-height:1.5;border-right:2px solid transparent}
+.sidebar-card li a:hover{background:rgba(99,102,241,.06);color:#6366F1;border-right-color:#6366F1}
+.sidebar-card li a svg{width:14px;height:14px;flex-shrink:0}
+.posts-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:640px){.posts-grid{grid-template-columns:repeat(2,1fr)}}
+.post-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden;transition:all .25s;text-decoration:none;display:flex;flex-direction:column}
+.post-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-3px)}
+.post-card-img{width:100%;aspect-ratio:1200/630;object-fit:cover;display:block}
+.post-card-body{padding:16px 18px;flex:1;display:flex;flex-direction:column}
+.post-card-category{font-size:.7rem;font-weight:600;color:#6366F1;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.post-title{font-size:.92rem;font-weight:700;color:#111827;margin-bottom:8px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.post-excerpt{font-size:.78rem;color:#6b7280;line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.post-meta{display:flex;align-items:center;gap:12px;font-size:.7rem;color:#9ca3af;margin-top:auto;padding-top:10px;border-top:1px solid #F1F5F9}
+.dark .post-meta{border-color:#1E293B}
+.post-meta span{display:flex;align-items:center;gap:4px}
+.post-meta svg{width:12px;height:12px}
+.empty-state{text-align:center;padding:48px 24px;color:#94a3b8;grid-column:1/-1}
+.empty-state svg{width:48px;height:48px;margin-bottom:12px;color:#CBD5E1}
+.empty-state p{font-size:.9rem}
+.footer{background:#0F172A}
+.footer-inner{padding:40px 1rem}
+@media(min-width:640px){.footer-inner{padding:48px 1.5rem}}
+@media(min-width:1024px){.footer-inner{padding:48px 2rem}}
+.footer-grid{display:grid;grid-template-columns:1fr;gap:32px}
+@media(min-width:640px){.footer-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.footer-grid{grid-template-columns:repeat(4,1fr);gap:48px}}
+.footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.footer-desc{color:#9ca3af;font-size:.875rem;line-height:1.625;margin-bottom:20px}
+.footer-social{display:flex;align-items:center;gap:12px}
+.footer-social a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;transition:background .2s;text-decoration:none}
+.footer-social a:hover{background:#6366F1}
+.footer-social a svg{width:16px;height:16px;color:#fff}
+.footer-col-title{color:#fff;font-weight:700;font-size:1rem;margin-bottom:20px}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:12px}
+.footer-link{color:#9ca3af;text-decoration:none;font-size:.875rem;transition:color .2s}
+.footer-link:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);margin-top:32px;padding-top:20px;display:flex;flex-direction:column;gap:12px;align-items:center}
+@media(min-width:640px){.footer-bottom{margin-top:40px;padding-top:24px;flex-direction:row;justify-content:space-between}}
+.footer-bottom p{color:#6b7280;font-size:.75rem;margin:0}
+@media(min-width:640px){.footer-bottom p{font-size:.875rem}}
+.footer-bottom-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.footer-bottom-links a{color:#6b7280;text-decoration:none;font-size:.75rem;transition:color .2s}
+@media(min-width:640px){.footer-bottom-links a{font-size:.875rem}}
+.footer-bottom-links a:hover{color:#fff}
+@media(max-width:639px){.cat-header h1{font-size:1.3rem}.cat-header{padding:32px 0 28px}.cat-body{padding:24px 1rem}}
+svg{max-width:100%;height:auto}
+</style>
+<link rel="icon" type="image/png" sizes="32x32" href="../../../admin/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="../../../admin/assets/favicon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="../../../admin/assets/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../../../admin/assets/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../../../admin/assets/apple-touch-icon.png">
+</head>
+<body>
+
+<header class="header">
+<div class="container">
+<div class="header-inner">
+<a href="../../../index.html" class="logo">
+<div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+<span class="logo-text">ToolRar</span>
+</a>
+<nav class="desktop-nav">
+<div class="nav-links-center">
+<a href="../../../index.html" class="nav-link">الرئيسية</a>
+<a href="../../../all-tools.html" class="nav-link">جميع الأدوات</a>
+<div class="dropdown-wrap" id="catDropdown">
+<a href="#" class="nav-link" onmouseenter="openCatDD()" onmouseleave="scheduleCloseCatDD()">التصنيفات<svg class="dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg></a>
+<div class="dropdown-menu cat-dropdown" onmouseenter="cancelCloseCatDD()" onmouseleave="closeCatDD()">
+<a href="../text-tools/" class="cat-item"><div class="cat-item-icon" style="background:#6366F1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></div><span>أدوات النصوص</span></a>
+<a href="../developer-tools/" class="cat-item"><div class="cat-item-icon" style="background:#10B981"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><span>أدوات المطورين</span></a>
+<a href="../photo-design-tools/" class="cat-item"><div class="cat-item-icon" style="background:#F59E0B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div><span>أدوات التصميم</span></a>
+<a href="../calculator-tools/" class="cat-item"><div class="cat-item-icon" style="background:#3B82F6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 13h.01"/><path d="M18 11h.01"/></svg></div><span>أدوات الحاسبة</span></a>
+<a href="../pdf-tools/" class="cat-item"><div class="cat-item-icon" style="background:#EC4899"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div><span>أدوات PDF</span></a>
+<a href="../zip-tools/" class="cat-item"><div class="cat-item-icon" style="background:#059669"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg></div><span>أدوات ZIP</span></a>
+<a href="../seo-tools/" class="cat-item"><div class="cat-item-icon" style="background:#14B8A6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="m9 8 5 3-5 3V8z"/></svg></div><span>أدوات SEO</span></a>
+<a href="../general-tools/" class="cat-item"><div class="cat-item-icon" style="background:#F59E0B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><span>أدوات متنوعة</span></a>
+<a href="../social-media-tools/" class="cat-item"><div class="cat-item-icon" style="background:#8B5CF6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div><span>سوشيال ميديا</span></a>
+</div>
+</div>
+<a class='nav-link active' href='../index.html'>المدونة</a>
+<a href="../../../pricing.html" class="nav-link">الأسعار</a>
+<a href="../../../about.html" class="nav-link">من نحن</a>
+</div>
+<div class="nav-controls">
+<div class="dropdown-wrap" id="langDropdown">
+<button class="nav-link" onclick="toggleLangDD()" onmouseenter="openLangDD()" onmouseleave="scheduleCloseLangDD()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> العربية<svg class="dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg></button>
+<div class="dropdown-menu lang-dropdown" onmouseenter="cancelCloseLangDD()" onmouseleave="closeLangDD()">
+<button class="lang-item active"><span class="lang-flag">🇸🇦</span><span>العربية</span><svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></button>
+<button class="lang-item" onclick="closeLangDD()"><span class="lang-flag">🇬🇧</span><span>English</span></button>
+<button class="lang-item" onclick="closeLangDD()"><span class="lang-flag">🇫🇷</span><span>Fran&ccedil;ais</span></button>
+</div>
+</div>
+<button class="dark-toggle" id="darkToggle" aria-label="تبديل الوضع الليلي"><svg id="darkIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span id="darkLabel">الوضع الليلي</span></button>
+</div>
+</nav>
+<div class="mobile-controls">
+<button class="mobile-btn" id="mobileDarkToggle" aria-label="تبديل الوضع الليلي"><svg id="mobileDarkIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+<button class="mobile-btn hamburger" id="hamburgerBtn" aria-label="القائمة"><svg id="hamburgerIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+</div>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+<a href="../../../index.html">الرئيسية</a>
+<a href="../../../all-tools.html">جميع الأدوات</a>
+<a href="../../../sitemap.html">التصنيفات</a>
+<a href='../index.html'>المدونة</a>
+<a href="../../../pricing.html">الأسعار</a>
+<a href="../../../about.html">من نحن</a>
+</div>
+</div>
+</header>
+
+<section class="cat-header">
+<div class="container cat-header-content">
+<nav class="breadcrumb">
+<a href="../../../index.html">الرئيسية</a>
+<span>/</span>
+<a href="../index.html">المدونة</a>
+<span>/</span>
+<span style="color:#A5B4FC">أدوات النصوص والكلمات</span>
+</nav>
+<div class="cat-icon-large" style="background:linear-gradient(135deg,#6366F1,#818CF8)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></div>
+<h1>أدوات النصوص والكلمات</h1>
+<p>أفضل الشروحات والأدوات المتعلقة بتحرير النصوص، الكتابة، الترجمة، والتدقيق اللغوي</p>
+</div>
+</section>
+
+<section class="cat-section">
+<div class="container">
+<div class="cat-body">
+<div class="cat-layout">
+<div class="cat-main">
+<div class="posts-grid">
+
+<a href="article.html" class="post-card">
+<img class="post-card-img" src="img/text-tools.png" alt="أدوات النصوص" loading="lazy" onerror="this.style.display='none'">
+<div class="post-card-body">
+<div class="post-card-category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> أدوات النصوص والكلمات</div>
+<div class="post-title">أفضل أدوات تحرير النصوص الاحترافية في 2026</div>
+<div class="post-excerpt">اكتشف أفضل أدوات تحرير النصوص التي تساعدك على الكتابة بسرعة وإتقان، مع ميزات متقدمة للتدقيق اللغوي والتنسيق.</div>
+<div class="post-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> 2026-07-07</span>
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 4 دقائق</span>
+</div>
+</div>
+</a>
+
+<a href="article.html" class="post-card">
+<img class="post-card-img" src="img/arabic-writing.png" alt="الكتابة العربية" loading="lazy" onerror="this.style.display='none'">
+<div class="post-card-body">
+<div class="post-card-category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> أدوات النصوص والكلمات</div>
+<div class="post-title">كيف تكتب مقالاً احترافياً: دليل شامل للكتابة العربية</div>
+<div class="post-excerpt">دليلك الشامل لكتابة مقالات احترافية باللغة العربية، مع نصائح حول الأسلوب والتنظيم وتحسين القراءة.</div>
+<div class="post-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> 2026-07-06</span>
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 6 دقائق</span>
+</div>
+</div>
+</a>
+
+<a href="article.html" class="post-card">
+<img class="post-card-img" src="img/translation.png" alt="الترجمة" loading="lazy" onerror="this.style.display='none'">
+<div class="post-card-body">
+<div class="post-card-category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> أدوات النصوص والكلمات</div>
+<div class="post-title">أدوات الترجمة الفورية: مقارنة بين أشهر المنصات</div>
+<div class="post-excerpt">مقارنة شاملة بين أفضل أدوات الترجمة الفورية المتاحة، مع تحليل دقة الترجمة والمميزات والعيوب لكل أداة.</div>
+<div class="post-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> 2026-07-05</span>
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 5 دقائق</span>
+</div>
+</div>
+</a>
+
+<div class="empty-state">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+<p>المزيد من المقالات قريباً...</p>
+</div>
+
+</div>
+</div>
+<div class="sidebar">
+<div class="sidebar-card">
+<h3>جميع الأقسام</h3>
+<ul>
+<li><a href="../text-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> أدوات النصوص والكلمات</a></li>
+<li><a href="../developer-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> أدوات المطورين</a></li>
+<li><a href="../photo-design-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> أدوات الصور والتصميم</a></li>
+<li><a href="../calculator-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 13h.01"/><path d="M18 11h.01"/></svg> أدوات الحاسبة</a></li>
+<li><a href="../pdf-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> أدوات PDF</a></li>
+<li><a href="../zip-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg> أدوات ZIP والضغط</a></li>
+<li><a href="../seo-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="m9 8 5 3-5 3V8z"/></svg> أدوات SEO</a></li>
+<li><a href="../general-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> أدوات متنوعة</a></li>
+<li><a href="../social-media-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> أدوات سوشيال ميديا</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="container">
+<div class="footer-inner">
+<div class="footer-grid">
+<div>
+<div class="footer-logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div><span class="logo-text">ToolRar</span></div>
+<p class="footer-desc">منصة مجانية تقدم مجموعة متنوعة من الأدوات التي تساعدك في مهامك اليومية بكل سهولة وكفاءة</p>
+<div class="footer-social">
+<a href="#" aria-label="Telegram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></a>
+<a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg></a>
+<a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+<a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+</div>
+</div>
+<div class="footer-col">
+<h4 class="footer-col-title">روابط سريعة</h4>
+<ul>
+<li><a href="../../../index.html" class="footer-link">الرئيسية</a></li>
+<li><a href="../../../all-tools.html" class="footer-link">جميع الأدوات</a></li>
+<li><a href="../../../sitemap.html" class="footer-link">التصنيفات</a></li>
+<li><a class='footer-link' href='../index.html'>المدونة</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h4 class="footer-col-title">الأقسام</h4>
+<ul>
+<li><a href="../text-tools/" class="footer-link">أدوات النصوص</a></li>
+<li><a href="../developer-tools/" class="footer-link">أدوات المطورين</a></li>
+<li><a href="../seo-tools/" class="footer-link">أدوات SEO</a></li>
+<li><a href="../social-media-tools/" class="footer-link">السوشيال ميديا</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h4 class="footer-col-title">تواصل معنا</h4>
+<ul>
+<li><a href="../../../about.html" class="footer-link">من نحن</a></li>
+<li><a href="../../../contact.html" class="footer-link">اتصل بنا</a></li>
+<li><a href="../../../privacy.html" class="footer-link">سياسة الخصوصية</a></li>
+<li><a href="../../../terms.html" class="footer-link">شروط الاستخدام</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<div class="footer-bottom-links">
+<a href="../../../terms.html">شروط الاستخدام</a>
+<a href="../../../privacy.html">سياسة الخصوصية</a>
+<a href="../../../sitemap.html">خريطة الموقع</a>
+</div>
+<p>ToolRar &copy; 2026 جميع الحقوق محفوظة</p>
+</div>
+</div>
+</div>
+</footer>
+
+<script>
+let isDark=false;
+function updateDarkUI(){const di=document.getElementById('darkIcon'),dl=document.getElementById('darkLabel'),mdi=document.getElementById('mobileDarkIcon');if(isDark){document.documentElement.classList.add('dark');localStorage.setItem('toolrar-theme','dark');di.innerHTML='<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';mdi.innerHTML='<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';dl.textContent='الوضع النهاري';}else{document.documentElement.classList.remove('dark');localStorage.setItem('toolrar-theme','light');di.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';mdi.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';dl.textContent='الوضع الليلي';}}
+function toggleDark(){isDark=!isDark;updateDarkUI()}
+let langCloseTimer,catCloseTimer;
+function openLangDD(){clearTimeout(langCloseTimer);document.getElementById('langDropdown').classList.add('open')}
+function scheduleCloseLangDD(){langCloseTimer=setTimeout(closeLangDD,150)}
+function closeLangDD(){document.getElementById('langDropdown').classList.remove('open')}
+function toggleLangDD(){document.getElementById('langDropdown').classList.toggle('open')}
+function cancelCloseLangDD(){clearTimeout(langCloseTimer)}
+function openCatDD(){clearTimeout(catCloseTimer);document.getElementById('catDropdown').classList.add('open')}
+function scheduleCloseCatDD(){catCloseTimer=setTimeout(closeCatDD,150)}
+function closeCatDD(){document.getElementById('catDropdown').classList.remove('open')}
+function cancelCloseCatDD(){clearTimeout(catCloseTimer)}
+function toggleMobileMenu(){const m=document.getElementById('mobileMenu'),i=document.getElementById('hamburgerIcon');m.classList.toggle('open');if(m.classList.contains('open')){i.innerHTML='<line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/>';}else{i.innerHTML='<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>';}}
+document.addEventListener('mousedown',function(e){const l=document.getElementById('langDropdown');if(l&&!l.contains(e.target))l.classList.remove('open');const c=document.getElementById('catDropdown');if(c&&!c.contains(e.target))c.classList.remove('open')});
+document.getElementById('darkToggle').addEventListener('click',toggleDark);
+document.getElementById('mobileDarkToggle').addEventListener('click',toggleDark);
+document.getElementById('hamburgerBtn').addEventListener('click',toggleMobileMenu);
+(function init(){const s=localStorage.getItem('toolrar-theme');if(s==='dark')isDark=true;updateDarkUI()})();
+</script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إضافة مقال - لوحة تحكم ToolRar</title>
+  <link rel="stylesheet" href="../assets/css/fonts-cairo.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="icon" href="../assets/favicon-32.png">
+</head>
+<body>
+  <header class="dash-header" id="dashHeader"></header>
+
+  <main class="dash-main">
+    <div class="container">
+      <div id="dashApp">
+        <!-- AI Providers and Models (visible when JS fails / file:// fallback) -->
+        <div id="aiStaticSection" style="display:none" data-ai-loaded="0">
+          <h3>⚙️ إعدادات الذكاء الاصطناعي</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>مزود الخدمة</label>
+              <select id="aiProviderStatic">
+                <option value="openrouter">OpenRouter (أوبن راوتر)</option>
+                <option value="google">Google AI Studio (قوقل AI ستوديو)</option>
+                <option value="opencode">OpenCode Zen (خطة زين)</option>
+                <option value="groq">Groq (منصة جروك)</option>
+                <option value="cerebras">Cerebras (منصة سيريبراس السريعة)</option>
+                <option value="siliconflow">SiliconFlow (سيليكون فلو - GLM)</option>
+                <option value="routeway">Routeway (منصة راوت واي)</option>
+                <option value="featherless">Featherless (مخدم GLM)</option>
+                <option value="agentrouter">AgentRouter (agentrouter.org)</option>
+                <option value="github">GitHub Models (نماذج GPT)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>النموذج (الموديل المجاني)</label>
+              <select id="aiModelStatic">
+                <optgroup label="OpenRouter">
+                  <option value="deepseek/deepseek-v4-flash:free">DeepSeek V4 Flash (free)</option>
+                  <option value="z-ai/glm-4.5-air:free">GLM 4.5 Air (free)</option>
+                  <option value="moonshotai/kimi-k2.6:free">Kimi K2.6 (free)</option>
+                  <option value="poolside/laguna-m.1:free">Laguna M.1 (free)</option>
+                  <option value="poolside/laguna-xs.2:free">Laguna XS.2 (free)</option>
+                  <option value="openai/gpt-oss-120b:free">gpt-oss-120b (free)</option>
+                </optgroup>
+                <optgroup label="Google AI Studio">
+                  <option value="gemini-2.5-flash">gemini-2.5-flash (أحدث)</option>
+                  <option value="gemini-2.5-pro">gemini-2.5-pro (فائق)</option>
+                  <option value="gemini-2.0-flash">gemini-2.0-flash (سريع)</option>
+                  <option value="gemini-2.0-flash-thinking-exp">gemini-2.0-flash-thinking-exp (استدلال)</option>
+                  <option value="gemini-1.5-flash">gemini-1.5-flash (افتراضي)</option>
+                  <option value="gemini-1.5-pro">gemini-1.5-pro (تحليل)</option>
+                </optgroup>
+                <optgroup label="OpenCode Zen">
+                  <option value="qwen3.6-plus-free">qwen3.6-plus-free</option>
+                  <option value="deepseek-v4-flash-free">deepseek-v4-flash-free</option>
+                  <option value="minimax-m3-free">minimax-m3-free</option>
+                  <option value="mimo-v2.5-free">mimo-v2.5-free</option>
+                  <option value="big-pickle">big-pickle</option>
+                  <option value="nemotron-3-ultra-free">nemotron-3-ultra-free</option>
+                  <option value="nemotron-3-super-free">nemotron-3-super-free</option>
+                </optgroup>
+                <optgroup label="Groq">
+                  <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+                  <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b</option>
+                  <option value="deepseek-r1-distill-qwen-32b">deepseek-r1-distill-qwen-32b</option>
+                  <option value="qwen-2.5-coder-32b">qwen-2.5-coder-32b</option>
+                  <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+                  <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                  <option value="gemma2-9b-it">gemma2-9b-it</option>
+                </optgroup>
+                <optgroup label="Cerebras">
+                  <option value="gpt-oss-120b">gpt-oss-120b</option>
+                  <option value="zai-glm-4.7">zai-glm-4.7</option>
+                </optgroup>
+                <optgroup label="SiliconFlow">
+                  <option value="deepseek-ai/DeepSeek-R1">DeepSeek-R1</option>
+                  <option value="deepseek-ai/DeepSeek-V4-Pro">DeepSeek-V4-Pro</option>
+                  <option value="deepseek-ai/DeepSeek-V4-Flash">DeepSeek-V4-Flash</option>
+                  <option value="zai-org/GLM-5.1">GLM-5.1</option>
+                  <option value="deepseek-ai/DeepSeek-V3.2">DeepSeek-V3.2</option>
+                  <option value="zai-org/GLM-5">GLM-5</option>
+                  <option value="deepseek-ai/DeepSeek-V3.1">DeepSeek-V3.1</option>
+                  <option value="Qwen/Qwen3-Coder-30B-A3B-Instruct">Qwen3-Coder-30B</option>
+                  <option value="Qwen/Qwen3-32B">Qwen3-32B</option>
+                  <option value="zai-org/GLM-4.5-Air">GLM-4.5-Air</option>
+                  <option value="zai-org/GLM-5V-Turbo">GLM-5V-Turbo</option>
+                  <option value="google/gemma-4-31B-it">Gemma-4-31B</option>
+                  <option value="MiniMaxAI/MiniMax-M3">MiniMax-M3</option>
+                  <option value="moonshotai/Kimi-K2.6">Kimi-K2.6</option>
+                  <option value="openai/gpt-oss-120b">GPT-OSS-120B</option>
+                  <option value="stepfun-ai/Step-3.5-Flash">Step-3.5-Flash</option>
+                  <option value="Qwen/Qwen3-14B">Qwen3-14B</option>
+                  <option value="Qwen/Qwen3-8B">Qwen3-8B</option>
+                  <option value="Qwen/Qwen2.5-72B-Instruct">Qwen2.5-72B</option>
+                  <option value="Qwen/Qwen2.5-7B-Instruct">Qwen2.5-7B</option>
+                </optgroup>
+                <optgroup label="Routeway">
+                  <option value="deepseek-v4-flash:free">DeepSeek V4 Flash</option>
+                  <option value="llama-3.3-70b-instruct:free">Llama 3.3 70B</option>
+                  <option value="nemotron-3-nano-30b-a3b:free">Nemotron 3 Nano</option>
+                  <option value="llama-3.1-8b-instruct:free">Llama 3.1 8B</option>
+                  <option value="llama-3.2-3b-instruct:free">Llama 3.2 3B</option>
+                  <option value="llama-3.2-1b-instruct:free">Llama 3.2 1B</option>
+                  <option value="mistral-nemo-instruct:free">Mistral Nemo</option>
+                  <option value="nemotron-nano-9b-v2:free">Nemotron Nano 9B</option>
+                  <option value="minimax-m2:free">MiniMax M2</option>
+                  <option value="gpt-oss-120b:free">GPT-OSS 120B</option>
+                  <option value="step-3.5-flash:free">Step 3.5 Flash</option>
+                  <option value="ling-2.6-flash:free">Ling 2.6 Flash</option>
+                  <option value="laguna-xs.2:free">Laguna XS.2</option>
+                  <option value="laguna-m.1:free">Laguna M.1</option>
+                </optgroup>
+                <optgroup label="Featherless">
+                  <option value="zai-org/GLM-5.1">GLM-5.1</option>
+                  <option value="zai-org/GLM-5">GLM-5</option>
+                  <option value="zai-org/GLM-4.7">GLM-4.7</option>
+                  <option value="zai-org/GLM-4.6">GLM-4.6</option>
+                </optgroup>
+                <optgroup label="AgentRouter">
+                  <option value="glm-5.2">GLM 5.2</option>
+                  <option value="claude-opus-4-6">Claude Opus 4.6</option>
+                  <option value="gpt-5.5">GPT-5.5</option>
+                  <option value="claude-opus-4-8">Claude Opus 4.8</option>
+                </optgroup>
+                <optgroup label="GitHub Models">
+                  <option value="openai/gpt-4.1">GPT-4.1</option>
+                  <option value="deepseek/deepseek-r1">DeepSeek R1</option>
+                  <option value="deepseek/deepseek-r1-0528">DeepSeek R1-0528</option>
+                  <option value="openai/gpt-4o">GPT-4o</option>
+                  <option value="deepseek/deepseek-v3-0324">DeepSeek V3-0324</option>
+                  <option value="mistral-ai/codestral-2501">Codestral 2501</option>
+                  <option value="meta/meta-llama-3.1-405b-instruct">Llama 3.1 405B</option>
+                  <option value="meta/llama-4-maverick-17b-128e-instruct-fp8">Llama 4 Maverick</option>
+                  <option value="meta/llama-3.3-70b-instruct">Llama 3.3 70B</option>
+                  <option value="microsoft/phi-4-reasoning">Phi-4 Reasoning</option>
+                  <option value="microsoft/phi-4-mini-reasoning">Phi-4 Mini Reasoning</option>
+                  <option value="mistral-ai/mistral-medium-2505">Mistral Medium 2505</option>
+                  <option value="microsoft/phi-4">Phi-4</option>
+                  <option value="mistral-ai/mistral-small-2503">Mistral Small 2503</option>
+                  <option value="meta/llama-4-scout-17b-16e-instruct">Llama 4 Scout</option>
+                  <option value="openai/gpt-4.1-mini">GPT-4.1 Mini</option>
+                  <option value="openai/gpt-4.1-nano">GPT-4.1 Nano</option>
+                  <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                  <option value="meta/meta-llama-3.1-8b-instruct">Llama 3.1 8B</option>
+                  <option value="mistral-ai/ministral-3b">Ministral 3B</option>
+                  <option value="cohere/cohere-command-a">Command A</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="dash-footer">
+    <div class="container">
+      ToolRar &copy; 2026 | لوحة تحكم المدونة
+    </div>
+  </footer>
+
+  <script>
+  // AI Providers data embedded directly (file:// fallback)
+  window.AI_PROVIDERS_DATA = {"providers":[
+    {"id":"google","name":"Google AI Studio","name_ar":"Google AI Studio (قوقل AI ستوديو)","api_endpoint":"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent","api_key":"AQ.Ab8RN6KhduQtbtmII7u0ijcaZDzc7xb8iZCTnPETVnZ2F3nfog","default_model":"gemini-1.5-flash","models":[
+      {"id":"gemini-2.5-flash","name":"gemini-2.5-flash (أحدث نموذج سريع - توليد نصوص وأكواد)"},{"id":"gemini-2.5-pro","name":"gemini-2.5-pro (ذكاء فائق ومنطق عالي - نصوص وأكواد معقدة)"},{"id":"gemini-2.0-flash","name":"gemini-2.0-flash (سريع جداً وذكي - نصوص وأكواد)"},{"id":"gemini-2.0-flash-thinking-exp","name":"gemini-2.0-flash-thinking-exp (استدلال وتفكير عميق)"},{"id":"gemini-1.5-flash","name":"gemini-1.5-flash (افتراضي متزن وسياق طويل - نصوص وأكواد)"},{"id":"gemini-1.5-pro","name":"gemini-1.5-pro (تحليل عميق وسياق ضخم - نصوص وأكواد)"}
+    ],"extra_headers":{}},
+    {"id":"opencode","name":"OpenCode Zen","name_ar":"OpenCode Zen (خطة زين)","api_endpoint":"https://opencode.ai/zen/v1/chat/completions","api_key":"sk-KQSYcYOXAr5YDBCzFh7jlVlxoSR5ZI4cnc8y56RlJJ9YjROqQhkmuG6fvKLwsWrR","default_model":"deepseek-v4-flash-free","models":[
+      {"id":"qwen3.6-plus-free","name":"qwen3.6-plus-free (كوين 3.6 بلس مجاني - نصوص وبرمجة)"},{"id":"deepseek-v4-flash-free","name":"deepseek-v4-flash-free (ديب سيك v4 فلاش مجاني - سريع جداً)"},{"id":"minimax-m3-free","name":"minimax-m3-free (مينيمكس 3 مجاني - نصوص ومقالات وسياق كبير)"},{"id":"mimo-v2.5-free","name":"mimo-v2.5-free (ميمو 2.5 مجاني - برمجة وتوليد أكواد)"},{"id":"big-pickle","name":"big-pickle (بيج بيكل مجاني - برمجة وتوليد أكواد)"},{"id":"nemotron-3-ultra-free","name":"nemotron-3-ultra-free (نيموترون 3 الترا مجاني)"},{"id":"nemotron-3-super-free","name":"nemotron-3-super-free (نيموترون مجاني - نصوص ومقالات)"}
+    ],"extra_headers":{}},
+    {"id":"openrouter","name":"OpenRouter","name_ar":"OpenRouter (أوبن راوتر)","api_endpoint":"https://openrouter.ai/api/v1/chat/completions","api_key":"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","default_model":"deepseek/deepseek-v4-flash:free","models":[
+      {"id":"deepseek/deepseek-v4-flash:free","name":"DeepSeek V4 Flash (free) - ديب سيك V4 فلاش مجاني"},{"id":"z-ai/glm-4.5-air:free","name":"GLM 4.5 Air (free) - جي إل إم 4.5 إير مجاني"},{"id":"moonshotai/kimi-k2.6:free","name":"Kimi K2.6 (free) - كيمي K2.6 مجاني"},{"id":"poolside/laguna-m.1:free","name":"Laguna M.1 (free) - لاجونا M.1 مجاني"},{"id":"poolside/laguna-xs.2:free","name":"Laguna XS.2 (free) - لاجونا XS.2 مجاني"},{"id":"openai/gpt-oss-120b:free","name":"gpt-oss-120b (free) - جي بي تي أوس 120b مجاني"}
+    ],"extra_headers":{"HTTP-Referer":"https://toolrar.com","X-Title":"ToolRar"}},
+    {"id":"groq","name":"Groq","name_ar":"Groq (منصة جروك)","api_endpoint":"https://api.groq.com/openai/v1/chat/completions","api_key":"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","default_model":"llama-3.3-70b-versatile","models":[
+      {"id":"llama-3.3-70b-versatile","name":"llama-3.3-70b-versatile (نموذج ميتا القوي - نصوص ومقالات ومحادثة)"},{"id":"deepseek-r1-distill-llama-70b","name":"deepseek-r1-distill-llama-70b (تفكير واستدلال - برمجة وكود ونصوص معقدة)"},{"id":"deepseek-r1-distill-qwen-32b","name":"deepseek-r1-distill-qwen-32b (تفكير واستدلال ممتاز - برمجة وكود ونصوص)"},{"id":"qwen-2.5-coder-32b","name":"qwen-2.5-coder-32b (نموذج علي بابا المتخصص - برمجة وتوليد أكواد)"},{"id":"llama-3.1-8b-instant","name":"llama-3.1-8b-instant (نموذج ميتا السريع - نصوص ومحادثة خفيفة)"},{"id":"mixtral-8x7b-32768","name":"mixtral-8x7b-32768 (سياق طويل 32k - نصوص وبرمجة)"},{"id":"gemma2-9b-it","name":"gemma2-9b-it (نموذج قوقل خفيف - نصوص ومحادثة)"}
+    ],"extra_headers":{}},
+    {"id":"cerebras","name":"Cerebras","name_ar":"Cerebras (منصة سيريبراس السريعة)","api_endpoint":"https://api.cerebras.ai/v1/chat/completions","api_key":"csk-8hnwewjmfy46xthhwcn3t22n94tt9t349e2rdkw9xvnf28pc","default_model":"gpt-oss-120b","models":[
+      {"id":"gpt-oss-120b","name":"gpt-oss-120b (استدلال وتفكير عميق فائق السرعة - نصوص وأكواد)"},{"id":"zai-glm-4.7","name":"zai-glm-4.7 (نموذج محادثة ذكي وفائق السرعة - نصوص وأكواد)"}
+    ],"extra_headers":{}},
+    {"id":"siliconflow","name":"SiliconFlow","name_ar":"SiliconFlow (سيليكون فلو - GLM)","api_endpoint":"https://api.siliconflow.com/v1/chat/completions","api_key":"sk-uksfscrxjhaynjmlcpbhcvykqqkukmjwqdidjbvsczsjdsge","default_model":"deepseek-ai/DeepSeek-V4-Flash","models":[
+      {"id":"deepseek-ai/DeepSeek-R1","name":"DeepSeek-R1 (برمجة/تفكير - الأقوى)"},{"id":"deepseek-ai/DeepSeek-V4-Pro","name":"DeepSeek-V4-Pro (برمجة)"},{"id":"deepseek-ai/DeepSeek-V4-Flash","name":"DeepSeek-V4-Flash (برمجة/سريع)"},{"id":"zai-org/GLM-5.1","name":"GLM-5.1 (برمجة - GLM)"},{"id":"deepseek-ai/DeepSeek-V3.2","name":"DeepSeek-V3.2 (برمجة/نصوص)"},{"id":"zai-org/GLM-5","name":"GLM-5 (برمجة - GLM)"},{"id":"deepseek-ai/DeepSeek-V3.1","name":"DeepSeek-V3.1 (برمجة/نصوص)"},{"id":"Qwen/Qwen3-Coder-30B-A3B-Instruct","name":"Qwen3-Coder-30B (برمجة)"},{"id":"Qwen/Qwen3-32B","name":"Qwen3-32B (نصوص/برمجة)"},{"id":"zai-org/GLM-4.5-Air","name":"GLM-4.5-Air (نصوص - GLM)"},{"id":"zai-org/GLM-5V-Turbo","name":"GLM-5V-Turbo (نصوص - GLM)"},{"id":"google/gemma-4-31B-it","name":"Gemma-4-31B (نصوص)"},{"id":"MiniMaxAI/MiniMax-M3","name":"MiniMax-M3 (نصوص)"},{"id":"moonshotai/Kimi-K2.6","name":"Kimi-K2.6 (نصوص)"},{"id":"openai/gpt-oss-120b","name":"GPT-OSS-120B (نصوص)"},{"id":"stepfun-ai/Step-3.5-Flash","name":"Step-3.5-Flash (نصوص)"},{"id":"Qwen/Qwen3-14B","name":"Qwen3-14B (نصوص)"},{"id":"Qwen/Qwen3-8B","name":"Qwen3-8B (نصوص)"},{"id":"Qwen/Qwen2.5-72B-Instruct","name":"Qwen2.5-72B (نصوص)"},{"id":"Qwen/Qwen2.5-7B-Instruct","name":"Qwen2.5-7B (نصوص)"}
+    ],"extra_headers":{}},
+    {"id":"routeway","name":"Routeway","name_ar":"Routeway (منصة راوت واي)","api_endpoint":"https://api.routeway.ai/v1/chat/completions","api_key":"sk-Mrl1csStecbVXviGdJaae157NT5Whg9WVY6ZMqy8wg05AcmJhokX0l9e5SHQjjltcsTlaLhwN8H8HDf1-w5O","default_model":"deepseek-v4-flash:free","models":[
+      {"id":"deepseek-v4-flash:free","name":"DeepSeek V4 Flash (برمجة/سريع)"},{"id":"llama-3.3-70b-instruct:free","name":"Llama 3.3 70B (نصوص/برمجة)"},{"id":"nemotron-3-nano-30b-a3b:free","name":"Nemotron 3 Nano 30B (نصوص)"},{"id":"llama-3.1-8b-instruct:free","name":"Llama 3.1 8B (نصوص)"},{"id":"llama-3.2-3b-instruct:free","name":"Llama 3.2 3B (نصوص)"},{"id":"llama-3.2-1b-instruct:free","name":"Llama 3.2 1B (نصوص)"},{"id":"mistral-nemo-instruct:free","name":"Mistral Nemo (نصوص)"},{"id":"nemotron-nano-9b-v2:free","name":"Nemotron Nano 9B (نصوص)"},{"id":"minimax-m2:free","name":"MiniMax M2 (نصوص)"},{"id":"gpt-oss-120b:free","name":"GPT-OSS 120B (نصوص)"},{"id":"step-3.5-flash:free","name":"Step 3.5 Flash (نصوص)"},{"id":"ling-2.6-flash:free","name":"Ling 2.6 Flash (نصوص)"},{"id":"laguna-xs.2:free","name":"Laguna XS.2 (نصوص)"},{"id":"laguna-m.1:free","name":"Laguna M.1 (نصوص)"}
+    ],"extra_headers":{}},
+    {"id":"featherless","name":"Featherless","name_ar":"Featherless (مخدم GLM)","api_endpoint":"https://api.featherless.ai/v1/chat/completions","api_key":"rc_ad3f761e6bcecf4c751c248e549bc2a045438e268d4c995172d338155615db0d","default_model":"zai-org/GLM-5.1","models":[
+      {"id":"zai-org/GLM-5.1","name":"GLM-5.1 (برمجة - GLM الأحدث)"},{"id":"zai-org/GLM-5","name":"GLM-5 (برمجة - GLM)"},{"id":"zai-org/GLM-4.7","name":"GLM-4.7 (نصوص/برمجة - GLM)"},{"id":"zai-org/GLM-4.6","name":"GLM-4.6 (نصوص/برمجة - GLM)"}
+    ],"extra_headers":{}},
+    {"id":"agentrouter","name":"AgentRouter","name_ar":"AgentRouter (agentrouter.org)","api_endpoint":"https://agentrouter.org/v1/chat/completions","api_key":"sk-Ry7ht1FvHQ7NE4OjN9Cc9wKqZBSVP8Jwm9MwH1VyK4OeLuEl","default_model":"glm-5.2","models":[
+      {"id":"glm-5.2","name":"GLM 5.2"},{"id":"claude-opus-4-6","name":"Claude Opus 4.6"},{"id":"gpt-5.5","name":"GPT-5.5"},{"id":"claude-opus-4-8","name":"Claude Opus 4.8"}
+    ],"extra_headers":{}},
+    {"id":"github","name":"GitHub Models","name_ar":"GitHub Models (نماذج GPT)","api_endpoint":"https://models.github.ai/inference/chat/completions","api_key":"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","default_model":"openai/gpt-4.1","models":[
+      {"id":"openai/gpt-4.1","name":"GPT-4.1 (برمجة - الأقوى)"},{"id":"deepseek/deepseek-r1","name":"DeepSeek R1 (برمجة/تفكير)"},{"id":"deepseek/deepseek-r1-0528","name":"DeepSeek R1-0528 (برمجة/تفكير)"},{"id":"openai/gpt-4o","name":"GPT-4o (برمجة/نصوص)"},{"id":"deepseek/deepseek-v3-0324","name":"DeepSeek V3-0324 (برمجة)"},{"id":"mistral-ai/codestral-2501","name":"Codestral 2501 (برمجة - كود)"},{"id":"meta/meta-llama-3.1-405b-instruct","name":"Llama 3.1 405B (برمجة/نصوص)"},{"id":"meta/llama-4-maverick-17b-128e-instruct-fp8","name":"Llama 4 Maverick 17B (نصوص)"},{"id":"meta/llama-3.3-70b-instruct","name":"Llama 3.3 70B (نصوص)"},{"id":"microsoft/phi-4-reasoning","name":"Phi-4 Reasoning (برمجة/تفكير)"},{"id":"microsoft/phi-4-mini-reasoning","name":"Phi-4 Mini Reasoning (برمجة/تفكير)"},{"id":"mistral-ai/mistral-medium-2505","name":"Mistral Medium 2505 (نصوص)"},{"id":"microsoft/phi-4","name":"Phi-4 (نصوص/برمجة)"},{"id":"mistral-ai/mistral-small-2503","name":"Mistral Small 2503 (نصوص)"},{"id":"meta/llama-4-scout-17b-16e-instruct","name":"Llama 4 Scout 17B (نصوص)"},{"id":"openai/gpt-4.1-mini","name":"GPT-4.1 Mini (نصوص/سريع)"},{"id":"openai/gpt-4.1-nano","name":"GPT-4.1 Nano (نصوص/سريع)"},{"id":"openai/gpt-4o-mini","name":"GPT-4o Mini (نصوص/سريع)"},{"id":"meta/meta-llama-3.1-8b-instruct","name":"Llama 3.1 8B (نصوص)"},{"id":"mistral-ai/ministral-3b","name":"Ministral 3B (نصوص)"},{"id":"cohere/cohere-command-a","name":"Cohere Command A (نصوص)"}
+    ],"extra_headers":{"Accept":"application/vnd.github+json"}}
+  ],"selected_provider":"openrouter","selected_model":"deepseek/deepseek-v4-flash:free","selected_lang":"ar"};
+  // Pre-populate localStorage for file:// protocol (no fetch available)
+  if (!localStorage.getItem('dash_ai_providers')) {
+    localStorage.setItem('dash_ai_providers', JSON.stringify(window.AI_PROVIDERS_DATA));
+  }
+  // Show static section if JS fails to render after 3 seconds
+  setTimeout(function() {
+    var dashApp = document.getElementById('dashApp');
+    var staticSection = document.getElementById('aiStaticSection');
+    if (staticSection && dashApp && dashApp.children.length <= 1) {
+      staticSection.style.display = 'block';
+      staticSection.style.cssText = 'background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;margin-bottom:20px;font-family:system-ui;direction:rtl';
+    }
+  }, 3000);
+  </script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

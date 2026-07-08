@@ -1,19 +1,157 @@
 backend:
-  name: github
-  repo: toolrar/blog
+  name: git-gateway
   branch: main
+  commit_messages:
+    create: "Create {{collection}} “{{slug}}”"
+    update: "Update {{collection}} “{{slug}}”"
+    delete: "Delete {{collection}} “{{slug}}”"
+    uploadMedia: "Upload “{{path}}”"
+    deleteMedia: "Delete “{{path}}”"
 
-media_folder: "blog/text-tools/img"
-public_folder: "/blog/text-tools/img"
+local_backend: false
+publish_mode: editorial_workflow
+media_folder: "blog/{{fields.category}}/img"
+public_folder: "/blog/{{fields.category}}/img"
+
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
 
 collections:
   - name: "blog"
-    label: "المدونة"
-    folder: "blog/text-tools"
+    label: "المقالات"
+    label_singular: "مقال"
+    folder: "blog"
     create: true
-    slug: "{{slug}}"
+    delete: true
+    path: "{{category}}/{{slug}}"
+    media_folder: "{{category}}/img"
+    public_folder: "/blog/{{category}}/img"
+    preview_path: "blog/{{category}}/{{slug}}"
+    extension: .html
+    format: "frontmatter"
     fields:
-      - {label: "العنوان", name: "title", widget: "string"}
-      - {label: "تاريخ النشر", name: "date", widget: "datetime"}
-      - {label: "صورة المقال", name: "image", widget: "image"}
-      - {label: "المحتوى", name: "body", widget: "markdown"}
+      - label: "العنوان"
+        name: "title"
+        widget: "string"
+        required: true
+      - label: "التصنيف"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "أدوات النصوص والكلمات", value: "text-tools" }
+          - { label: "أدوات المطورين", value: "Developer" }
+          - { label: "أدوات الصور والتصميم", value: "Photo-Editing" }
+          - { label: "أدوات الحاسبة", value: "Calculators" }
+          - { label: "أدوات PDF والمستندات", value: "docs-tools" }
+          - { label: "أدوات ZIP والضغط", value: "zip-tools" }
+          - { label: "أدوات SEO", value: "seo" }
+          - { label: "أدوات متنوعة", value: "General" }
+          - { label: "أدوات سوشيال ميديا", value: "Social-media" }
+        required: true
+      - label: "رابط مختصر (Slug)"
+        name: "slug"
+        widget: "string"
+        hint: "سيتم إنشاؤه تلقائياً من العنوان"
+        required: false
+      - label: "تاريخ النشر"
+        name: "date"
+        widget: "datetime"
+        default: "{{now}}"
+        required: true
+      - label: "تاريخ التحديث"
+        name: "updated"
+        widget: "datetime"
+        required: false
+      - label: "الكاتب"
+        name: "author"
+        widget: "string"
+        default: "Toolrar"
+        required: true
+      - label: "صورة المقال"
+        name: "image"
+        widget: "image"
+        required: false
+        hint: "يفضل أبعاد 1200x630"
+      - label: "الوصف المختصر"
+        name: "description"
+        widget: "text"
+        required: true
+        hint: "يظهر في بطاقة المقال"
+      - label: "Meta Description"
+        name: "meta_desc"
+        widget: "text"
+        required: false
+        hint: "وصف محسن لمحركات البحث (max 160 حرف)"
+        pattern: ['.{0,160}', "يجب ألا يتجاوز 160 حرفاً"]
+      - label: "الكلمات المفتاحية"
+        name: "keywords"
+        widget: "string"
+        required: false
+      - label: "وقت القراءة (دقائق)"
+        name: "read_time"
+        widget: "number"
+        default: 5
+        value_type: "int"
+        min: 1
+        max: 60
+        required: true
+      - label: "محتوى المقال"
+        name: "body"
+        widget: "markdown"
+        required: true
+        hint: "يمكنك استخدام HTML مباشرة"
+      - label: "حالة النشر"
+        name: "status"
+        widget: "select"
+        options:
+          - { label: "منشور", value: "published" }
+          - { label: "مسودة", value: "draft" }
+        default: "published"
+        required: true
+
+  - name: "categories"
+    label: "التصنيفات"
+    label_singular: "تصنيف"
+    folder: "admin/dashboard/data"
+    create: false
+    delete: false
+    extension: .json
+    format: "json"
+    files:
+      - file: "admin/dashboard/data/categories.json"
+        label: "التصنيفات"
+        name: "categories"
+        format: "json"
+        fields:
+          - label: "قائمة التصنيفات"
+            name: "categories"
+            widget: "list"
+            fields:
+              - { label: "المعرف", name: "id", widget: "string" }
+              - { label: "الاسم (عربي)", name: "name_ar", widget: "string" }
+              - { label: "الاسم (إنجليزي)", name: "name_en", widget: "string" }
+              - { label: "الوصف", name: "desc_ar", widget: "text" }
+              - { label: "اللون", name: "color", widget: "string", pattern: ['^#([A-Fa-f0-9]{6})$', "يجب أن يكون لوناً سداسياً عشرية"] }
+              - { label: "الترتيب", name: "order", widget: "number", value_type: "int" }
+
+  - name: "settings"
+    label: "الإعدادات"
+    files:
+      - file: "admin/dashboard/data/site-settings.json"
+        label: "إعدادات الموقع"
+        name: "site_settings"
+        format: "json"
+        fields:
+          - { label: "اسم الموقع", name: "site_name", widget: "string" }
+          - { label: "رابط الموقع", name: "site_url", widget: "string" }
+          - { label: "عنوان المدونة", name: "blog_title", widget: "string" }
+          - { label: "وصف المدونة", name: "blog_desc", widget: "text" }
+          - { label: "GitHub Repository", name: "github_repo", widget: "string", hint: "username/repo" }
+          - { label: "الفرع", name: "github_branch", widget: "string", default: "main" }
+          - { label: "رابط فيسبوك", name: "facebook_url", widget: "string", required: false }
+          - { label: "رابط تويتر", name: "twitter_url", widget: "string", required: false }
+          - { label: "رابط تليجرام", name: "telegram_url", widget: "string", required: false }
+          - { label: "رابط انستقرام", name: "instagram_url", widget: "string", required: false }
+          - { label: "المقالات في كل صفحة", name: "posts_per_page", widget: "number", value_type: "int", default: 9 }

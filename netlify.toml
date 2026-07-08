@@ -1,26 +1,116 @@
 [build]
   publish = "."
-  command = ""
+  functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "18"
+
+# Admin dashboard routes
 [[redirects]]
-  from = "/admin"
-  to = "/admin/index.html"
+  from = "/admin/dashboard"
+  to = "/admin/dashboard/index.html"
   status = 200
 
 [[redirects]]
-  from = "/blog"
-  to = "/blog/index.html"
+  from = "/admin/dashboard/add-post"
+  to = "/admin/dashboard/add-post.html"
   status = 200
 
-[[headers]]
-  for = "/admin/*"
-    [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+[[redirects]]
+  from = "/admin/dashboard/edit-post"
+  to = "/admin/dashboard/edit-post.html"
+  status = 200
 
+[[redirects]]
+  from = "/admin/dashboard/categories"
+  to = "/admin/dashboard/categories.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/dashboard/settings"
+  to = "/admin/dashboard/settings.html"
+  status = 200
+
+# Clean URLs for blog2
+[[redirects]]
+  from = "/blog2"
+  to = "/blog2/"
+  status = 200
+
+[[redirects]]
+  from = "/blog2/:category/"
+  to = "/blog2/:category/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog2/:category"
+  to = "/blog2/:category/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog2/:category/:article"
+  to = "/blog2/:category/:article"
+  status = 200
+
+# Netlify Identity
+[[redirects]]
+  from = "/.netlify/identity/*"
+  to = "https://identity.netlify.com/.netlify/identity/:splat"
+  status = 200
+
+# Admin fallback
+[[redirects]]
+  from = "/admin/dashboard/*"
+  to = "/admin/dashboard/index.html"
+  status = 200
+
+# 404 handling
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404
+
+# Headers for performance and security
 [[headers]]
   for = "/*"
-    [headers.values]
+  [headers.values]
+    X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-XSS-Protection = "1; mode=block"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/admin/dashboard/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/blog2/*/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/admin/dashboard/data/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Decap CMS configuration
+[[headers]]
+  for = "/admin/config.yml"
+  [headers.values]
+    Content-Type = "text/yaml; charset=utf-8"
+
+# Netlify Identity
+[identity]
+  enable = true
